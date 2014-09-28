@@ -16,14 +16,20 @@ static unsigned scr_width;	/* Width of screen in columns */
 static unsigned scr_lines;	/* Height of screen in lines */
 
 void vt_fill(char ch, char attr) {
-  
-  /* To complete */
-  
+	char *vptr;
+	vptr=video_mem;
+	int i =0;
+	for(i;i<scr_width*scr_lines;i++,vptr++){
+			*vptr=ch;
+			vptr++;
+			*vptr=attr;
+		}
 }
+  
 
 void vt_blank() {
 
-  /* To complete ... */
+  vt_fill("00","70");
 
 }
 
