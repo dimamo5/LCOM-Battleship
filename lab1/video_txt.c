@@ -1,7 +1,7 @@
 #include <minix/drivers.h>
 #include <sys/video.h>
 #include <sys/mman.h>
-
+#include <math.h>
 #include <assert.h>
 
 #include "vt_info.h"
@@ -28,38 +28,67 @@ void vt_fill(char ch, char attr) {
   
 
 void vt_blank() {
-
-
-	vt_fill(0x00,0x0);
-  /*char *vptr;
-  vptr=video_mem;
-  int i =0;
-  for(i;i<scr_width*scr_lines;i++,vptr++){
-	  *vptr=0x0;
-	  vptr++;
-	  *vptr=0x0;
-  }*/
+	vt_fill(0x00,0x00);
 
 }
 
 int vt_print_char(char ch, char attr, int r, int c) {
-	/*if(r>scr_lines || c>scr_width){
+	char *vptr;
+	if(r>=scr_lines || c>=scr_width){
 		return 1;
 	}
-	*vptr=video_mem;
-	vptr=r*scr_width+c
-	*/
+	vptr=video_mem;
+	vptr=vptr+2*scr_width*r+2*c; // 2*((r+1)*scr_width - (scr_width-c));
+	*vptr=ch;
+	vptr++;
+	*vptr=attr;
+
+	return 0;
 }
 
 int vt_print_string(char *str, char attr, int r, int c) {
-
-  /* To complete ... */
+	int lim=strlen(str);
+	int i =0;
+	char *vptr;
+	vptr=video_mem;
+	vptr=vptr+2*scr_width*r+2*c;
+	for(i;i<lim;i++,vptr++){
+		*vptr=*(str+i);
+		vptr++;
+		*vptr=attr;
+	}
+	return 0;
 
 }
 
 int vt_print_int(int num, char attr, int r, int c) {
-
-  /* To complete ... */
+	int i =0;
+	char *vptr;
+	vptr=video_mem;
+	vptr=vptr+2*scr_width*r+2*c;
+	int num_temp=num;
+	int cont =0;
+	while(num_temp>0){
+	num_temp=num_temp/10;
+	cont++;
+	}
+	/*cont--;
+	for(i;i<=cont;i++,vptr++,cont--){
+		int num_temp2=num;
+		*vptr=num_temp2/pow(10,cont)+0x30;
+		vptr++;
+		*vptr=attr;
+	}*/
+	vptr=vptr+2*(cont-1);
+	for(i;i<cont;i++){
+		//*vptr=num_temp2%(int)pow(10,i))/(pow(10,(i-1)));
+		*vptr=(num%10)+0x30;
+		num=num/10;
+		vptr++;
+		*vptr=attr;
+		vptr=vptr-3;
+	}
+	return 0;
 
 }
 
