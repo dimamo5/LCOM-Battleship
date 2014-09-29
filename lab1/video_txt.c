@@ -29,14 +29,26 @@ void vt_fill(char ch, char attr) {
 
 void vt_blank() {
 
-  vt_fill("00","70");
+
+	vt_fill(0x00,0x0);
+  /*char *vptr;
+  vptr=video_mem;
+  int i =0;
+  for(i;i<scr_width*scr_lines;i++,vptr++){
+	  *vptr=0x0;
+	  vptr++;
+	  *vptr=0x0;
+  }*/
 
 }
 
 int vt_print_char(char ch, char attr, int r, int c) {
-  
-  /* To complete ... */
-
+	/*if(r>scr_lines || c>scr_width){
+		return 1;
+	}
+	*vptr=video_mem;
+	vptr=r*scr_width+c
+	*/
 }
 
 int vt_print_string(char *str, char attr, int r, int c) {
