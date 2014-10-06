@@ -41,6 +41,9 @@
 
 #define TIMER_SQR_WAVE		(BIT(2)|BIT(1)) /**< @brief Mode 3: square wave generator */
 #define TIMER_RATE_GEN		BIT(2)          /**< @brief Mode 2: rate generator */
+#define TIMER_HW_RTRIG		BIT(1)			/**< @brief Mode 1: HARDWARE RETRIGGERABLE ONE-SHOT */
+#define TIMER_INTR			BIT(0)			/**< @brief Mode 0: INTERRUPT ON TERMINAL COUNT */
+
 
 /* Counting mode: bit 0 */
 
