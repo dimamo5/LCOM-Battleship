@@ -22,14 +22,19 @@ void timer_int_handler() {
 
 }
 
+
 int timer_get_conf(unsigned long timer, unsigned char *st) {
+
 	unsigned char temp;//Initialize ReadBack Command
 	temp = TIMER_RB_CMD | TIMER_RB_SEL(timer) |TIMER_RB_COUNT_; // Read Back Command
 	sys_outb(TIMER_CTRL,temp);//execute previous command
 	printf("0x%X \n",temp);
 	unsigned char timer_sel=TIMER_0+timer;
-	sys_inb(timer_sel,(unsigned long *)st);
+	unsigned long temp_st; // Auxiliar long variable, to be filled
+	sys_inb(timer_sel,&temp_st); // There is no need for a cast this way
+	*st = temp_st;  // The original variable st is filled as supposed and the unimportant bits are truncated while passing a long to a char
 	printf("0x%X \n",*st);
+
 	return 0;
 }
 
