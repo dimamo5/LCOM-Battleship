@@ -6,16 +6,22 @@
 int timer_set_square(unsigned long timer, unsigned long freq) {
 	unsigned long resultado_freq,control_word;
 	resultado_freq = TIMER_FREQ / freq;
-	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE;
-	char freq_lsb = (char) resultado_freq;
-	char freq_msb = (char) (resultado_freq >> 8);
+	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE|TIMER_BIN;
+	unsigned long freq_lsb = resultado_freq;
+	printf("%X \n",freq_lsb);
+	unsigned long freq_msb = resultado_freq >> 8;
+	printf("%X \n",freq_msb);
 
 	if (timer == 0)
 	{
+		printf("passou");
 		control_word |= TIMER_SEL0;
-		sys_outb(TIMER_CTRL,control_word);  /*colocar nos registo de controlo os valores corretos*/
-		sys_outb(TIMER_0, freq_lsb);
-		sys_outb(TIMER_0, freq_msb);
+		if(sys_outb(TIMER_CTRL,control_word)!=OK)
+			printf("erro1");  /*colocar nos registo de controlo os valores corretos*/
+		if(sys_outb(TIMER_0, freq_lsb)!=OK)
+			printf("erro2");
+		if(sys_outb(TIMER_0, freq_msb)!=OK)
+			printf("erro1");
 	}
 	else if (timer == 1)
 	{
@@ -52,9 +58,9 @@ void timer_int_handler() {
 
 int timer_get_conf(unsigned long timer, unsigned char *st) {
 
-	unsigned char temp;//Initialize ReadBack Command
+	unsigned char temp; //Initialize ReadBack Command
 	temp = TIMER_RB_CMD | TIMER_RB_SEL(timer) |TIMER_RB_COUNT_; // Read Back Command
-	sys_outb(TIMER_CTRL,temp);//execute previous command
+	sys_outb(TIMER_CTRL,temp); //execute previous command
 	printf("0x%X \n",temp);
 	unsigned char timer_sel=TIMER_0+timer;
 	unsigned long temp_st; // Auxiliar long variable, to be filled
@@ -105,7 +111,7 @@ int timer_display_conf(unsigned char conf) {
 }
 
 int timer_test_square(unsigned long freq) {
-	timer_set_square('0',freq);
+	timer_set_square(0,freq);
 	return 0;
 }
 

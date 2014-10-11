@@ -3,6 +3,7 @@
 
 static void print_usage(char *argv[]);
 static int proc_args(int argc, char *argv[]);
+static unsigned long parse_ulong(char *str, int base);
 
 int main(int argc, char **argv) {
 
@@ -47,7 +48,8 @@ static int proc_args(int argc, char *argv[]) {
   		  printf("timer:: wrong no of arguments for test of square() \n");
   		  return 1;
   	  }
-  	  freq=*argv[2];
+  	  freq=parse_ulong(argv[2],10);
+  	  printf("%lu",freq);
   	  printf("timer:: square()\n"); /* Actually, it was already invoked */
   	  timer_test_square(freq);
   	  return 0;
@@ -56,9 +58,30 @@ static int proc_args(int argc, char *argv[]) {
   		  printf("timer: wrong no of arguments for test of config() \n");
   		  return 1;
   	  }
-  	  timer=(unsigned long) *argv[2] - 48;
+  	  timer=parse_ulong(argv[2],10);
   	  printf("timer:: config()\n"); /* Actually, it was already invoked */
   	  timer_test_config(timer);
   	  return 0;
     }
+}
+
+static unsigned long parse_ulong(char *str, int base) {
+  char *endptr;
+  unsigned long val;
+
+  val = strtoul(str, &endptr, base);
+
+  if ((errno == ERANGE && val == ULONG_MAX )
+	  || (errno != 0 && val == 0)) {
+	  perror("strtol");
+	  return ULONG_MAX;
+  }
+
+  if (endptr == str) {
+	  printf("video_txt: parse_ulong: no digits were found in %s \n", str);
+	  return ULONG_MAX;
+  }
+
+  /* Successful conversion */
+  return val;
 }
