@@ -4,8 +4,35 @@
 #include "i8254.h"
 
 int timer_set_square(unsigned long timer, unsigned long freq) {
+	unsigned long resultado_freq,control_word;
+	resultado_freq = TIMER_FREQ / freq;
+	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE;
+	char freq_lsb = (char) resultado_freq;
+	char freq_msb = (char) (resultado_freq >> 8);
 
-	return 0;
+	if (timer == 0)
+	{
+		control_word |= TIMER_SEL0;
+		sys_outb(TIMER_CTRL,control_word);  /*colocar nos registo de controlo os valores corretos*/
+		sys_outb(TIMER_0, freq_lsb);
+		sys_outb(TIMER_0, freq_msb);
+	}
+	else if (timer == 1)
+	{
+		control_word |= TIMER_SEL1;
+		sys_outb(TIMER_CTRL, control_word);
+		sys_outb(TIMER_0, freq_lsb);
+		sys_outb(TIMER_0, freq_msb);
+	}
+	else if (timer == 2)
+	{
+		control_word |= TIMER_SEL2;
+		sys_outb(TIMER_CTRL, control_word);
+		sys_outb(TIMER_0, freq_lsb);
+		sys_outb(TIMER_0, freq_msb);
+	}
+
+	return 1;
 }
 
 int timer_subscribe_int(void ) {
@@ -45,27 +72,27 @@ int timer_display_conf(unsigned char conf) {
 	else printf("\nBINARY \n");
 
 	if((conf & TIMER_SQR_WAVE)>>1==3){
-			printf("MODE 3 \n");
+		printf("MODE 3 \n");
 	}
 	else if ((conf & TIMER_RATE_GEN)>>1==2)
-			printf("MODE 2 \n");
+		printf("MODE 2 \n");
 	else if ((conf & TIMER_HW_RTRIG)>>1==1)
-			printf("MODE 1 \n");
+		printf("MODE 1 \n");
 	else if ((conf & TIMER_INTR)>>1==0)
-			printf("MODE 0 \n");
+		printf("MODE 0 \n");
 
 	if ((conf & TIMER_LSB_MSB)>>4==3){
-				printf("LSB followed by MSB \n");
-			}
+		printf("LSB followed by MSB \n");
+	}
 	else if((conf & TIMER_MSB)>>4==2){
-				printf("MSB \n");
-			}
+		printf("MSB \n");
+	}
 	else if ((conf & TIMER_LSB)>>4==1){
-				printf("LSB \n");
-			}
+		printf("LSB \n");
+	}
 
 	if ((conf & BIT(6))>>(6)){
-			printf("NULL COUNTER = 1 \n");
+		printf("NULL COUNTER = 1 \n");
 	}
 	else printf("NULL COUNTER = 0 \n");
 
@@ -78,12 +105,12 @@ int timer_display_conf(unsigned char conf) {
 }
 
 int timer_test_square(unsigned long freq) {
-	
+	timer_set_square('0',freq);
 	return 0;
 }
 
 int timer_test_int(unsigned long time) {
-	
+
 	return 0;
 }
 
