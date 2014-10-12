@@ -1,7 +1,13 @@
 #include <minix/syslib.h>
 #include <minix/drivers.h>
+#include <minix/com.h>
 #include "timer.h"
 #include "i8254.h"
+
+unsigned int counter;
+
+static int hook_id ;
+
 
 int timer_set_square(unsigned long timer, unsigned long freq) {
 	unsigned long resultado_freq,control_word;
@@ -17,7 +23,7 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 		printf("passou");
 		control_word |= TIMER_SEL0;
 		if(sys_outb(TIMER_CTRL,control_word)!=OK)
-			printf("erro1");  /*colocar nos registo de controlo os valores corretos*/
+			printf("erro1");
 		if(sys_outb(TIMER_0, freq_lsb)!=OK)
 			printf("erro2");
 		if(sys_outb(TIMER_0, freq_msb)!=OK)
@@ -42,17 +48,26 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 }
 
 int timer_subscribe_int(void ) {
+    if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE , &hook_id) != OK)
+    	return 1;
+    if(sys_irqenable(&hook_id) != OK)
+        return 1;
 
 	return 0;
 }
 
 int timer_unsubscribe_int() {
 
+    if(sys_irqrmpolicy(&hook_id) != OK)
+    	return 1;
+    if(sys_irqdisable(&hook_id) != OK)
+        return 1;
+
 	return 0;
 }
 
 void timer_int_handler() {
-
+	++couter;
 }
 
 
