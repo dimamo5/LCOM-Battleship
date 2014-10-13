@@ -56,7 +56,6 @@
 #define TIMER_RB_STATUS_        BIT(4)
 #define TIMER_RB_SEL(n)         BIT((n)+1)
 
-
 /**@}*/
 
 #endif /* _LCOM_I8254_H */
