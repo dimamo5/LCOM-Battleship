@@ -6,14 +6,6 @@
  *
  * Functions for using the i8254 timers
  */
-
-/**
- * @brief Check the counting mode
- *
- * @param timer Timer to get config. (Ranges from 0 to 2)
-  * @return Return 1 for binary and 0 for BCD
- */
-int get_counting_mode(unsigned long timer);
 /**
  * @brief Configures a timer to generate a square wave
  * 

@@ -7,15 +7,6 @@
 unsigned long counter;
 static unsigned int hook_id;
 
-int get_counting_mode(unsigned long timer){
-	unsigned char conf;
-	timer_get_conf(timer,&conf);
-	if(conf & TIMER_BCD){
-		return 0;//BCD
-		}
-	else return 1; //BINARY
-}
-
 int timer_set_square(unsigned long timer, unsigned long freq) {
 	if(freq<1||freq>TIMER_FREQ){
 		printf("ERROR FREQ");
@@ -23,18 +14,8 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 	}
 	unsigned long resultado_freq,control_word;
 	resultado_freq = TIMER_FREQ / freq;
-	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE;
+	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE|TIMER_BIN;
 	unsigned short timer_end=TIMER_0+timer;
-	if(get_counting_mode(timer)){
-		control_word |= TIMER_BIN;
-		unsigned char freq_lsb = resultado_freq;
-		unsigned char freq_msb = resultado_freq >> 8;
-	}
-	if(get_counting_mode(timer)){
-		control_word |= TIMER_BCD;
-		unsigned char freq_lsb = resultado_freq;
-		unsigned char freq_msb = resultado_freq >> 8;
-	}
 	unsigned char freq_lsb = resultado_freq;
 	unsigned char freq_msb = resultado_freq >> 8;
 	switch(timer){
@@ -57,23 +38,23 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 }
 
 int timer_subscribe_int(void ) {
-	hook_id=BIT(1);
-	unsigned int hook_id_temp=hook_id;
+	unsigned int bit_sel=1;
+	hook_id=bit_sel;
     if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE , &hook_id) != OK)
     	return -1;
     if(sys_irqenable(&hook_id) != OK)
         return -1;
-	return hook_id_temp;
+	return BIT(bit_sel);
 }
 
 int timer_unsubscribe_int() {
 
-	 if(sys_irqdisable(&hook_id) != OK){
-	    	   return 1;
-	    }
-    if(sys_irqrmpolicy(&hook_id) != OK){
-    	return 1;
-    }
+	if(sys_irqdisable(&hook_id) != OK){
+		return 1;
+	}
+	if(sys_irqrmpolicy(&hook_id) != OK){
+		return 1;
+	}
 
 	return 0;
 }
@@ -169,7 +150,7 @@ int timer_test_int(unsigned long time) {
 			switch(_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
 			{
 			case HARDWARE:
-				if(msg.NOTIFY_ARG && irq_set)
+				if(msg.NOTIFY_ARG & irq_set)
 				{
                     i++;
                     if(i%60==0){
