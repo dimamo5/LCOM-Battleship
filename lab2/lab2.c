@@ -39,7 +39,7 @@ static int proc_args(int argc, char *argv[]) {
   		  printf("timer:: wrong no of arguments for test of int() \n");
   		  return 1;
   	  }
-  	  time=*argv[2];
+  	  time=parse_ulong(argv[2],10);
   	  printf("timer:: int()\n"); /* Actually, it was already invoked */
   	  timer_test_int(time);
   	  return 0;

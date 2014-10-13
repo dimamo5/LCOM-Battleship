@@ -6,21 +6,17 @@
 
 unsigned int counter;
 
-static int hook_id ;
-
+static int hook_id;
 
 int timer_set_square(unsigned long timer, unsigned long freq) {
 	unsigned long resultado_freq,control_word;
 	resultado_freq = TIMER_FREQ / freq;
 	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE|TIMER_BIN;
 	unsigned long freq_lsb = resultado_freq;
-	printf("%X \n",freq_lsb);
 	unsigned long freq_msb = resultado_freq >> 8;
-	printf("%X \n",freq_msb);
 
 	if (timer == 0)
 	{
-		printf("passou");
 		control_word |= TIMER_SEL0;
 		if(sys_outb(TIMER_CTRL,control_word)!=OK)
 			printf("erro1");
@@ -48,12 +44,14 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 }
 
 int timer_subscribe_int(void ) {
+	hook_id=BIT(1);
+	int hook_id_temp=hook_id;
     if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE , &hook_id) != OK)
-    	return 1;
+    	return -1;
     if(sys_irqenable(&hook_id) != OK)
-        return 1;
-
-	return 0;
+        return -1;
+    hook_id=hook_id_temp;
+	return hook_id;
 }
 
 int timer_unsubscribe_int() {
@@ -67,7 +65,7 @@ int timer_unsubscribe_int() {
 }
 
 void timer_int_handler() {
-	++couter;
+	++counter;
 }
 
 
@@ -76,13 +74,10 @@ int timer_get_conf(unsigned long timer, unsigned char *st) {
 	unsigned char temp; //Initialize ReadBack Command
 	temp = TIMER_RB_CMD | TIMER_RB_SEL(timer) |TIMER_RB_COUNT_; // Read Back Command
 	sys_outb(TIMER_CTRL,temp); //execute previous command
-	printf("0x%X \n",temp);
 	unsigned char timer_sel=TIMER_0+timer;
 	unsigned long temp_st; // Auxiliar long variable, to be filled
 	sys_inb(timer_sel,&temp_st); // There is no need for a cast this way
 	*st = temp_st;  // The original variable st is filled as supposed and the unimportant bits are truncated while passing a long to a char
-	printf("0x%X \n",*st);
-
 	return 0;
 }
 
@@ -131,6 +126,49 @@ int timer_test_square(unsigned long freq) {
 }
 
 int timer_test_int(unsigned long time) {
+
+	int ipc_status;
+	counter=0;
+	unsigned int i=0,r;
+	message msg;
+	short irq_set=timer_subscribe_int();
+	timer_test_square(60); //Por para a frequencia normal
+
+	while(counter < time)
+	{
+		/* ANY -> receives msg from any process
+		 *  2nd and 3rd arguments are the addresses of variables of type message and int
+		 */
+		if((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
+		{
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if( is_ipc_notify(ipc_status) ) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
+		{
+			switch(_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+			{
+			case HARDWARE:
+				if(msg.NOTIFY_ARG && irq_set)
+				{
+                    i++;
+                    if(i%60==0){
+                    	timer_int_handler();
+                    	printf("Interrupt %d \n",counter); // message printed when interrupt received
+                    }
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+		else
+		{
+			printf("Any interrupt received\n");     // Any interrupt received, so anything to do
+		}
+	}
+	timer_unsubscribe_int();
 
 	return 0;
 }
