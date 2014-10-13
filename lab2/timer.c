@@ -4,62 +4,76 @@
 #include "timer.h"
 #include "i8254.h"
 
-unsigned int counter;
+unsigned long counter;
+static unsigned int hook_id;
 
-static int hook_id;
+int get_counting_mode(unsigned long timer){
+	unsigned char conf;
+	timer_get_conf(timer,&conf);
+	if(conf & TIMER_BCD){
+		return 0;//BCD
+		}
+	else return 1; //BINARY
+}
 
 int timer_set_square(unsigned long timer, unsigned long freq) {
+	if(freq<1||freq>TIMER_FREQ){
+		printf("ERROR FREQ");
+		return 1;
+	}
 	unsigned long resultado_freq,control_word;
 	resultado_freq = TIMER_FREQ / freq;
-	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE|TIMER_BIN;
-	unsigned long freq_lsb = resultado_freq;
-	unsigned long freq_msb = resultado_freq >> 8;
-
-	if (timer == 0)
-	{
-		control_word |= TIMER_SEL0;
+	control_word = TIMER_LSB_MSB|TIMER_SQR_WAVE;
+	unsigned short timer_end=TIMER_0+timer;
+	if(get_counting_mode(timer)){
+		control_word |= TIMER_BIN;
+		unsigned char freq_lsb = resultado_freq;
+		unsigned char freq_msb = resultado_freq >> 8;
+	}
+	if(get_counting_mode(timer)){
+		control_word |= TIMER_BCD;
+		unsigned char freq_lsb = resultado_freq;
+		unsigned char freq_msb = resultado_freq >> 8;
+	}
+	unsigned char freq_lsb = resultado_freq;
+	unsigned char freq_msb = resultado_freq >> 8;
+	switch(timer){
+		case 0:	control_word |= TIMER_SEL0;
+				break;
+		case 1: control_word |= TIMER_SEL1;
+				break;
+		case 2: control_word |= TIMER_SEL2;
+				break;
+		default:break;
+	}
 		if(sys_outb(TIMER_CTRL,control_word)!=OK)
-			printf("erro1");
-		if(sys_outb(TIMER_0, freq_lsb)!=OK)
-			printf("erro2");
-		if(sys_outb(TIMER_0, freq_msb)!=OK)
-			printf("erro1");
-	}
-	else if (timer == 1)
-	{
-		control_word |= TIMER_SEL1;
-		sys_outb(TIMER_CTRL, control_word);
-		sys_outb(TIMER_0, freq_lsb);
-		sys_outb(TIMER_0, freq_msb);
-	}
-	else if (timer == 2)
-	{
-		control_word |= TIMER_SEL2;
-		sys_outb(TIMER_CTRL, control_word);
-		sys_outb(TIMER_0, freq_lsb);
-		sys_outb(TIMER_0, freq_msb);
-	}
+			printf("Erro Control word");
+		if(sys_outb(timer_end, freq_lsb)!=OK)
+			printf("Erro timer LSB");
+		if(sys_outb(timer_end, freq_msb)!=OK)
+			printf("Erro timer MSB");
 
-	return 1;
+	return 0;
 }
 
 int timer_subscribe_int(void ) {
 	hook_id=BIT(1);
-	int hook_id_temp=hook_id;
+	unsigned int hook_id_temp=hook_id;
     if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE , &hook_id) != OK)
     	return -1;
     if(sys_irqenable(&hook_id) != OK)
         return -1;
-    hook_id=hook_id_temp;
-	return hook_id;
+	return hook_id_temp;
 }
 
 int timer_unsubscribe_int() {
 
-    if(sys_irqrmpolicy(&hook_id) != OK)
+	 if(sys_irqdisable(&hook_id) != OK){
+	    	   return 1;
+	    }
+    if(sys_irqrmpolicy(&hook_id) != OK){
     	return 1;
-    if(sys_irqdisable(&hook_id) != OK)
-        return 1;
+    }
 
 	return 0;
 }
@@ -132,6 +146,12 @@ int timer_test_int(unsigned long time) {
 	unsigned int i=0,r;
 	message msg;
 	short irq_set=timer_subscribe_int();
+
+	if(irq_set < 0){
+		printf("Subscribe failed");
+		return 1;
+	}
+
 	timer_test_square(60); //Por para a frequencia normal
 
 	while(counter < time)
@@ -168,7 +188,9 @@ int timer_test_int(unsigned long time) {
 			printf("Any interrupt received\n");     // Any interrupt received, so anything to do
 		}
 	}
-	timer_unsubscribe_int();
+	if(timer_unsubscribe_int()!=0){
+		printf("Unsubscribe failed");
+	}
 
 	return 0;
 }
