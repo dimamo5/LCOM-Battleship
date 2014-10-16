@@ -39,10 +39,12 @@
 
 /* Operating mode: bits 3, 2 and 1 */
 
-#define TIMER_SQR_WAVE		(BIT(2)|BIT(1)) /**< @brief Mode 3: square wave generator */
-#define TIMER_RATE_GEN		BIT(2)          /**< @brief Mode 2: rate generator */
-#define TIMER_HW_RTRIG		BIT(1)			/**< @brief Mode 1: HARDWARE RETRIGGERABLE ONE-SHOT */
-#define TIMER_INTR			BIT(0)			/**< @brief Mode 0: INTERRUPT ON TERMINAL COUNT */
+#define TIMER_HW_STROBE		(BIT(3)|BIT(1))	/**< @brief Mode 4: Hardware triggered strobe */
+#define TIMER_SW_STROBE		BIT(3)			/**< @brief Mode 4: Software triggered strobe */
+#define TIMER_SQR_WAVE		(BIT(2)|BIT(1)) /**< @brief Mode 3: Square wave generator */
+#define TIMER_RATE_GEN		BIT(2)          /**< @brief Mode 2: Rate generator */
+#define TIMER_HW_RTRIG		BIT(1)			/**< @brief Mode 1: Hardware retriggerable one-shot */
+#define TIMER_INTR			BIT(0)			/**< @brief Mode 0: interrupt on terminal count */
 
 
 /* Counting mode: bit 0 */
