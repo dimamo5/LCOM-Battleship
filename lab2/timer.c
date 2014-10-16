@@ -49,7 +49,7 @@ int timer_subscribe_int(void ) {
 
 int timer_unsubscribe_int() {
 
-	if(sys_irqdisable(&hook_id) != OK){
+	if(sys_irqdisable(&hook_id) != OK){ // Disable first and remove policy after, order may be important in most cases
 		return 1;
 	}
 	if(sys_irqrmpolicy(&hook_id) != OK){
@@ -67,9 +67,9 @@ void timer_int_handler() {
 int timer_get_conf(unsigned long timer, unsigned char *st) {
 
 	unsigned char temp; //Initialize ReadBack Command
-	temp = TIMER_RB_CMD | TIMER_RB_SEL(timer) |TIMER_RB_COUNT_; // Read Back Command
+	temp = TIMER_RB_CMD | TIMER_RB_SEL(timer) |TIMER_RB_COUNT_; // Read Back Command - count and status flags are reversed: we have count at 1, which means we dont want to read the counter and we have status at 0, which means we want to read the programmed mode
 	sys_outb(TIMER_CTRL,temp); //execute previous command
-	unsigned char timer_sel=TIMER_0+timer;
+	unsigned char timer_sel=TIMER_0+timer; // Timer to be used selected
 	unsigned long temp_st; // Auxiliar long variable, to be filled
 	sys_inb(timer_sel,&temp_st); // There is no need for a cast this way
 	*st = temp_st;  // The original variable st is filled as supposed and the unimportant bits are truncated while passing a long to a char
@@ -78,39 +78,43 @@ int timer_get_conf(unsigned long timer, unsigned char *st) {
 
 int timer_display_conf(unsigned char conf) {
 	if(conf & TIMER_BCD){
-		printf("\nBCD \n");
+		printf("\nCounting Mode: BCD \n");
 	}
-	else printf("\nBINARY \n");
+	else printf("\nCounting Mode: BINARY \n");
 
 	if((conf & TIMER_SQR_WAVE)>>1==3){
-		printf("MODE 3 \n");
+		printf("Operating Mode: Square Wave Generator(MODE 3) \n");
 	}
+	else if ((conf & TIMER_SW_STROBE)>>1==5)
+			printf("Operating Mode: Hardware triggered strobe(MODE 5) \n");
+	else if ((conf & TIMER_HW_STROBE)>>1==4)
+		printf("Operating Mode: Software triggered strobe(MODE 4) \n");
 	else if ((conf & TIMER_RATE_GEN)>>1==2)
-		printf("MODE 2 \n");
+		printf("Operating Mode: Rate Generator(MODE 2) \n");
 	else if ((conf & TIMER_HW_RTRIG)>>1==1)
-		printf("MODE 1 \n");
+		printf("Operating Mode: Hardware retriggerable one-shot(MODE 1) \n");
 	else if ((conf & TIMER_INTR)>>1==0)
-		printf("MODE 0 \n");
+		printf("Operating Mode: Interrupt on terminal count(MODE 0) \n");
 
 	if ((conf & TIMER_LSB_MSB)>>4==3){
-		printf("LSB followed by MSB \n");
+		printf("Type of access: LSB followed by MSB \n");
 	}
 	else if((conf & TIMER_MSB)>>4==2){
-		printf("MSB \n");
+		printf("Type of access: MSB \n");
 	}
 	else if ((conf & TIMER_LSB)>>4==1){
-		printf("LSB \n");
+		printf("Type of access: LSB \n");
 	}
 
 	if ((conf & BIT(6))>>(6)){
-		printf("NULL COUNTER = 1 \n");
+		printf("Null counter value = 1 \n");
 	}
-	else printf("NULL COUNTER = 0 \n");
+	else printf("Null counter value = 0 \n");
 
 	if((conf & BIT(7))>>(7)){
-		printf("OUT PIN = 1 \n\n");
+		printf("Output Pin value = 1 \n\n");
 	}
-	else printf("OUT PIN = 0 \n\n");
+	else printf("Output Pin value = 0 \n\n");
 
 	return 0;
 }
@@ -126,7 +130,7 @@ int timer_test_int(unsigned long time) {
 	counter=0;
 	unsigned int i=0,r;
 	message msg;
-	short irq_set=timer_subscribe_int();
+	short irq_set=timer_subscribe_int(); // Interrupts are subscribed to a line and enabled
 
 	if(irq_set < 0){
 		printf("Subscribe failed");
@@ -135,7 +139,7 @@ int timer_test_int(unsigned long time) {
 
 	timer_test_square(60); //Por para a frequencia normal
 
-	while(counter < time)
+	while(counter < time) // Counter will be incremented on each message print, so it stops when it reaches the time wanted
 	{
 		/* ANY -> receives msg from any process
 		 *  2nd and 3rd arguments are the addresses of variables of type message and int
@@ -153,7 +157,7 @@ int timer_test_int(unsigned long time) {
 				if(msg.NOTIFY_ARG & irq_set)
 				{
                     i++;
-                    if(i%60==0){
+                    if(i%60==0){  // At a 60hz default frequency, we only want the message printed each 60 ticks
                     	timer_int_handler();
                     	printf("Interrupt %d \n",counter); // message printed when interrupt received
                     }
@@ -169,7 +173,7 @@ int timer_test_int(unsigned long time) {
 			printf("Any interrupt received\n");     // Any interrupt received, so anything to do
 		}
 	}
-	if(timer_unsubscribe_int()!=0){
+	if(timer_unsubscribe_int()!=0){       // Finish by disabling interrupts and unsubscribing from them from the line
 		printf("Unsubscribe failed");
 	}
 
