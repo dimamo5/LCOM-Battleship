@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 	/* Initialize service */
 	  sef_startup();
 
-	  printf("lab2: PC Timer \n");
+	  printf("lab3: KBC \n");
 
 	if ( argc == 1 ) {
 	      print_usage(argv);
@@ -49,7 +49,7 @@ static int proc_args(int argc, char *argv[]) {
   		  return 1;
   	  }
   	  sec=parse_ulong(argv[2],10);
-  	  led=argv[3];
+  	  //led=argv[3];
   	  printf("kbc:: scan()\n"); /* Actually, it was already invoked */
   	  kbd_test_leds(sec,led);
   	  return 0;
