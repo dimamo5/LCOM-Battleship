@@ -1,5 +1,4 @@
-#include <minix/drivers.h>
-#include "timer.h"
+#include "test3.h"
 
 static void print_usage(char *argv[]);
 static int proc_args(int argc, char *argv[]);
@@ -23,44 +22,45 @@ int main(int argc, char **argv) {
 
 static void print_usage(char *argv[]) {
 	  printf("Usage: one of the following tests:\n"
-		 "\t service run %s -args \"int <time>\" \n"
-		 "\t service run %s -args \"square <freq>\"\n"
-		 "\t service run %s -args \"config <timer> \" \n",
+		 "\t service run %s -args \"scan <0->C/other->ASSEMBLY>\" \n"
+		 "\t service run %s -args \"led <number of arguments Led's to toggle>\"\n"
+		 "\t service run %s -args \"timed_scan <seconds without input to exit> \" \n",
 		 argv[0], argv[0], argv[0]);
 }
 
 static int proc_args(int argc, char *argv[]) {
 
-  unsigned long timer, time, freq;
+  unsigned short ass,n,sec;
+  unsigned short * led;
   char *str;
 
-  if (strncmp(argv[1], "int", strlen("int")) == 0) {
+  if (strncmp(argv[1], "scan", strlen("scan")) == 0) {
   	  if( argc != 3 ) {
-  		  printf("timer:: wrong no of arguments for test of int() \n");
+  		  printf("kbc:: wrong no of arguments for test of scan() \n");
   		  return 1;
   	  }
-  	  time=parse_ulong(argv[2],10);
-  	  printf("timer:: int()\n"); /* Actually, it was already invoked */
-  	  timer_test_int(time);
+  	  ass=parse_ulong(argv[2],10);
+  	  printf("kbc:: scan()\n"); /* Actually, it was already invoked */
+  	  kbd_test_scan(ass);
   	  return 0;
-    } else if (strncmp(argv[1], "square", strlen("square")) == 0) {
+    } else if (strncmp(argv[1], "led", strlen("led")) == 0) {
   	  if( argc != 3 ) {
-  		  printf("timer:: wrong no of arguments for test of square() \n");
+  		  printf("kbc:: wrong no of arguments for test of led() \n");
   		  return 1;
   	  }
-  	  freq=parse_ulong(argv[2],10);
-  	  printf("%lu",freq);
-  	  printf("timer:: square()\n"); /* Actually, it was already invoked */
-  	  timer_test_square(freq);
+  	  sec=parse_ulong(argv[2],10);
+  	  led=argv[3];
+  	  printf("kbc:: scan()\n"); /* Actually, it was already invoked */
+  	  kbd_test_leds(sec,led);
   	  return 0;
-    } else if (strncmp(argv[1], "config", strlen("config")) == 0) {
+    } else if (strncmp(argv[1], "timed_scan", strlen("timed_scan")) == 0) {
   	  if( argc != 3 ) {
-  		  printf("timer: wrong no of arguments for test of config() \n");
+  		  printf("kbc: wrong no of arguments for test of timed_scan() \n");
   		  return 1;
   	  }
-  	  timer=parse_ulong(argv[2],10);
-  	  printf("timer:: config()\n"); /* Actually, it was already invoked */
-  	  timer_test_config(timer);
+  	  n=parse_ulong(argv[2],10);
+  	  printf("kbc:: timed_scan()\n"); /* Actually, it was already invoked */
+  	  kbd_test_timed_scan(n);
   	  return 0;
     }
 }
@@ -78,7 +78,7 @@ static unsigned long parse_ulong(char *str, int base) {
   }
 
   if (endptr == str) {
-	  printf("video_txt: parse_ulong: no digits were found in %s \n", str);
+	  printf("kbc: parse_ulong: no digits were found in %s \n", str);
 	  return ULONG_MAX;
   }
 
