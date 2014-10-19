@@ -1,6 +1,15 @@
 #ifndef __TEST3_H
 #define __TEST3_H
 
+#include <minix/drivers.h>
+#include <minix/syslib.h>
+#include <minix/com.h>
+#include <assert.h>
+
+#define BIT(n) (0x01<<(n))
+#define KBC_OUTBUF 0x60 //Output buffer from KBC
+#define KBC_IRQ 1 //KBC IRQ line
+
 /** @defgroup test3 test3
  * @{
  *
@@ -43,5 +52,11 @@ int kbd_test_leds(unsigned short n, unsigned short *leds);
  * @return Return 0 upon success and non-zero otherwise
  */
 int kbd_test_timed_scan(unsigned short n);
+
+int kbd_scan_c();
+int kbd_int_handler();
+int kbd_unsubscribe_int();
+int kbd_subscribe_int();
+
 
 #endif /* __TEST3_H */
