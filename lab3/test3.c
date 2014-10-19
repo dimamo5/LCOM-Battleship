@@ -1,3 +1,7 @@
+#include "test3.h"
+#include <minix/drivers.h>
+
+
 int kbd_test_scan(unsigned short ass); {
 	/* To be completed */
 }
