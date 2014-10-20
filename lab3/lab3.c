@@ -32,7 +32,7 @@ static void print_usage(char *argv[]) {
 static int proc_args(int argc, char *argv[]) {
 
   unsigned short ass,n,sec;
-  unsigned short * led;
+  unsigned short led[n];
   char *str;
 
   if (strncmp(argv[1], "scan", strlen("scan")) == 0) {
@@ -45,12 +45,15 @@ static int proc_args(int argc, char *argv[]) {
   	  kbd_test_scan(ass);
   	  return 0;
     } else if (strncmp(argv[1], "led", strlen("led")) == 0) {
-  	  if( argc != 3 ) {
+  	  if( argc < 3 ) {
   		  printf("kbc:: wrong no of arguments for test of led() \n");
   		  return 1;
   	  }
   	  sec=parse_ulong(argv[2],10);
-  	  //led=argv[3];
+  	  unsigned int i;
+  	  for(i=0;i<n;i++){
+  		  led[i]=parse_ulong(argv[3+i],10);
+  	  }
   	  printf("kbc:: scan()\n"); /* Actually, it was already invoked */
   	  kbd_test_leds(sec,led);
   	  return 0;
