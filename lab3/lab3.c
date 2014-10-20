@@ -1,4 +1,5 @@
 #include "test3.h"
+#include "keyboard.h"
 
 static void print_usage(char *argv[]);
 static int proc_args(int argc, char *argv[]);
