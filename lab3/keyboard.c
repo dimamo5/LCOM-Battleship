@@ -53,9 +53,20 @@ int kbd_send_command(int led) {
 		com = LED_CAPSLOCK;
 	}
 	unsigned int counter = 1;
-	do {
+	do { if(counter==1){
 		sys_outb(KBD_BUFF, SWITCH_LED);
-		sys_inb(KBD_BUFF, &resp);
+		sys_inb(KBD_BUFF, &resp);}
+
+		while (kbd_analisa(resp) == 0) {
+			if (kbd_analisa(resp) == 0 && counter == 1) {
+				sys_outb(KBD_BUFF, SWITCH_LED);
+				sys_inb(KBD_BUFF, &resp);
+			} else if (kbd_analisa(resp) == 0 && counter == 2) {
+				sys_outb(KBD_BUFF, com);
+				sys_inb(KBD_BUFF, &resp);
+
+			}
+		}
 
 		if (kbd_analisa(resp) == 2 && counter == 1) { //acknowledged after 1st cycle
 			sys_outb(KBD_BUFF, com);
@@ -70,8 +81,6 @@ int kbd_send_command(int led) {
 			counter = 1;
 			continue;
 
-		} else if (kbd_analisa(resp) == 0) { // Resend, repeat the 2 commands before
-			continue;
 		}
 	} while (1);
 	return 1;
@@ -88,8 +97,9 @@ int kbd_analisa(int resp) {
 	}
 }
 
-int kbd_led(int n,unsigned short led[]) {
-	int ipc_status,m=0;
+int kbd_led(int n, unsigned short led[]) {
+	int ipc_status, m = 0;
+	int led1,led2,led3;
 	unsigned int i = 0, r;
 	message msg;
 	short irq_set = kbd_subscribe_int();
@@ -98,7 +108,7 @@ int kbd_led(int n,unsigned short led[]) {
 		printf("Subscribe failed");
 		return 1;
 	}
-	while (m!=n) {
+	while (m != n) {
 
 		/* ANY -> receives msg from any process
 		 *  2nd and 3rd arguments are the addresses of variables of type message and int
@@ -108,12 +118,13 @@ int kbd_led(int n,unsigned short led[]) {
 			continue;
 		}
 		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
-		{
+				{
 			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
 			{
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set) {
-					kbd_send_command(led[m]);
+
+					kbd_send_command();
 					m++;
 					continue;
 				}
@@ -137,6 +148,7 @@ int kbd_scan_c() {
 	int ipc_status, int_cont = 1;
 	unsigned int i = 0, r;
 	message msg;
+	unsigned short byte2;
 	short irq_set = kbd_subscribe_int();
 
 	if (irq_set < 0) {
@@ -153,23 +165,31 @@ int kbd_scan_c() {
 			continue;
 		}
 		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
-		{
+				{
 			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
 			{
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set) {
 					kbd_int_handler();
-					if (code >> 7) {
-						printf("Breakcode: 0x%02X \n", code);
-					} else {
-						printf("Makecode: 0x%02X \n", code);
+					if(code==SCAN_2BYTE){
+						byte2=1;
+						break;
 					}
-					if (code == BC_ESC) {
-						int_cont = 0;
-						printf("Press ENTER to leave");
-						return 0;
+					if(byte2){
+						code|=(SCAN_2BYTE<<8);
+						byte2=0;
 					}
-				}
+						if (code&BREAKCODE) {
+							printf("Breakcode: 0x%04X \n", code);
+						} else {
+							printf("Makecode: 0x%04X \n", code);
+						}
+						if (code == BC_ESC) {
+							int_cont = 0;
+							printf("Press ENTER to leave");
+							return 0;
+						}
+					}
 				break;
 
 			default:
