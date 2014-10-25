@@ -22,6 +22,8 @@
 #define LED_SCRLOCK BIT(0)
 #define SWITCH_LED 0xED //comando para ligar LED
 #define BUFFER_FULL BIT(1) //Buffer quando estiver full
+#define SCAN_2BYTE 0x00E0
+#define BREAKCODE BIT(7)
 
 
 int kbd_int_handler();
