@@ -6,6 +6,7 @@
 #include <minix/com.h>
 #include <assert.h>
 #include <minix/sysutil.h>
+#include "timer.h"
 
 #define DELAY_US    20000
 #define BIT(n) (0x01<<(n))

@@ -3,8 +3,10 @@
 static unsigned int hook_id;
 static unsigned long code;
 
+unsigned long counter_timer;
+
 int kbd_subscribe_int() {
-	unsigned int bit_sel = 1;
+	unsigned int bit_sel = 2;
 	hook_id = bit_sel;
 	if (sys_irqsetpolicy(KBC_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id) != OK)
 		return -1;
@@ -132,15 +134,25 @@ int kbd_led(int n, unsigned short led[]) {
 						continue;
 					}
 					if(led[m]==0){
-						led1=!led1;
+						if(led1==0){
+							led1=1;
+						}
+						else led1=0;
 					}
 					if(led[m]==1){
-						led2=!led2;
+						if(led2==0){
+							led2=1;
+						}
+						else led2=0;
 					}
 					if(led[m]==2){
-						led3=!led3;
+						if(led3==0){
+							led3=1;
+						}
+						else led3=0;
 					}
 					kbd_send_command(get_command(led1,led2,led3));
+					timer_test_int(60);
 					m++;
 					continue;
 				}
@@ -161,7 +173,7 @@ int kbd_led(int n, unsigned short led[]) {
 }
 
 int kbd_scan_c() {
-	int ipc_status, int_cont = 1;
+	int ipc_status, flagstop = 1;
 	unsigned int i = 0, r;
 	message msg;
 	unsigned short byte2;
@@ -171,7 +183,7 @@ int kbd_scan_c() {
 		printf("Subscribe failed");
 		return 1;
 	}
-	while (int_cont) {
+	while (flagstop) {
 
 		/* ANY -> receives msg from any process
 		 *  2nd and 3rd arguments are the addresses of variables of type message and int
@@ -201,7 +213,7 @@ int kbd_scan_c() {
 							printf("Makecode: 0x%04X \n", code);
 						}
 						if (code == BC_ESC) {
-							int_cont = 0;
+							flagstop = 0;
 							printf("Press ENTER to leave");
 							return 0;
 						}
@@ -222,3 +234,86 @@ int kbd_scan_c() {
 	return 0;
 }
 
+int kbd_timed_scan(unsigned short sec) {
+	int ipc_status, flag_stop = 1;
+	unsigned int i = 0, r;
+	unsigned int counter_milisec=0;
+	counter_timer=0;
+	message msg;
+	unsigned short byte2;
+	short irq_set = kbd_subscribe_int();
+	short irq_set_time=timer_subscribe_int();
+
+	timer_test_square(60);
+
+	if (irq_set < 0) {
+		printf("Subscribe failed");
+		return 1;
+	}
+	while (flag_stop) {
+
+		/* ANY -> receives msg from any process
+		 *  2nd and 3rd arguments are the addresses of variables of type message and int
+		 */
+		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
+				{
+			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+			{
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set) {
+					counter_timer=0;
+					counter_milisec=0;
+					kbd_int_handler();
+					if(code==SCAN_2BYTE){
+						byte2=1;
+						break;
+					}
+					if(byte2){
+						code|=(SCAN_2BYTE<<8);
+						byte2=0;
+					}
+						if (code&BREAKCODE) {
+							printf("Breakcode: 0x%04X \n", code);
+						} else {
+							printf("Makecode: 0x%04X \n", code);
+						}
+						if (code == BC_ESC) {
+							flag_stop = 0;
+							printf("Press ENTER to leave");
+							break;
+						}
+					}
+				if (msg.NOTIFY_ARG & irq_set_time){
+					counter_milisec++;
+					if(counter_milisec%60==0){
+						counter_timer++;
+					}
+					if(sec<=counter_timer){
+						printf("Acabou o tempo");
+						flag_stop=0;
+						break;
+					}
+				}
+				break;
+
+			default:
+				break;
+			}
+		} else {
+			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
+		}
+	}
+
+	if (kbd_unsubscribe_int() != 0) {
+		printf("Unsubscribe failed");
+	}
+
+	if(timer_unsubscribe_int()!=0){
+			printf("Unsubscribe failed");
+		}
+	return 0;
+}
