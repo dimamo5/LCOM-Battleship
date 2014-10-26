@@ -31,7 +31,8 @@ int kbd_unsubscribe_int();
 int kbd_subscribe_int();
 int kbd_scan_c();
 int kbd_analisa(int resp);
-int kbd_send_command(int led);
+int kbd_send_command(unsigned char com);
+unsigned char get_command(int led1,int led2,int led3);
 int kbd_led(int n,unsigned short led[]);
 
 #endif

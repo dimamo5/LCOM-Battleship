@@ -40,18 +40,22 @@ int kbd_status() {
 	return 1;
 }
 
-int kbd_send_command(int led) {
-	unsigned long resp;
-	unsigned long com;
-	if (led == -1) {
-		com = LED_OFF;
-	} else if (led == 0) {
-		com = LED_SCRLOCK;
-	} else if (led == 1) {
-		com = LED_NUMPAD;
-	} else if (led == 2) {
-		com = LED_CAPSLOCK;
+unsigned char get_command(int led1,int led2,int led3){
+	unsigned char command=0x00;
+	if(led1){
+		command|=LED_SCRLOCK;
 	}
+	if(led2){
+		command |=LED_NUMPAD;
+	}
+	if(led3){
+		command |=LED_CAPSLOCK;
+	}
+	return command;
+}
+
+int kbd_send_command(unsigned char com) {
+	unsigned long resp;
 	unsigned int counter = 1;
 	do { if(counter==1){
 		sys_outb(KBD_BUFF, SWITCH_LED);
@@ -123,8 +127,20 @@ int kbd_led(int n, unsigned short led[]) {
 			{
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set) {
-
-					kbd_send_command();
+					if(m=0){
+						kbd_send_command(get_command(0,0,0));//tudo desligado
+						continue;
+					}
+					if(led[m]==0){
+						led1=!led1;
+					}
+					if(led[m]==1){
+						led2=!led2;
+					}
+					if(led[m]==2){
+						led3=!led3;
+					}
+					kbd_send_command(get_command(led1,led2,led3));
 					m++;
 					continue;
 				}
