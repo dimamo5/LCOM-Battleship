@@ -49,7 +49,7 @@ static int proc_args(int argc, char *argv[]) {
 			printf("kbc:: wrong no of arguments for test of led() \n");
 			return 1;
 		}
-		sec=parse_ulong(argv[2],10);
+		n=parse_ulong(argv[2],10);
 		unsigned int i;
 		for(i=0;i<n;i++){
 			if(led[i]<0||led[i]>2){
@@ -58,16 +58,16 @@ static int proc_args(int argc, char *argv[]) {
 			led[i]=parse_ulong(argv[3+i],10);
 		}
 		printf("kbc:: scan()\n"); /* Actually, it was already invoked */
-		kbd_test_leds(sec,led);
+		kbd_test_leds(n,led);
 		return 0;
 	} else if (strncmp(argv[1], "timed_scan", strlen("timed_scan")) == 0) {
 		if( argc != 3 ) {
 			printf("kbc: wrong no of arguments for test of timed_scan() \n");
 			return 1;
 		}
-		n=parse_ulong(argv[2],10);
+		sec=parse_ulong(argv[2],10);
 		printf("kbc:: timed_scan()\n"); /* Actually, it was already invoked */
-		kbd_test_timed_scan(n);
+		kbd_test_timed_scan(sec);
 		return 0;
 	}
 }

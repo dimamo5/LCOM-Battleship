@@ -14,5 +14,5 @@ int kbd_test_leds(unsigned short n, unsigned short *leds) {
 	return 1;
 }
 int kbd_test_timed_scan(unsigned short n) {
-	/* To be completed */
+	kbd_timed_scan(n);
 }
