@@ -28,18 +28,24 @@ int kbd_unsubscribe_int() {
 }
 
 int kbd_int_handler() {
-	sys_inb(KBD_BUFF, &code);
-	return 1;
+	if (sys_inb(KBD_BUFF, &code) != OK) {
+		printf("Int Handler Error at sys_inb.");
+		return 1;
+	}
+	return 0;
 }
 
+// this function analises the status of the inbuffer: if it is full,
+// it will wait indefinitely until it clear some space for input
 int kbd_status() {
 	unsigned long status, lixo;
-	sys_inb(KBC_STATUS, &status);
-	if (status & BUFFER_FULL) {
-		tickdelay(micros_to_ticks(DELAY_US));
+	sys_inb(KBC_STATUS, &status); // reads the status
+	while (status & BUFFER_FULL) { // compares if the In buffer is full or not
+		tickdelay(micros_to_ticks(DELAY_US)); //20ms delay to let it process
 		sys_inb(KBD_BUFF, &lixo);
+		sys_inb(KBC_STATUS, &status);
 	}
-	return 1;
+	return 0;
 }
 
 unsigned char get_command(int led1, int led2, int led3) {
@@ -59,26 +65,52 @@ unsigned char get_command(int led1, int led2, int led3) {
 int kbd_send_command(unsigned char com) {
 	unsigned long resp;
 	unsigned int counter = 1;
+	kbd_status();
 	do {
 		if (counter == 1) {
-			sys_outb(KBD_BUFF, SWITCH_LED);
-			sys_inb(KBD_BUFF, &resp);
+			if (sys_outb(KBD_BUFF, SWITCH_LED) != OK) {
+				printf("Error at kbd_send_command.");
+				return 1;
+			}
+			if (sys_inb(KBD_BUFF, &resp) != OK) {
+				printf("Error at kbd_send_command.");
+				return 1;
+			}
 		}
 
 		while (kbd_analisa(resp) == 0) {
 			if (kbd_analisa(resp) == 0 && counter == 1) {
-				sys_outb(KBD_BUFF, SWITCH_LED);
-				sys_inb(KBD_BUFF, &resp);
+				if (sys_outb(KBD_BUFF, SWITCH_LED) != OK) {
+					printf("Error at kbd_send_command.");
+					return 1;
+				}
+				if (sys_inb(KBD_BUFF, &resp) != OK) {
+					printf("Error at kbd_send_command.");
+					return 1;
+				}
+
 			} else if (kbd_analisa(resp) == 0 && counter == 2) {
-				sys_outb(KBD_BUFF, com);
-				sys_inb(KBD_BUFF, &resp);
+				if (sys_outb(KBD_BUFF, com) != OK) {
+					printf("Error at kbd_send_command.");
+					return 1;
+				}
+				if (sys_inb(KBD_BUFF, &resp) != OK) {
+					printf("Error at kbd_send_command.");
+					return 1;
+				}
 
 			}
 		}
 
 		if (kbd_analisa(resp) == 2 && counter == 1) { //acknowledged after 1st cycle
-			sys_outb(KBD_BUFF, com);
-			sys_inb(KBD_BUFF, &resp);
+			if (sys_outb(KBD_BUFF, com) != OK) {
+				printf("Error at kbd_send_command.");
+				return 1;
+			}
+			if (sys_inb(KBD_BUFF, &resp) != OK) {
+				printf("Error at kbd_send_command.");
+				return 1;
+			}
 			counter++; // Counter passa para 2, ou seja, vai para o 2o ciclo write/read
 		}
 		if (kbd_analisa(resp) == 2 && counter == 2) { //acknowledged after 2nd cycle
@@ -91,7 +123,7 @@ int kbd_send_command(unsigned char com) {
 
 		}
 	} while (1);
-	return 1;
+	return 0;
 
 }
 
@@ -120,19 +152,19 @@ int kbd_led(int n, unsigned short led[]) {
 			continue;
 		}
 
-		if (led[m] == 0) {   // if the array element being analyzed is the 1st led (led1)
+		if (led[m] == 0) { // if the array element being analyzed is the 1st led (led1)
 			if (led1 == 0) {
-				led1 = 1;    // if it was off, change the status to 1- "on/going to be turned on"
+				led1 = 1; // if it was off, change the status to 1- "on/going to be turned on"
 			} else
-				led1 = 0;    // if it was on, change the status to 0 - "off/going to be turned off"
+				led1 = 0; // if it was on, change the status to 0 - "off/going to be turned off"
 		}
-		if (led[m] == 1) {    // same as before, but with the 2nd led
+		if (led[m] == 1) { // same as before, but with the 2nd led
 			if (led2 == 0) {
 				led2 = 1;
 			} else
 				led2 = 0;
 		}
-		if (led[m] == 2) {    // same as before, but with the 3rd led
+		if (led[m] == 2) { // same as before, but with the 3rd led
 			if (led3 == 0) {
 				led3 = 1;
 			} else
