@@ -2,9 +2,7 @@
 #include "keyboard.h"
 
 int kbd_test_scan(unsigned short ass) {
-	if(!ass){
-		kbd_scan_c();
-	}
+		kbd_scan(ass);
 	//else kbd_scan_ass;
 }
 
