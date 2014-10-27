@@ -27,9 +27,9 @@ int main(int argc, char **argv) {
 static void print_usage(char *argv[]) {
 	printf(
 			"Usage: one of the following tests:\n"
-					"\t service run %s -args \"scan <0->C/other->ASSEMBLY>\" \n"
-					"\t service run %s -args \"led <number of arguments Led's to toggle>\"\n"
-					"\t service run %s -args \"timed_scan <seconds without input to exit> \" \n",
+			"\t service run %s -args \"scan <0->C/other->ASSEMBLY>\" \n"
+			"\t service run %s -args \"led <number of the led's to toggle>\"\n"
+			"\t service run %s -args \"timed_scan <seconds without input to exit> \" \n",
 			argv[0], argv[0], argv[0]);
 }
 
@@ -48,25 +48,26 @@ static int proc_args(int argc, char *argv[]) {
 		printf("kbc:: scan()\n"); /* Actually, it was already invoked */
 		kbd_test_scan(ass);
 		return 0;
-	} else if (strncmp(argv[1], "led", strlen("led")) == 0) {
-		n = parse_ulong(argv[2], 10);
-		if (argc-3!=n || argc < 3) {
+	}
+	else if (strncmp(argv[1], "led", strlen("led")) == 0) {
+		if (argc < 3) {
 			printf("kbc:: wrong no of arguments for test of led() \n");
 			return 1;
 		}
 
 		unsigned int i;
-		for (i = 0; i < n; i++) {
-			led[i] = parse_ulong(argv[3 + i], 10);
+		for (i = 0; i < (argc-2); i++) {
+			led[i] = parse_ulong(argv[2 + i], 10);
 			if (led[i] < 0 || led[i] > 2) {
 				printf("kbc: wrong type of arguments for test of led() \n");
 				return 1;
 			}
 		}
-		printf("kbc:: scan()\n"); /* Actually, it was already invoked */
-		kbd_test_leds(n, led);
+		printf("kbc:: led()\n"); /* Actually, it was already invoked */
+		kbd_test_leds(argc-2, led);
 		return 0;
-	} else if (strncmp(argv[1], "timed_scan", strlen("timed_scan")) == 0) {
+	}
+	else if (strncmp(argv[1], "timed_scan", strlen("timed_scan")) == 0) {
 		if (argc != 3) {
 			printf("kbc: wrong no of arguments for test of timed_scan() \n");
 			return 1;
