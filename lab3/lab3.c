@@ -10,6 +10,9 @@ int main(int argc, char **argv) {
 	/* Initialize service */
 	sef_startup();
 
+	//Handler em ASM
+	sys_enable_iop(SELF);
+
 	printf("lab3: KBC \n");
 
 	if (argc == 1) {

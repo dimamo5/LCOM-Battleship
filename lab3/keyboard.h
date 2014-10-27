@@ -22,7 +22,8 @@
 #define LED_NUMPAD BIT(1)
 #define LED_SCRLOCK BIT(0)
 #define SWITCH_LED 0xED //comando para ligar LED
-#define BUFFER_FULL BIT(1) //Buffer quando estiver full
+#define IN_BUFFER_FULL BIT(1) //Quando buffer IN estiver full
+#define OUT_BUFFER_FULL BIT(0) //Quando buffer OUT estiver full
 #define SCAN_2BYTE 0x00E0
 #define BREAKCODE BIT(7)
 
@@ -30,7 +31,7 @@
 int kbd_int_handler();
 int kbd_unsubscribe_int();
 int kbd_subscribe_int();
-int kbd_scan_c();
+int kbd_scan(unsigned short ass);
 int kbd_analisa(int resp);
 int kbd_send_command(unsigned char com);
 unsigned char get_command(int led1,int led2,int led3);

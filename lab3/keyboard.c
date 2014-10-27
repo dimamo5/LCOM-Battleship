@@ -1,7 +1,7 @@
 #include "keyboard.h"
 
 static unsigned int hook_id;
-static unsigned long code;
+unsigned long code;
 
 unsigned long counter_timer;
 
@@ -37,15 +37,35 @@ int kbd_int_handler() {
 
 // this function analises the status of the inbuffer: if it is full,
 // it will wait indefinitely until it clear some space for input
-int kbd_status() {
+int kbd_in_status() {
 	unsigned long status, lixo;
-	sys_inb(KBC_STATUS, &status); // reads the status
-	while (status & BUFFER_FULL) { // compares if the In buffer is full or not
+
+	if (sys_inb(KBC_STATUS, &status) != OK) { // reads the status
+		printf("Error at kbd_in_status");
+		return 1;
+	}
+	while (status & IN_BUFFER_FULL) { // compares if the In buffer is full or not
 		tickdelay(micros_to_ticks(DELAY_US)); //20ms delay to let it process
 		sys_inb(KBD_BUFF, &lixo);
 		sys_inb(KBC_STATUS, &status);
 	}
 	return 0;
+}
+
+// outbuffer data is only read when the buffer is full
+int kbd_out_status() {
+	unsigned long status;
+
+	if (sys_inb(KBC_STATUS, &status) != OK) { // reads the status
+		printf("Error at kbd_out_status");
+		return 1;
+	}
+
+	if (status & OUT_BUFFER_FULL) { // if the out buffer is ready to be read
+		return 0;
+	}
+
+	return 1;
 }
 
 unsigned char get_command(int led1, int led2, int led3) {
@@ -65,7 +85,7 @@ unsigned char get_command(int led1, int led2, int led3) {
 int kbd_send_command(unsigned char com) {
 	unsigned long resp;
 	unsigned int counter = 1;
-	kbd_status();
+	kbd_in_status();
 	do {
 		if (counter == 1) {
 			if (sys_outb(KBD_BUFF, SWITCH_LED) != OK) {
@@ -179,7 +199,7 @@ int kbd_led(int n, unsigned short led[]) {
 	return 0;
 }
 
-int kbd_scan_c() {
+int kbd_scan(unsigned short ass) {
 	int ipc_status, flagstop = 1;
 	unsigned int i = 0, r;
 	message msg;
@@ -205,7 +225,15 @@ int kbd_scan_c() {
 			{
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set) {
-					kbd_int_handler();
+					if (!ass) {
+						if (kbd_out_status() == 0) {
+							kbd_int_handler();
+						} else {
+							continue;
+						}
+					} else
+						scan_asm();
+
 					if (code == SCAN_2BYTE) {
 						byte2 = 1;
 						break;
@@ -274,7 +302,13 @@ int kbd_timed_scan(unsigned short sec) {
 				if (msg.NOTIFY_ARG & irq_set) {
 					counter_timer = 0;
 					counter_milisec = 0;
-					kbd_int_handler();
+
+					if (kbd_out_status() == 0) {
+						kbd_int_handler();
+					} else {
+						continue;
+					}
+
 					if (code == SCAN_2BYTE) {
 						byte2 = 1;
 						break;
