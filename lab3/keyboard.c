@@ -106,7 +106,7 @@ int kbd_analisa(int resp) {
 }
 
 int kbd_led(int n, unsigned short led[]) {
-	int m = 0;
+	int m = -1;
 	int led1 = 0; // led1 status - initialized as turned off
 	int led2 = 0; // led2 status - initialized as turned off
 	int led3 = 0; // led3 status - initialized as turned off
@@ -114,7 +114,7 @@ int kbd_led(int n, unsigned short led[]) {
 
 	while (m != n) {
 
-		if (m == 0) {
+		if (m == -1) {
 			kbd_send_command(get_command(0, 0, 0)); // at start, every led is turned off
 			m++; // increments m and goes to next iteration of the cycle
 			continue;
