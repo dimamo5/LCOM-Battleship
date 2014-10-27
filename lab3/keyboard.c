@@ -6,7 +6,7 @@ unsigned long code;
 unsigned long counter_timer;
 
 int kbd_subscribe_int() {
-	unsigned int bit_sel = 2;
+	unsigned int bit_sel = 2;  // bit_sel is different from the one on the timer_subscribe
 	hook_id = bit_sel;
 	if (sys_irqsetpolicy(KBC_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id) != OK)
 		return -1;
@@ -28,7 +28,7 @@ int kbd_unsubscribe_int() {
 }
 
 int kbd_int_handler() {
-	if (sys_inb(KBD_BUFF, &code) != OK) {
+	if (sys_inb(KBD_BUFF, &code) != OK) { //sends content from the out buffer to the variable
 		printf("Int Handler Error at sys_inb.");
 		return 1;
 	}
@@ -52,7 +52,9 @@ int kbd_in_status() {
 	return 0;
 }
 
-// outbuffer data is only read when the buffer is full
+// this function analises if the output buffer is full
+// returns 0 if it is full
+// returns 1 if it is not or if there was an error
 int kbd_out_status() {
 	unsigned long status;
 
@@ -68,6 +70,12 @@ int kbd_out_status() {
 	return 1;
 }
 
+//This function receives each led status and builds the command from that
+//Example: if led3 is active and the other 2 are inactive,
+// the function will be called as get_command(0,0,1)
+// and the command variable will be returned as 00000100 -> 0x04
+// this command will then be used when activating/deactivating the leds,
+// depending on whether or not they are active at the moment
 unsigned char get_command(int led1, int led2, int led3) {
 	unsigned char command = 0x00;
 	if (led1) {
@@ -82,12 +90,18 @@ unsigned char get_command(int led1, int led2, int led3) {
 	return command;
 }
 
+
+//this function sends the command to switch on/off the leds and receives
+// a response. It then sends the arguments, if the response was "Acknowledged"
+// Otherwise, the function will respond according to the error
 int kbd_send_command(unsigned char com) {
 	unsigned long resp;
-	unsigned int counter = 1;
-	kbd_in_status();
+	unsigned int counter = 1; //counts if the function is on the 1st half of the cycle (sending command) or on the 2nd half(sending argument)
+	kbd_in_status(); //this will be used before every sys_outb, to make sure the inbuffer isn't full and has space
+
 	do {
-		if (counter == 1) {
+		if (counter == 1) { // on the 1st cycle, it sends the command and receives a response
+			kbd_in_status();
 			if (sys_outb(KBD_BUFF, SWITCH_LED) != OK) {
 				printf("Error at kbd_send_command.");
 				return 1;
@@ -98,9 +112,10 @@ int kbd_send_command(unsigned char com) {
 			}
 		}
 
-		while (kbd_analisa(resp) == 0) {
-			if (kbd_analisa(resp) == 0 && counter == 1) {
-				if (sys_outb(KBD_BUFF, SWITCH_LED) != OK) {
+		while (kbd_analisa(resp) == 0) { // while (RESEND)
+			if (kbd_analisa(resp) == 0 && counter == 1) { //if(RESEND && 1st cycle)
+				kbd_in_status();
+				if (sys_outb(KBD_BUFF, SWITCH_LED) != OK) { // sends command and receives response
 					printf("Error at kbd_send_command.");
 					return 1;
 				}
@@ -109,8 +124,9 @@ int kbd_send_command(unsigned char com) {
 					return 1;
 				}
 
-			} else if (kbd_analisa(resp) == 0 && counter == 2) {
-				if (sys_outb(KBD_BUFF, com) != OK) {
+			} else if (kbd_analisa(resp) == 0 && counter == 2) { //if(RESEND && 2nd cycle)
+				kbd_in_status();
+				if (sys_outb(KBD_BUFF, com) != OK) { // sends argument and receives response
 					printf("Error at kbd_send_command.");
 					return 1;
 				}
@@ -123,6 +139,7 @@ int kbd_send_command(unsigned char com) {
 		}
 
 		if (kbd_analisa(resp) == 2 && counter == 1) { //acknowledged after 1st cycle
+			kbd_in_status();
 			if (sys_outb(KBD_BUFF, com) != OK) {
 				printf("Error at kbd_send_command.");
 				return 1;
@@ -138,7 +155,7 @@ int kbd_send_command(unsigned char com) {
 		}
 
 		else if (kbd_analisa(resp) == 1) { // Error, start from the beggining of the loop
-			counter = 1;
+			counter = 1; // counter is reset, as it goes back to the 1st half of the cycle
 			continue;
 
 		}
@@ -147,6 +164,8 @@ int kbd_send_command(unsigned char com) {
 
 }
 
+
+//auxiliar function to analise if the response is a "error", a "resend" or a "acknowledged".
 int kbd_analisa(int resp) {
 	if (resp == RESEND) {
 		return 0;
