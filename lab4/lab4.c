@@ -1,5 +1,5 @@
 #include "test4.h"
-
+#include "mouse.h"
 
 static void print_usage(char *argv[]);
 static int proc_args(int argc, char *argv[]);
@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
 	/* Initialize service */
 	sef_startup();
 
-	printf("lab4: KBC \n");
+	printf("lab4: MOUSE \n");
 
 	if (argc == 1) {
 		print_usage(argv);
@@ -32,7 +32,7 @@ static void print_usage(char *argv[]) {
 			argv[0], argv[0], argv[0], argv[0]);
 }
 
-static int proc_args(int num, char *argv[]) {
+static int proc_args(int argc, char *argv[]) {
 
 	unsigned short number_packets, idle_time, length, tolerance;
 
@@ -43,7 +43,7 @@ static int proc_args(int num, char *argv[]) {
 		}
 		number_packets = parse_ulong(argv[2], 10);
 		printf("mouse:: packets()\n"); /* Actually, it was already invoked */
-		//kbd_test_scan(ass);
+		test_packet(number_packets);
 		return 0;
 	} else if (strncmp(argv[1], "async", strlen("async")) == 0) {
 		if (argc != 3) {
@@ -53,7 +53,7 @@ static int proc_args(int num, char *argv[]) {
 
 		printf("mouse:: async()\n"); /* Actually, it was already invoked */
 		idle_time = parse_ulong(argv[2], 10);
-		//kbd_test_leds(argc-2, led);
+		mouse_packet_async(idle_time);
 		return 0;
 	} else if (strncmp(argv[1], "config", strlen("config")) == 0) {
 		if (argc != 2) {

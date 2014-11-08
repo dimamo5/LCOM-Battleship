@@ -2,11 +2,11 @@
 #include "mouse.h"
 
 int test_packet(unsigned short cnt){
-    /* To be completed ... */
+	return mouse_packet(cnt);
 }	
 	
 int test_async(unsigned short idle_time) {
-    /* To be completed ... */
+	return mouse_packet_async (idle_time);
 }
 	
 int test_config(void) {

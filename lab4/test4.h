@@ -42,7 +42,6 @@ int test_async(unsigned short idle_time);
  */
 int test_config(void);
 
-
 /** 
  * @brief To test state machine implementation
  * 
@@ -59,5 +58,6 @@ int test_config(void);
  * @return Return 0 upon success and non-zero otherwise
  */
 
-
 int test_gesture(short length, unsigned short tolerance);
+
+#endif
