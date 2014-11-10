@@ -72,7 +72,7 @@ static int proc_args(int argc, char *argv[]) {
 		printf("mouse:: gesture()\n"); /* Actually, it was already invoked */
 		length = parse_ulong(argv[2], 10);
 		tolerance = parse_ulong(argv[3], 10);
-		//kbd_test_leds(argc-2, led);
+		mouse_gesture(length,tolerance);
 		return 0;
 	}
 }

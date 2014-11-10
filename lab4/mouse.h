@@ -45,7 +45,7 @@ int check_first_byte();
 int send_cmd_config();
 int config();
 int check_ldown(unsigned char* packet);
-void check_hor_line(ev_type_t *evt);
+//void check_hor_line(event_t *evt);
 int mouse_gesture(short length, unsigned short tolerance);
 
 

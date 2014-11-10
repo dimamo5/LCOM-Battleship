@@ -3,14 +3,7 @@
 static unsigned int hook_id;
 unsigned long code;
 
-static unsigned char x_pos,y_pos;
-
-typedef enum {
-	INIT, DRAW, COMP
-} state_t;
-typedef enum {
-	LDOW, LUP, MOVE
-} ev_type_t;
+static short x_total, y_total, l, t;
 
 int mouse_subscribe_int() {
 	unsigned int bit_sel = 3; // bit_sel is different from the one on the timer_subscribe and kbc_subscrive (just in case)
@@ -137,8 +130,8 @@ void print_packets(unsigned char* packet) {
 			"B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
 			packet[0], packet[1], packet[2], (packet[0] & BIT(0)),
 			(packet[0] & BIT(2)) >> 2, (packet[0] & BIT(1)) >> 1,
-			(packet[0] & BIT(6)) >> 6, (packet[0] & BIT(7)) >> 7, packet[1],
-			packet[2]);
+			(packet[0] & BIT(6)) >> 6, (packet[0] & BIT(7)) >> 7,
+			(char) packet[1], (char) packet[2]);
 }
 
 int print_config(unsigned char* config) {
@@ -341,37 +334,85 @@ int mouse_packet_async(unsigned short idle_time) {
 }
 
 int config() {
+	int n = 0, ipc_status,r;
+	message msg;
 	unsigned char config[3];
-	unsigned int bytes_received = 0;
-	unsigned long byte_temp;
+	short irq_set = mouse_subscribe_int();
+
+	disable_packets();
 
 	send_cmd_config();
 
-	while (bytes_received != 3) {
-		if (kbd_out_status) {
-			if (sys_inb(KBD_BUFF, &byte_temp) != OK)
-				printf("Error at sys_inb.");
+	while (n < 3) {
+		/* Get a request message. */
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
 		}
+		if (is_ipc_notify(ipc_status)) {
 
-		config[bytes_received] = byte_temp;
-		bytes_received++;
+			/* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_set) {
+					mouse_int_handler();
+					config[n] = code;
+					n++;
+
+				}
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		} else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
 	}
+	mouse_unsubscribe_int();
 	print_config(config);
+
 	return 0;
 }
 
-void check_hor_line(ev_type_t *evt) {
+typedef enum {
+	INIT, DRAW, COMP
+} state_t;
+typedef enum {
+	LDOWN, LUP, MOVE
+} ev_type_t;
+
+typedef struct {
+	ev_type_t type;
+	signed char x;
+	signed char y;
+} event_t;
+
+void check_hor_line(event_t *evt) {
 	static state_t st = INIT; // initial state; keep state
 	switch (st) {
 	case INIT:
+		x_total = 0;
+		y_total = 0;
 		if (evt->type == LDOWN)
 			st = DRAW;
 		break;
 	case DRAW:
 		if (evt->type == MOVE) {
-			// need to check if HOR_LINE event occurs
-		} else if (evt->type == LUP)
+			if ((abs(x_total + evt->x) < abs(x_total)) && (abs(y_total) > t)) {
+				x_total = 0;
+				y_total = 0;
+			} else {
+				x_total += evt->x;
+				y_total += evt->y;
+
+				if (abs(x_total) >= l) {
+					st = COMP;
+				}
+			}
+
+		} else if (evt->type == LUP) {
 			st = INIT;
+		}
 		break;
 	default:
 		break;
@@ -379,10 +420,13 @@ void check_hor_line(ev_type_t *evt) {
 }
 
 int check_ldown(unsigned char* packet) {
-	if (packet[0] & BIT(0)) {
-		return 1;
+	if (packet[1] == 0 && packet[2] == 0) {
+		if (packet[0] & BIT(0)) {
+			return LDOWN;
+		} else
+			return LUP;
 	} else
-		return 0;
+		return MOVE;
 }
 
 int mouse_gesture(short length, unsigned short tolerance) {
@@ -391,6 +435,12 @@ int mouse_gesture(short length, unsigned short tolerance) {
 	unsigned char packets[3];
 	message msg;
 	short irq_set = mouse_subscribe_int();
+	x_total = 0;
+	y_total = 0;
+	unsigned short flagstop = 1; //0 inicio
+	l = length;
+	t = tolerance;
+	event_t evento;
 
 	enable_packets();
 
@@ -398,7 +448,7 @@ int mouse_gesture(short length, unsigned short tolerance) {
 		printf("Subscribe failed");
 		return 1;
 	}
-	while (number_packets_received < number_packets) {
+	while (flagstop) {
 
 		/* ANY -> receives msg from any process
 		 *  2nd and 3rd arguments are the addresses of variables of type message and int
@@ -428,6 +478,14 @@ int mouse_gesture(short length, unsigned short tolerance) {
 					if (byte_packets == 3) {
 						byte_packets = 1;
 						print_packets(packets);
+						evento.type = check_ldown(packets);
+						evento.x = packets[1];
+						evento.y = packets[2];
+						check_hor_line(&evento);
+						if (abs(x_total) >= l && abs(y_total) < t) {
+							flagstop = 0;
+							continue;
+						}
 						number_packets_received++;
 						continue;
 					}
