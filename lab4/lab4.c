@@ -60,8 +60,8 @@ static int proc_args(int argc, char *argv[]) {
 			printf("mouse: wrong no of arguments for test of test_config() \n");
 			return 1;
 		}
-		printf("mouse:: timed_scan()\n"); /* Actually, it was already invoked */
-		//kbd_test_timed_scan(sec);
+		printf("mouse:: config()\n"); /* Actually, it was already invoked */
+		test_config();
 		return 0;
 	} else if (strncmp(argv[1], "gesture", strlen("gesture")) == 0) {
 		if (argc != 4) {

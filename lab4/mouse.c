@@ -3,6 +3,15 @@
 static unsigned int hook_id;
 unsigned long code;
 
+static unsigned char x_pos,y_pos;
+
+typedef enum {
+	INIT, DRAW, COMP
+} state_t;
+typedef enum {
+	LDOW, LUP, MOVE
+} ev_type_t;
+
 int mouse_subscribe_int() {
 	unsigned int bit_sel = 3; // bit_sel is different from the one on the timer_subscribe and kbc_subscrive (just in case)
 	hook_id = bit_sel;
@@ -63,11 +72,30 @@ int kbd_in_status() {
 	}
 	return 0;
 }
+int send_cmd_config() {
+	kbd_in_status();
+	unsigned long resp;
+	do {
+		if (sys_outb(KBC_STATUS, MOUSE_WC) != OK)
+			printf("Error at sys_outb.");
+		if (sys_outb(KBD_BUFF, CMD_CONFIG) != OK)
+			printf("Error at 2 sys_outb.");
+		if (sys_inb(KBD_BUFF, &resp) != OK)
+			printf("Error at sys_inb.");
+		if (resp == ACK) {
+			return 0;
+		}
+
+	} while (resp != ACK);
+
+}
 
 int enable_packets() {
 	kbd_in_status();
 	unsigned long resp;
 	do {
+		if (sys_outb(KBC_STATUS, ENABLE_MOUSE) != OK)
+			printf("Error at sys_outb.");
 		if (sys_outb(KBC_STATUS, MOUSE_WC) != OK)
 			printf("Error at sys_outb.");
 		if (sys_outb(KBD_BUFF, ENABLE_PACKETS) != OK)
@@ -77,11 +105,22 @@ int enable_packets() {
 		if (resp == ACK) {
 			return 0;
 		}
-		sys_inb(KBD_BUFF, &resp);
-		sys_inb(KBD_BUFF, &resp); //TODO ver destes ACK
-		sys_inb(KBD_BUFF, &resp);
-		sys_inb(KBD_BUFF, &resp);
-		sys_inb(KBD_BUFF, &resp);
+	} while (resp != ACK);
+}
+
+int disable_packets() {
+	kbd_in_status();
+	unsigned long resp;
+	do {
+		if (sys_outb(KBC_STATUS, MOUSE_WC) != OK)
+			printf("Error at sys_outb.");
+		if (sys_outb(KBD_BUFF, DISABLE_PACKETS) != OK)
+			printf("Error at 2 sys_outb.");
+		if (sys_inb(KBD_BUFF, &resp) != OK)
+			printf("Error at sys_inb.");
+		if (resp == ACK) {
+			return 0;
+		}
 	} while (resp != ACK);
 }
 
@@ -98,8 +137,54 @@ void print_packets(unsigned char* packet) {
 			"B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
 			packet[0], packet[1], packet[2], (packet[0] & BIT(0)),
 			(packet[0] & BIT(2)) >> 2, (packet[0] & BIT(1)) >> 1,
-			(packet[0] & BIT(4)) >> 4, (packet[0] & BIT(5)) >> 5, packet[1],
+			(packet[0] & BIT(6)) >> 6, (packet[0] & BIT(7)) >> 7, packet[1],
 			packet[2]);
+}
+
+int print_config(unsigned char* config) {
+
+	if (config[0] & REMOTE_BIT) {
+		printf("\nRemote (polled) mode\n");
+	} else
+		printf("\nStream Mode\n");
+
+	if (config[0] & ENABLE_BIT) {
+		printf("Data reporting enabled\n");
+	} else
+		printf("Data reporting disable\n");
+
+	if (config[0] & SCALING_BIT) {
+		printf("Scaling is 2:1\n");
+	} else
+		printf("Scaling is 1:1\n");
+
+	if (config[0] & LEFT_BT_BIT) {
+		printf(" Left button is currently pressed\n");
+	} else
+		printf("Left button is currently  released\n");
+
+	if (config[0] & MIDDLE_BT_BIT) {
+		printf(" Middle button is currently pressed\n");
+	} else
+		printf("Middle button is currently  released\n");
+
+	if (config[0] & RIGHT_BT_BIT) {
+		printf(" Right button is currently pressed\n");
+	} else
+		printf("Right button is currently  released\n");
+
+	if (config[1] == 0) {
+		printf("1 count per mm\n");
+	} else if (config[1] == 1) {
+		printf("2 count per mm\n");
+	} else if (config[1] == 2) {
+		printf("4 count per mm\n");
+	} else if (config[1] == 3) {
+		printf("8 count per mm\n");
+	}
+
+	printf("Sample rate: %d\n", config[2]);
+
 }
 
 int mouse_packet(unsigned short number_packets) {
@@ -159,6 +244,8 @@ int mouse_packet(unsigned short number_packets) {
 			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 		}
 	}
+
+	disable_packets();
 
 	if (mouse_unsubscribe_int() != OK) {
 		printf("Unsubscribe failed");
@@ -241,6 +328,8 @@ int mouse_packet_async(unsigned short idle_time) {
 		}
 	}
 
+	disable_packets();
+
 	if (mouse_unsubscribe_int() != 0) {
 		printf("Unsubscribe failed");
 	}
@@ -251,3 +340,113 @@ int mouse_packet_async(unsigned short idle_time) {
 	return 0;
 }
 
+int config() {
+	unsigned char config[3];
+	unsigned int bytes_received = 0;
+	unsigned long byte_temp;
+
+	send_cmd_config();
+
+	while (bytes_received != 3) {
+		if (kbd_out_status) {
+			if (sys_inb(KBD_BUFF, &byte_temp) != OK)
+				printf("Error at sys_inb.");
+		}
+
+		config[bytes_received] = byte_temp;
+		bytes_received++;
+	}
+	print_config(config);
+	return 0;
+}
+
+void check_hor_line(ev_type_t *evt) {
+	static state_t st = INIT; // initial state; keep state
+	switch (st) {
+	case INIT:
+		if (evt->type == LDOWN)
+			st = DRAW;
+		break;
+	case DRAW:
+		if (evt->type == MOVE) {
+			// need to check if HOR_LINE event occurs
+		} else if (evt->type == LUP)
+			st = INIT;
+		break;
+	default:
+		break;
+	}
+}
+
+int check_ldown(unsigned char* packet) {
+	if (packet[0] & BIT(0)) {
+		return 1;
+	} else
+		return 0;
+}
+
+int mouse_gesture(short length, unsigned short tolerance) {
+	int ipc_status;
+	unsigned int number_packets_received = 0, r, byte_packets = 1;
+	unsigned char packets[3];
+	message msg;
+	short irq_set = mouse_subscribe_int();
+
+	enable_packets();
+
+	if (irq_set < 0) {
+		printf("Subscribe failed");
+		return 1;
+	}
+	while (number_packets_received < number_packets) {
+
+		/* ANY -> receives msg from any process
+		 *  2nd and 3rd arguments are the addresses of variables of type message and int
+		 */
+		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
+				{
+			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+			{
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set) {
+
+					mouse_int_handler();
+
+					if (byte_packets == 1) {
+						if (!check_first_byte()) {
+							byte_packets = 1;
+							continue;
+						}
+					}
+
+					packets[byte_packets - 1] = code;
+
+					if (byte_packets == 3) {
+						byte_packets = 1;
+						print_packets(packets);
+						number_packets_received++;
+						continue;
+					}
+					byte_packets++;
+				}
+				break;
+
+			default:
+				break;
+			}
+		} else {
+			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
+		}
+	}
+
+	disable_packets();
+
+	if (mouse_unsubscribe_int() != OK) {
+		printf("Unsubscribe failed");
+	}
+	return 0;
+}
