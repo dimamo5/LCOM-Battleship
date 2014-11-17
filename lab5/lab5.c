@@ -1,5 +1,9 @@
-#include "test4.h"
-#include "mouse.h"
+#include "test5.h"
+#include <minix/drivers.h>
+#include <minix/syslib.h>
+#include <minix/com.h>
+#include <assert.h>
+#include <minix/sysutil.h>
 
 static void print_usage(char *argv[]);
 static int proc_args(int argc, char *argv[]);
@@ -47,7 +51,7 @@ static int proc_args(int argc, char *argv[]) {
 		mode = parse_ulong(argv[2], 10);
 		delay = parse_ulong(argv[3], 10);
 		printf("video_gr:: test_init()\n"); /* Actually, it was already invoked */
-		//test_init(mode,delay);
+		test_init(mode,delay);
 		return 0;
 	} else if (strncmp(argv[1], "square", strlen("square")) == 0) {
 		if (argc != 6) {
@@ -60,7 +64,7 @@ static int proc_args(int argc, char *argv[]) {
 		y = parse_ulong(argv[3], 10);
 		size = parse_ulong(argv[4], 10);
 		color = parse_ulong(argv[5], 10);
-		//test_square(x,y,size,color);
+		test_square(x,y,size,color);
 		return 0;
 	} else if (strncmp(argv[1], "line", strlen("line")) == 0) {
 		if (argc != 7) {

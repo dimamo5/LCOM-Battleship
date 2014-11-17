@@ -27,6 +27,7 @@ void *vg_init(unsigned short mode);
  */
 int vg_exit(void);
 
+void vg_set_pixel(uint x, uint y, ulong color);
  /** @} end of video_gr */
  
 #endif /* __VIDEO_GR_H */
