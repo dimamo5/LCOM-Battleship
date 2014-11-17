@@ -46,7 +46,7 @@ void * vg_init(unsigned short mode) {
 	/* Allow memory mapping */
 
 	mr.mr_base = VRAM_PHYS_ADDR;
-	mr.mr_limit = mr.mr_base + H_RES * V_RES * BITS_PER_PIXEL;
+	mr.mr_limit = mr.mr_base + H_RES * V_RES;
 
 	if (OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
 		panic("video_txt: sys_privctl (ADD_MEM) failed: %d\n", r);
