@@ -2,6 +2,13 @@
 #define __VBE_H
 
 #include <stdint.h>
+#include "lmlib.h"
+
+#define LINEAR_MODEL_BIT 14
+
+#define PB2BASE(x) (((x) >> 4) & 0x0F000)
+#define PB2OFF(x) ((x) & 0x0FFFF)
+
 
 /** @defgroup vbe vbe
  * @{

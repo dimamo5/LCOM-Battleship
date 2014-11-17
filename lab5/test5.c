@@ -1,14 +1,17 @@
 void *test_init(unsigned short mode, unsigned short delay) {
-	
-	/* To be completed */
+	unsigned char* mem;
+	mem=vg_init(105);
+	timer_test_int(delay);
+	vg_exit();
+	printf("0x%X",mem);
 	
 }
 
 
 int test_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color) {
-	
-	/* To be completed */
-	
+	vg_init(105);
+	vg_fill(x,y,size,size,color);
+	vg_exit();
 }
 
 int test_line(unsigned short xi, unsigned short yi, 
