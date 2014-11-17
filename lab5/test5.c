@@ -17,8 +17,10 @@ int test_square(unsigned short x, unsigned short y, unsigned short size,
 
 int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
 		unsigned short yf, unsigned long color) {
-
-	/* To be completed */
+	vg_init(0x105);
+	vg_line(xi, yi, xf, yf, color);
+	timer_test_int(5);
+	vg_exit();
 
 }
 
