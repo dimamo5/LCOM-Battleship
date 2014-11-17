@@ -132,4 +132,6 @@ void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 		}
 
 	}
+
+
 }

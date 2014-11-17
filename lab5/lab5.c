@@ -1,10 +1,11 @@
-#include "test5.h"
+
 #include <minix/drivers.h>
 #include <minix/syslib.h>
 #include <minix/com.h>
 #include <assert.h>
 #include <minix/sysutil.h>
 
+#include "test5.h"
 static void print_usage(char *argv[]);
 static int proc_args(int argc, char *argv[]);
 static unsigned long parse_ulong(char *str, int base);
