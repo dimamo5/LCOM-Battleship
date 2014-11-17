@@ -62,7 +62,7 @@ void * vg_init(unsigned short mode) {
 
 	h_res = H_RES;
 	v_res = V_RES;
-	bits_per_pixel=BITS_PER_PIXEL;
+	bits_per_pixel = BITS_PER_PIXEL;
 	return video_mem;
 }
 
@@ -86,20 +86,50 @@ void vg_set_pixel(unsigned short x, unsigned short y, unsigned long color) {
 	if ((x > h_res) || (y > v_res)) {
 		printf("Erro");
 	}
-	mem_temp = mem_temp + h_res * y +x;
+	mem_temp = mem_temp + h_res * y + x;
 	(*mem_temp) = color;
 }
 
-void vg_fill(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned long color) {
+void vg_fill(unsigned short x, unsigned short y, unsigned short width,
+		unsigned short height, unsigned long color) {
 	unsigned char * mem_temp = video_mem;
-	unsigned short x_original=x;
+	unsigned short x_original = x;
 	unsigned short i;
+	if (x + width > h_res) {
+		return;
+	}
+	if (y + height > v_res) {
+		return;
+	}
 	for (i = 0; i < width * height; i++) {
 		vg_set_pixel(x, y, color);
 		x++;
-		if (x == width+x_original) {
+		if (x == width + x_original) {
 			x = x_original;
 			y++;
 		}
+	}
+}
+
+void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
+		unsigned short yf, unsigned long color) {
+	unsigned short dx = xf - xi;
+	unsigned short dy = yf - yi;
+	unsigned short x, y;
+
+	unsigned short d = 2 * dy - dx;
+	vg_set_pixel(xi, yi,color);
+	y = yi;
+
+	for (x = xi + 1; x < xf; x++) {
+		if (d > 0) {
+			y = y + 1;
+			vg_set_pixel(x, y,color);
+			d = d + (2 * dy - 2 * dx);
+		} else {
+			vg_set_pixel(x, y,color);
+			d = d + (2 * dy);
+		}
+
 	}
 }
