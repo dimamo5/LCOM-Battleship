@@ -113,25 +113,42 @@ void vg_fill(unsigned short x, unsigned short y, unsigned short width,
 
 void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 		unsigned short yf, unsigned long color) {
-	unsigned short dx = xf - xi;
-	unsigned short dy = yf - yi;
-	unsigned short x, y;
+	/*unsigned short dx = xf - xi;
+	 unsigned short dy = yf - yi;
+	 unsigned short x, y;
 
-	unsigned short d = 2 * dy - dx;
-	vg_set_pixel(xi, yi,color);
-	y = yi;
+	 unsigned short d = 2 * dy - dx;
+	 vg_set_pixel(xi, yi,color);
+	 y = yi;
 
-	for (x = xi + 1; x < xf; x++) {
-		if (d > 0) {
-			y = y + 1;
-			vg_set_pixel(x, y,color);
-			d = d + (2 * dy - 2 * dx);
-		} else {
-			vg_set_pixel(x, y,color);
-			d = d + (2 * dy);
+	 for (x = xi + 1; x < xf; x++) {
+	 if (d > 0) {
+	 y = y + 1;
+	 vg_set_pixel(x, y,color);
+	 d = d + (2 * dy - 2 * dx);
+	 } else {
+	 vg_set_pixel(x, y,color);
+	 d = d + (2 * dy);
+	 }
+
+	 }*/
+	int dx = abs(xf - xi), sx = xi < xf ? 1 : -1;
+	int dy = abs(yf - yi), sy = yi < yf ? 1 : -1;
+	int err = (dx > dy ? dx : -dy) / 2, e2;
+
+	while (1) {
+		vg_set_pixel(xi, yi, color);
+		if (xi == xf && yi == yf)
+			break;
+		e2 = err;
+		if (e2 > -dx) {
+			err -= dy;
+			xi += sx;
 		}
-
+		if (e2 < dy) {
+			err += dx;
+			yi += sy;
+		}
 	}
-
 
 }
