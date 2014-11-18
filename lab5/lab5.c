@@ -49,7 +49,7 @@ static int proc_args(int argc, char *argv[]) {
 			printf("video_gr:: wrong no of arguments for test_init() \n");
 			return 1;
 		}
-		mode = parse_ulong(argv[2], 10);
+		mode = parse_ulong(argv[2], 16);
 		delay = parse_ulong(argv[3], 10);
 		printf("video_gr:: test_init()\n"); /* Actually, it was already invoked */
 		test_init(mode, delay);
