@@ -46,7 +46,7 @@ int test_square(unsigned short x, unsigned short y, unsigned short size,
 			{
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set) {
-					 sys_inb(KBD_BUFF, &code);
+					sys_inb(KBD_BUFF, &code);
 				}
 				break;
 
@@ -61,7 +61,7 @@ int test_square(unsigned short x, unsigned short y, unsigned short size,
 	if (kbd_unsubscribe_int() != 0) {
 		printf("Unsubscribe failed");
 	}
-    // Fim keyboard
+	// Fim keyboard
 
 	vg_exit();
 }
@@ -71,45 +71,44 @@ int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
 	vg_init(0x105);
 	vg_line(xi, yi, xf, yf, color);
 	// Inicio keyboard
-		int ipc_status;
-		unsigned long code;
-		unsigned int i = 0, r;
-		message msg;
-		unsigned short byte2;
-		short irq_set = kbd_subscribe_int();
+	int ipc_status;
+	unsigned long code;
+	unsigned int i = 0, r;
+	message msg;
+	short irq_set = kbd_subscribe_int();
 
-		if (irq_set < 0) {
-			printf("Subscribe failed");
-			return 1;
+	if (irq_set < 0) {
+		printf("Subscribe failed");
+		return 1;
+	}
+	while (code != BC_ESC) {
+
+		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
 		}
-		while (code != BC_ESC) {
-
-			if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
-				printf("driver_receive failed with: %d", r);
-				continue;
-			}
-			if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
-					{
-				switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
 				{
-				case HARDWARE:
-					if (msg.NOTIFY_ARG & irq_set) {
-						 sys_inb(KBD_BUFF, &code);
-					}
-					break;
-
-				default:
-					break;
+			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+			{
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set) {
+					sys_inb(KBD_BUFF, &code);
 				}
-			} else {
-				printf("Any interrupt received\n"); // Any interrupt received, so anything to do
-			}
-		}
+				break;
 
-		if (kbd_unsubscribe_int() != 0) {
-			printf("Unsubscribe failed");
+			default:
+				break;
+			}
+		} else {
+			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 		}
-	    // Fim keyboard
+	}
+
+	if (kbd_unsubscribe_int() != 0) {
+		printf("Unsubscribe failed");
+	}
+	// Fim keyboard
 	vg_exit();
 
 }
