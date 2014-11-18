@@ -10,10 +10,10 @@
 
 void *test_init(unsigned short mode, unsigned short delay) {
 	unsigned char* mem;
-	mem = vg_init(0x105);
+	mem = vg_init(mode);
 	timer_test_int(delay);
 	vg_exit();
-	printf("0x%X", mem);
+	printf("Virtual Memory : 0x%X", mem);
 
 }
 
@@ -27,7 +27,6 @@ int test_square(unsigned short x, unsigned short y, unsigned short size,
 	unsigned long code;
 	unsigned int i = 0, r;
 	message msg;
-	unsigned short byte2;
 	short irq_set = kbd_subscribe_int();
 
 	if (irq_set < 0) {

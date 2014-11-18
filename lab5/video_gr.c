@@ -37,7 +37,20 @@ void * vg_init(unsigned short mode) {
 		printf("set_vbe_mode: sys_int86() failed \n");
 		return NULL;
 	}
+	/* Obter info do modo */
+	vbe_mode_info_t info_mode;
+	vbe_get_mode_info(mode,&info_mode);
 
+	h_res=info_mode.XResolution;
+	printf("%d",h_res);
+	v_res=info_mode.YResolution;
+	printf("%d",v_res);
+	bits_per_pixel=info_mode.BitsPerPixel;
+	printf("%d",bits_per_pixel);
+
+
+
+	unsigned long vram=h_res*v_res*(bits_per_pixel/8);
 	/* Map memory */
 
 	int r;
@@ -45,18 +58,18 @@ void * vg_init(unsigned short mode) {
 
 	/* Allow memory mapping */
 
-	mr.mr_base = VRAM_PHYS_ADDR;
-	mr.mr_limit = mr.mr_base + H_RES * V_RES;
+	mr.mr_base = info_mode.PhysBasePtr;
+	mr.mr_limit = mr.mr_base + vram;
 
 	if (OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
-		panic("video_txt: sys_privctl (ADD_MEM) failed: %d\n", r);
+		panic("video_gr: sys_privctl (ADD_MEM) failed: %d\n", r);
 
 	/* Map memory */
 
-	video_mem = vm_map_phys(SELF, (void *) mr.mr_base, H_RES * V_RES);
+	video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram);
 
 	if (video_mem == MAP_FAILED)
-		panic("video_txt couldn't map video memory");
+		panic("video_gr couldn't map video memory");
 
 	/* Save text mode resolution */
 
