@@ -5,8 +5,8 @@
 #include <minix/sysutil.h>
 
 #include "test5.h"
-#include "vbe.h"
 #include "keyboard.h"
+#include "sprite.h"
 
 void *test_init(unsigned short mode, unsigned short delay) {
 	unsigned char* mem;
@@ -113,15 +113,17 @@ int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
 }
 
 int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
-
-	/* To be completed */
-
+	vg_init(0x105);
+	aloca_pixmap(xi,yi,xpm);
+	timer_test_int(5);
+	vg_exit();
 }
 
 int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		unsigned short hor, short delta, unsigned short time) {
-
-	/* To be completed */
+	vg_init(0x105);
 
 }
-
+int test_controller(){
+	display_vbe_info();
+}
