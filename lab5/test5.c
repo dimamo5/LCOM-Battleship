@@ -181,8 +181,8 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		st->xspeed = 0;
 	}
 
-	aloca_pixmap((unsigned short) st->x, (unsigned short) st->y, st->map);
-
+	aloca_pixmap((unsigned short) st->x, (unsigned short) st->y, st->map,st->width,st->height);
+/*
 	int ipc_status, flag_stop = 1;
 	unsigned int r, counter_milisec = 0, counter_timer = 0;
 	unsigned long code;
@@ -199,9 +199,9 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	}
 	while (flag_stop) {
 		printf("entrou no ciclo");
-		/* ANY -> receives msg from any process
-		 *  2nd and 3rd arguments are the addresses of variables of type message and int
-		 */
+		// ANY -> receives msg from any process
+		 //  2nd and 3rd arguments are the addresses of variables of type message and int
+		 //
 		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
 			printf("driver_receive failed with: %d", r);
 			continue;
@@ -254,7 +254,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	if (timer_unsubscribe_int() != 0) {
 		printf("Unsubscribe failed");
 	}
-
+*/
 	return 0;
 }
 
