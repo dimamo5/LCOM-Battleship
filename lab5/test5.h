@@ -1,7 +1,6 @@
 #ifndef __TEST5_H
 #define __TEST5_H
 
-
 /** @defgroup video_gr video_gr
  * @{
  *
@@ -34,7 +33,8 @@ void *test_init(unsigned short mode, unsigned short delay);
  * @param color color to set the pixel
  * @return 0 on success, non-zero otherwise
  */
-int test_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color);
+int test_square(unsigned short x, unsigned short y, unsigned short size,
+		unsigned long color);
 
 /**
  * @brief Tests drawing a line segment with specifed end points and color
@@ -49,8 +49,8 @@ int test_square(unsigned short x, unsigned short y, unsigned short size, unsigne
  * @param color color of the line segment to draw
  * @return 0 upon success, non-zero upon failure
  */
-int test_line(unsigned short xi, unsigned short yi, 
-		           unsigned short xf, unsigned short yf, unsigned long color);
+int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
+		unsigned short yf, unsigned long color);
 
 /**
  * @brief Tests drawing XPM on the screen at specified coordinates
@@ -78,8 +78,22 @@ int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]);
  * @param time duration in seconds of the movement
  * @return 0 upon success, non-zero upon failure
  */
-int test_move(unsigned short xi, unsigned short yi, char *xpm[], unsigned short hor, short delta, unsigned short time);
+int test_move(unsigned short xi, unsigned short yi, char *xpm[],
+		unsigned short hor, short delta, unsigned short time);
 
- /** @} end of video_gr */
- 
+/**
+ * @brief Tests retrieving VBE controller information  (VBE function 0x0)
+ *
+ * Tests retrieving VBE controller information (VBE function 0x0) and its parsing.
+ * Upon its invocation it should provide at least the following information:
+ * 	- Capabilities
+ * 	- List of mode numbers supported
+ * 	- Total memory
+ *
+ * @return 0 upon success, non-zero upon failure
+ */
+int test_controller();
+
+/** @} end of video_gr */
+
 #endif /* __TEST5_H */
