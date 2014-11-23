@@ -18,9 +18,9 @@
  * other graphical objects or the screen limits. 
  */
 typedef struct {
-  int x,y;             /**< current sprite position */
+  double x,y;             /**< current sprite position */
   int width, height;   /**< sprite dimensions */
-  int xspeed, yspeed;  /**< current speeds in the x and y direction */
+  double xspeed, yspeed;  /**< current speeds in the x and y direction */
   char *map;           /**< the sprite pixmap (use read_xpm()) */
 } Sprite;
 

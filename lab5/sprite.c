@@ -8,21 +8,20 @@
 Sprite *create_sprite(char *pic[]) {
 //allocate space for the "object"
 	Sprite *sp = (Sprite *) malloc(sizeof(Sprite));
-	if (sp == NULL)
-		return NULL;
+	if (sp == 0)
+		return 0;
 // read the sprite pixmap
 	sp->map = read_xpm(pic, &(sp->width), &(sp->height));
-	if (sp->map == NULL) {
+	if (sp->map == 0) {
 		free(sp);
-		return NULL;
+		return 0;
 	}
 	return sp;
 }
 
 void destroy_sprite(Sprite *sp) {
-	if (sp == NULL)
+	if (sp == 0)
 		return;
 	free(sp->map);
 	free(sp);
-	sp = NULL; // hopeless: pointer is passed by value
 }
