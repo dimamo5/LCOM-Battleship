@@ -97,21 +97,21 @@ static int proc_args(int argc, char *argv[]) {
 		pixmap = argv[4];
 		test_xpm(x, y, get_xpm(pixmap));
 		return 0;
-	} else if (strncmp(argv[1], "move", strlen("move")) == 0) {
-		if (argc != 8) {
-			printf("video_gr:: wrong no of arguments for test_move() \n");
+	} else if (strncmp(argv[1], "controller", strlen("controller")) == 0) {
+		if (argc != 2) {
+			printf("video_gr:: wrong no of arguments for test_controller() \n");
 			return 1;
 		}
 
 		printf("video_gr:: test_controller()\n");
 		test_controller();
 		return 0;
-	} else if (strncmp(argv[1], "controller", strlen("controller")) == 0) {
-		if (argc != 2) {
-			printf("video_gr:: wrong no of arguments for test_controller() \n");
+	} else if (strncmp(argv[1], "move", strlen("move")) == 0) {
+		if (argc != 8) {
+			printf("video_gr:: wrong no of arguments for test_move() \n");
 			return 1;
 		}
-		printf("video_gr:: test_controller()\n");
+		printf("video_gr:: test_move()\n");
 		xi = parse_ulong(argv[2], 10);
 		yi = parse_ulong(argv[3], 10);
 		pixmap = argv[4];

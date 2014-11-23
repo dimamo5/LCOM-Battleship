@@ -193,12 +193,9 @@ void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 
 }
 
-void aloca_pixmap(unsigned short xi, unsigned short yi, char *xpm) {
-	int width, height;
-	char *map, mem_temp;
+void aloca_pixmap(unsigned short xi, unsigned short yi, char *map,int width,int height) {
+	char * mem_temp;
 	unsigned int i = 0;
-	// get the pix map from the XPM
-	map = read_xpm(xpm, &width, &height);
 	// copy it to graphics memory
 	unsigned short x_original = xi;
 
