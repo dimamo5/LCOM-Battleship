@@ -22,6 +22,17 @@ int vbe_get_mode_info(unsigned short mode, vbe_mode_info_t *vmi_p) {
 
 	sys_int86(&reg);
 
+	if (reg.u.b.ah == FUNCTION_FAIL) {
+			printf("Function call failed \n");
+			return -1;
+		} else if (reg.u.b.ah == FUNCTION_NOT_SUPPORTED) {
+			printf("Function is not supported in current HW configuration \n");
+			return -1;
+		} else if (reg.u.b.ah == FUNCTION_INVALID) {
+			printf("Function is invalid in current video mode \n");
+			return -1;
+		}
+
 	*vmi_p = *(vbe_mode_info_t *) address.virtual;
 	lm_free(&address);
 
@@ -33,7 +44,7 @@ int vbe_get_info(vbe_info_t *vi_p) {
 	struct reg86u reg;
 	mmap_t address;
 
-	lm_init();
+	int virtual =(int)lm_init();
 	lm_alloc(sizeof(vbe_info_t), &address);
 
 	reg.u.b.intno = 0x10; //BIOS service mode
@@ -43,7 +54,18 @@ int vbe_get_info(vbe_info_t *vi_p) {
 	reg.u.w.di = PB2OFF(address.phys);
 
 	sys_int86(&reg);
-	int virtual =(int) address.virtual;
+
+	if (reg.u.b.ah == FUNCTION_FAIL) {
+			printf("Function call failed \n");
+			return -1;
+		} else if (reg.u.b.ah == FUNCTION_NOT_SUPPORTED) {
+			printf("Function is not supported in current HW configuration \n");
+			return -1;
+		} else if (reg.u.b.ah == FUNCTION_INVALID) {
+			printf("Function is invalid in current video mode \n");
+			return -1;
+		}
+
 	*vi_p = *(vbe_info_t *) address.virtual;
 	lm_free(&address);
 
