@@ -78,8 +78,8 @@ void * vg_init(unsigned short mode) {
 
 	/* Allow memory mapping */
 
-	mr.mr_base = info_mode.PhysBasePtr;
-	mr.mr_limit = mr.mr_base + vram;
+	mr.mr_base = info_mode.PhysBasePtr; //Endereço base da memoria
+	mr.mr_limit = mr.mr_base + vram;    //Endereço final da memoria - limite, fim do range a partir da posicao inicial
 	mem_phys = mr.mr_base;
 
 	if (OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
@@ -138,29 +138,8 @@ void vg_fill(unsigned short x, unsigned short y, unsigned short width,
 
 void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 		unsigned short yf, unsigned long color) {
-	/*unsigned short dx = xf - xi;
-	 unsigned short dy = yf - yi;
-	 unsigned short x, y;
 
-	 unsigned short d = 2 * dy - dx;
-	 vg_set_pixel(xi, yi,color);
-	 y = yi;
-
-	 for (x = xi + 1; x < xf; x++) {
-	 if (d > 0) {
-	 y = y + 1;
-	 vg_set_pixel(x, y,color);
-	 d = d + (2 * dy - 2 * dx);
-	 } else {
-	 vg_set_pixel(x, y,color);
-	 d = d + (2 * dy);
-	 }
-
-	 }*/
-	int err, e2, dx = abs(xf - xi), dy = abs(yf - yi), sx, sy;
-	/*int err = (dx > dy ? dx : -dy) / 2, e2;
-	 int dx = abs(xf - xi), sx = xi < xf ? 1 : -1;
-	 int dy = abs(yf - yi), sy = yi < yf ? 1 : -1;*/
+	int err, err_temp, dx = abs(xf - xi), dy = abs(yf - yi), sx, sy;
 
 	if (xi < xf) {
 		sx = 1;
@@ -184,12 +163,12 @@ void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 		vg_set_pixel(xi, yi, color);
 		if (xi == xf && yi == yf)
 			break;
-		e2 = err;
-		if (e2 > -dx) {
+		err_temp = err;
+		if (err_temp > -dx) {
 			err -= dy;
 			xi += sx;
 		}
-		if (e2 < dy) {
+		if (err_temp < dy) {
 			err += dx;
 			yi += sy;
 		}
