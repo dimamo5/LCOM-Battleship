@@ -8,6 +8,13 @@
 #define BIT(n) (0x01<<(n))
 #define PB2BASE(x) (((x) >> 4) & 0x0F000)
 #define PB2OFF(x) ((x) & 0x0FFFF)
+#define VBE_CONTROLLER_INFO 0x4F00
+#define VBE_MODE_INFO 0x4F01
+#define VBE_SET_MODE 0x4F02
+#define FUNCTION_FAIL 0x01
+#define FUNCTION_NOT_SUPPORTED 0x02
+#define FUNCTION_INVALID 0X03
+
 
 /** @defgroup vbe vbe
  * @{

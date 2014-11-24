@@ -205,5 +205,7 @@ char** get_xpm(char * string) {
 	} else if (strncmp(string, "penguin", strlen("penguin")) == 0) {
 		return penguin;
 	}
+	else
+		return NULL;
 
 }

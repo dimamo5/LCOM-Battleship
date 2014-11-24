@@ -51,6 +51,17 @@ void * vg_init(unsigned short mode) {
 		printf("set_vbe_mode: sys_int86() failed \n");
 		return NULL;
 	}
+	if (reg.u.b.ah == FUNCTION_FAIL) {
+		printf("Function call failed \n");
+		return NULL;
+	} else if (reg.u.b.ah == FUNCTION_NOT_SUPPORTED) {
+		printf("Function is not supported in current HW configuration \n");
+		return NULL;
+	} else if (reg.u.b.ah == FUNCTION_INVALID) {
+		printf("Function is invalid in current video mode \n");
+		return NULL;
+	}
+
 	/* Obter info do modo */
 	vbe_mode_info_t info_mode;
 	vbe_get_mode_info(mode, &info_mode);
@@ -114,12 +125,7 @@ void vg_fill(unsigned short x, unsigned short y, unsigned short width,
 		unsigned short height, unsigned long color) {
 	unsigned short x_original = x;
 	unsigned short i;
-	if (x + width > h_res) {
-		return;
-	}
-	if (y + height > v_res) {
-		return;
-	}
+
 	for (i = 0; i < width * height; i++) {
 		vg_set_pixel(x, y, color);
 		x++;
@@ -210,19 +216,22 @@ void aloca_pixmap(unsigned short xi, unsigned short yi, char *map, int width,
 
 void display_vbe_info() {
 	vbe_info_t info_vbe;
-	int mode_list_ptr = vbe_get_info(&info_vbe);
+
+	short* mode_list_ptr = (short*) vbe_get_info(&info_vbe);
+
+	// Endereço físico do Video Mode
 	int farptr = info_vbe.VideoModePtr;
-	mode_list_ptr -= Mi;
-	mode_list_ptr += ((farptr & 0xffff0000) >> 12) + (farptr & 0xffff);
-	short counter=0;
-	short mode = -1;
+
+	// Transformacao de endereço fisico para virtual
+	//
+	mode_list_ptr = (short *) ((int) mode_list_ptr
+			+ ((farptr & 0xffff0000) >> 12) + (farptr & 0xffff));
+
 	do {
-		mode = *(short*) mode_list_ptr;
-		printf("0x%X\t", mode);
-		(short*) mode_list_ptr++;
-		counter++;
-	} while (mode != -1);
-	printf("%d",counter);
+		printf("0x%X\t", *mode_list_ptr);
+		(short *) mode_list_ptr++;
+	} while (*mode_list_ptr != -1);
+
 	if (info_vbe.Capabilities[0] & BIT(0)) {
 		printf("\nDAC width is switchable to 8 bits per primary color\n\n");
 	} else {

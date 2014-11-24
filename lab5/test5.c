@@ -19,6 +19,15 @@ void *test_init(unsigned short mode, unsigned short delay) {
 int test_square(unsigned short x, unsigned short y, unsigned short size,
 		unsigned long color) {
 	vg_init(0x105);
+
+	//Verificacao dos limites do quadrado:
+	// verifica se o quadrado se encontra completamente dentro da resoluçao usada
+	if (x + size > get_hres() || y + size > get_vres()) {
+		vg_exit();
+		printf("Ultrapassou os limites!");
+		return;
+	}
+
 	vg_fill(x, y, size, size, color);
 
 	// Inicio keyboard
@@ -67,6 +76,13 @@ int test_square(unsigned short x, unsigned short y, unsigned short size,
 int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
 		unsigned short yf, unsigned long color) {
 	vg_init(0x105);
+	if (xi > get_hres() || xf > get_hres() || yi > get_vres()
+			|| yf > get_vres()) {
+		printf("Ultrapassou os limites!");
+		vg_exit();
+		return;
+	}
+
 	vg_line(xi, yi, xf, yf, color);
 	// Inicio keyboard
 	int ipc_status;
@@ -112,10 +128,18 @@ int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
 }
 
 int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
+	if (xpm == NULL) {
+		printf("Não existe tal XPM!");
+	}
 	vg_init(0x105);
 	int width, height;
 	char * map;
 	map = (char *) read_xpm(xpm, &width, &height);
+	if (xi + width > get_hres() || yi + height > get_vres()) {
+		vg_exit();
+		printf("Ultrapassou os limites!");
+		return;
+	}
 	aloca_pixmap(xi, yi, map, width, height);
 	int ipc_status;
 	unsigned long code;
@@ -160,16 +184,10 @@ int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
 
 int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		unsigned short hor, short delta, unsigned short time) {
-
-	vg_init(0x105);
-
-	printf("passou");
-
-	if (xi > get_hres() || yi > get_vres()) {
-		vg_exit();
-		printf("Passou da resolucao do ecra!");
-		return -1;
+	if (xpm == NULL) {
+		printf("Não existe tal XPM!");
 	}
+	vg_init(0x105);
 
 	Sprite* st = create_sprite(xpm);
 	st->x = xi;
@@ -181,6 +199,18 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	} else {
 		st->yspeed = (double) delta / (time * 60);
 		st->xspeed = 0;
+	}
+
+	if (hor) {
+		if ((xi + delta + st->width > get_hres() || xi + delta < 0)) {
+			vg_exit();
+			printf("Passou da resolucao horizontal do ecra!");
+			return -1;
+		}
+	} else if ((yi + delta + st->height > get_vres() || yi + delta < 0)) {
+		vg_exit();
+		printf("Passou da resolucao vertical do ecra!");
+		return -1;
 	}
 
 	aloca_pixmap((unsigned short) st->x, (unsigned short) st->y, st->map,
@@ -202,7 +232,6 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		return 1;
 	}
 	while (flag_stop) {
-		printf("entrou no ciclo");
 		// ANY -> receives msg from any process
 		//  2nd and 3rd arguments are the addresses of variables of type message and int
 		//
