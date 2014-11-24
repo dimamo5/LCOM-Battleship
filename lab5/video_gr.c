@@ -44,7 +44,7 @@ unsigned get_memphys() {
 
 void * vg_init(unsigned short mode) {
 	struct reg86u reg;
-	reg.u.w.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
+	reg.u.w.ax = VBE_SET_MODE; // VBE call, function 02 -- set VBE mode
 	reg.u.w.bx = 1 << LINEAR_MODEL_BIT | mode; // set bit 14: linear framebuffer
 	reg.u.b.intno = 0x10;
 	if (sys_int86(&reg) != OK) {
@@ -223,7 +223,6 @@ void display_vbe_info() {
 	int farptr = info_vbe.VideoModePtr;
 
 	// Transformacao de endereço fisico para virtual
-	//
 	mode_list_ptr = (short *) ((int) mode_list_ptr
 			+ ((farptr & 0xffff0000) >> 12) + (farptr & 0xffff));
 
@@ -233,9 +232,9 @@ void display_vbe_info() {
 	} while (*mode_list_ptr != -1);
 
 	if (info_vbe.Capabilities[0] & BIT(0)) {
-		printf("\nDAC width is switchable to 8 bits per primary color\n\n");
+		printf("\n\nDAC width is switchable to 8 bits per primary color\n\n");
 	} else {
-		printf("\nDAC is fixed width, with 6 bits per primary color\n\n");
+		printf("\n\nDAC is fixed width, with 6 bits per primary color\n\n");
 	}
 	if (info_vbe.Capabilities[0] & BIT(1) >> 1) {
 		printf("Controller is not VGA compatible\n\n");

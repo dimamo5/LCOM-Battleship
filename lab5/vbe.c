@@ -15,7 +15,7 @@ int vbe_get_mode_info(unsigned short mode, vbe_mode_info_t *vmi_p) {
 	reg.u.w.cx = mode;
 
 	reg.u.b.intno = 0x10; //BIOS service mode
-	reg.u.w.ax = 0x4F01; //VBE
+	reg.u.w.ax = VBE_MODE_INFO; //VBE
 
 	reg.u.w.es = PB2BASE(address.phys);
 	reg.u.w.di = PB2OFF(address.phys);
@@ -48,7 +48,7 @@ int vbe_get_info(vbe_info_t *vi_p) {
 	lm_alloc(sizeof(vbe_info_t), &address);
 
 	reg.u.b.intno = 0x10; //BIOS service mode
-	reg.u.w.ax = 0x4F00; //VBE
+	reg.u.w.ax = VBE_CONTROLLER_INFO; //VBE
 
 	reg.u.w.es = PB2BASE(address.phys);
 	reg.u.w.di = PB2OFF(address.phys);
