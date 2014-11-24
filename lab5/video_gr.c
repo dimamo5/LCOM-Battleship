@@ -38,6 +38,10 @@ unsigned get_vres() {
 	return v_res;
 }
 
+unsigned get_memphys() {
+	return mem_phys;
+}
+
 void * vg_init(unsigned short mode) {
 	struct reg86u reg;
 	reg.u.w.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
@@ -52,11 +56,8 @@ void * vg_init(unsigned short mode) {
 	vbe_get_mode_info(mode, &info_mode);
 
 	h_res = info_mode.XResolution;
-	printf("%d", h_res);
 	v_res = info_mode.YResolution;
-	printf("%d", v_res);
 	bits_per_pixel = info_mode.BitsPerPixel;
-	printf("%d", bits_per_pixel);
 
 	unsigned long vram = h_res * v_res * (bits_per_pixel / 8);
 	/* Map memory */
@@ -82,10 +83,7 @@ void * vg_init(unsigned short mode) {
 
 	/* Save text mode resolution */
 
-	h_res = H_RES;
-	v_res = V_RES;
-	bits_per_pixel = BITS_PER_PIXEL;
-	return video_mem;
+	return (void *) video_mem;
 }
 
 int vg_exit() {
@@ -193,7 +191,8 @@ void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 
 }
 
-void aloca_pixmap(unsigned short xi, unsigned short yi, char *map,int width,int height) {
+void aloca_pixmap(unsigned short xi, unsigned short yi, char *map, int width,
+		int height) {
 	char * mem_temp;
 	unsigned int i = 0;
 	// copy it to graphics memory
@@ -215,14 +214,15 @@ void display_vbe_info() {
 	int farptr = info_vbe.VideoModePtr;
 	mode_list_ptr -= Mi;
 	mode_list_ptr += ((farptr & 0xffff0000) >> 12) + (farptr & 0xffff);
-
+	short counter=0;
 	short mode = -1;
 	do {
 		mode = *(short*) mode_list_ptr;
 		printf("0x%X\t", mode);
 		(short*) mode_list_ptr++;
+		counter++;
 	} while (mode != -1);
-
+	printf("%d",counter);
 	if (info_vbe.Capabilities[0] & BIT(0)) {
 		printf("\nDAC width is switchable to 8 bits per primary color\n\n");
 	} else {

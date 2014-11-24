@@ -1,5 +1,5 @@
 #include "sprite.h"
-
+#include <stdio.h>
 /** Creates a new sprite with pixmap "pic", random speeds
  * (not zero) and position (within the screen limits), and
  * draws it in memory whose address is "base";
@@ -8,19 +8,19 @@
 Sprite *create_sprite(char *pic[]) {
 //allocate space for the "object"
 	Sprite *sp = (Sprite *) malloc(sizeof(Sprite));
-	if (sp == 0)
-		return 0;
+	if (sp == NULL)
+		return NULL;
 // read the sprite pixmap
-	sp->map = read_xpm(pic, &(sp->width), &(sp->height));
-	if (sp->map == 0) {
+	sp->map = (char *)read_xpm(pic, &(sp->width), &(sp->height));
+	if (sp->map == NULL) {
 		free(sp);
-		return 0;
+		return NULL;
 	}
 	return sp;
 }
 
 void destroy_sprite(Sprite *sp) {
-	if (sp == 0)
+	if (sp == NULL)
 		return;
 	free(sp->map);
 	free(sp);

@@ -9,11 +9,10 @@
 #include "sprite.h"
 
 void *test_init(unsigned short mode, unsigned short delay) {
-	unsigned char* mem;
-	mem = vg_init(mode);
+	vg_init(mode);
 	timer_test_int(delay);
 	vg_exit();
-	printf("Virtual Memory : 0x%X", mem);
+	printf("Physical Memory : 0x%X", get_memphys());
 
 }
 
@@ -161,8 +160,11 @@ int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
 
 int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		unsigned short hor, short delta, unsigned short time) {
+
 	vg_init(0x105);
+
 	printf("passou");
+
 	if (xi > get_hres() || yi > get_vres()) {
 		vg_exit();
 		printf("Passou da resolucao do ecra!");
@@ -181,8 +183,10 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		st->xspeed = 0;
 	}
 
-	aloca_pixmap((unsigned short) st->x, (unsigned short) st->y, st->map,st->width,st->height);
-/*
+	aloca_pixmap((unsigned short) st->x, (unsigned short) st->y, st->map,
+			st->width, st->height);
+
+	double x_ant = xi, y_ant = yi;
 	int ipc_status, flag_stop = 1;
 	unsigned int r, counter_milisec = 0, counter_timer = 0;
 	unsigned long code;
@@ -200,8 +204,8 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	while (flag_stop) {
 		printf("entrou no ciclo");
 		// ANY -> receives msg from any process
-		 //  2nd and 3rd arguments are the addresses of variables of type message and int
-		 //
+		//  2nd and 3rd arguments are the addresses of variables of type message and int
+		//
 		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
 			printf("driver_receive failed with: %d", r);
 			continue;
@@ -222,10 +226,14 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 				}
 				if (msg.NOTIFY_ARG & irq_set_time) {
 					counter_milisec++;
+					vg_fill((unsigned short) x_ant, (unsigned short) y_ant,
+							st->width, st->height, 0x00);
 					st->x += st->xspeed;
 					st->y += st->yspeed;
 					aloca_pixmap((unsigned short) st->x, (unsigned short) st->y,
-							st->map);
+							st->map, st->width, st->height);
+					x_ant = st->x;
+					y_ant = st->y;
 					if (counter_milisec % 60 == 0) {
 						counter_timer++;
 						printf("%d seconds", counter_timer);
@@ -244,6 +252,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 		}
 	}
+	destroy_sprite(st);
 
 	vg_exit();
 
@@ -254,7 +263,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	if (timer_unsubscribe_int() != 0) {
 		printf("Unsubscribe failed");
 	}
-*/
+
 	return 0;
 }
 
