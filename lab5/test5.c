@@ -129,7 +129,8 @@ int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
 
 int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
 	if (xpm == NULL) {
-		printf("Não existe tal XPM!");
+		printf("Nao existe tal XPM!");
+		return -1;
 	}
 	vg_init(0x105);
 	int width, height;
@@ -185,7 +186,8 @@ int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
 int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		unsigned short hor, short delta, unsigned short time) {
 	if (xpm == NULL) {
-		printf("Não existe tal XPM!");
+		printf("Nao existe tal XPM!");
+		return -1;
 	}
 	vg_init(0x105);
 
