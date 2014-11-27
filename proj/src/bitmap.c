@@ -83,9 +83,6 @@ void drawBitmap(Bitmap* bmp, int x, int y) {
 	if (x + width < 0 || x > getHRes() || y + height < 0 || y > getVRes())
 		return;
 	aloca_pixmap(x,y,(unsigned short*)bmp->Data,width,height);
-	printf("\n%d/\n",*(unsigned short*)bmp->Data);
-	printf("\n%d\n",*(unsigned short*)bmp->Data++);
-
 
 
 }
