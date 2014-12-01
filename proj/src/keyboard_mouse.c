@@ -1,5 +1,4 @@
-#include "keyboard.h"
-
+#include "keyboard_mouse.h"
 
 static unsigned int hook_id;
 unsigned long code;
@@ -27,116 +26,91 @@ int kbd_unsubscribe_int() {
 
 }
 
-int check_codes_menus() {
+//updates the keyboard (checks for input of arrows, esc or enter)
+void check_up_codes_menus() {
+	kb_temp kb; //temporario
 
-	int ipc_status;
-	unsigned int i = 0, r;
+	int ipc_status, r = 0;
 	message msg;
-	short irq_set = kbd_subscribe_int();
 
-	if (irq_set < 0) {
-		printf("Subscribe failed");
-		return 1;
+	if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+		return;
 	}
-	while (code != SC_ENTER || code != SC_UP_ARROW || code != SC_DOWN_ARROW || code!= BC_ESC) {
-
-		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
-			printf("driver_receive failed with: %d", r);
-			continue;
-		}
-		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
-				{
-			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+	if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
 			{
-			case HARDWARE:
-				if (msg.NOTIFY_ARG & irq_set) {
-					scan_asm();
-				}
-				break;
-
-			default:
-				break;
+		switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+		{
+		case HARDWARE:
+			if (msg.NOTIFY_ARG & kb.IRQ_SET_KB) {
+				scan_asm();
+				kb.scancode = code;
 			}
-		} else {
-			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
+			break;
+
+		default:
+			break;
 		}
 	}
 
-	if (kbd_unsubscribe_int() != 0) {
-		printf("Unsubscribe failed");
-	}
-	switch (code){
-		case SC_ENTER:
-			return 0;
-			break;
-		case SC_UP_ARROW:
-			return 1;
-			break;
-		case SC_DOWN_ARROW:
-			return 2;
-			break;
-		case BC_ESC:
-			return 3;
-			break;
+	switch (kb.scancode) {
+	case SC_ENTER:
+		kb.key_pressed_menu = 0;
+		break;
+	case SC_UP_ARROW:
+		kb.key_pressed_menu = 1;
+		break;
+	case SC_DOWN_ARROW:
+		kb.key_pressed_menu = 2;
+		break;
+	case BC_ESC:
+		kb.key_pressed_menu = 3;
+		break;
 	}
 }
 
 int check_codes_game() {
+	kb_temp kb; //temporario
 
-	int ipc_status;
-	unsigned int i = 0, r;
+	int ipc_status, r = 0;
 	message msg;
-	short irq_set = kbd_subscribe_int();
 
-	if (irq_set < 0) {
-		printf("Subscribe failed");
-		return 1;
+	if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+		return;
 	}
-	while (code != SC_LEFT_ARROW || code != SC_UP_ARROW || code != SC_DOWN_ARROW || code!= SC_RIGHT_ARROW || code!= SC_ENTER || code!= BC_ESC) {
-
-		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
-			printf("driver_receive failed with: %d", r);
-			continue;
-		}
-		if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
-				{
-			switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+	if (is_ipc_notify(ipc_status)) // receive notification of interrupt request. returns true if msg received is notification and false otherwise
 			{
-			case HARDWARE:
-				if (msg.NOTIFY_ARG & irq_set) {
-					scan_asm();
-				}
-				break;
-
-			default:
-				break;
+		switch (_ENDPOINT_P(msg.m_source)) // m_source contains the endpoint of the msg and _ENDPOINT extracts the process identifier from process's endpoint
+		{
+		case HARDWARE:
+			if (msg.NOTIFY_ARG & kb.IRQ_SET_KB) {
+				scan_asm();
+				kb.scancode = code;
 			}
-		} else {
-			printf("Any interrupt received\n"); // Any interrupt received, so anything to do
+			break;
+
+		default:
+			break;
 		}
 	}
 
-	if (kbd_unsubscribe_int() != 0) {
-		printf("Unsubscribe failed");
-	}
-	switch (code){
-		case SC_ENTER:
-			return 0;
-			break;
-		case SC_UP_ARROW:
-			return 1;
-			break;
-		case SC_DOWN_ARROW:
-			return 2;
-			break;
-		case SC_LEFT_ARROW:
-			return 3;
-			break;
-		case SC_RIGHT_ARROW:
-			return 4;
-			break;
-		case BC_ESC:
-			return 5;
-			break;
+	switch (kb.scancode) {
+	case SC_ENTER:
+		kb.key_pressed_game = 0;
+		break;
+	case SC_UP_ARROW:
+		kb.key_pressed_game = 1;
+		break;
+	case SC_DOWN_ARROW:
+		kb.key_pressed_game = 2;
+		break;
+	case SC_LEFT_ARROW:
+		kb.key_pressed_game = 3;
+		break;
+	case SC_RIGHT_ARROW:
+		kb.key_pressed_game = 4;
+		break;
+	case BC_ESC:
+		kb.key_pressed_game = 5;
+		break;
 	}
 }
