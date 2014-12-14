@@ -1,7 +1,16 @@
 #ifndef __VIDEO_GR_H
 #define __VIDEO_GR_H
 
-#define TRANS_COLOR 63519
+typedef enum {
+	SMALL, BIG
+} Board_size;
+
+#define TRANS_COLOR rgb(255,0,255)
+#define RED rgb(255,0,0)
+#define GREEN rgb(0,255,0)
+#define BLUE rgb(0,0,255)
+#define WHITE rgb(255,255,255)
+
 /** @defgroup video_gr video_gr
  * @{
  *
@@ -29,6 +38,11 @@ void *vg_init(unsigned short mode);
 int vg_exit(void);
 
 void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color);
+
+void updateBufferSec();
+
+int rgb(unsigned char r, unsigned char g, unsigned char b);
+
 /** @} end of video_gr */
 
 #endif /* __VIDEO_GR_H */

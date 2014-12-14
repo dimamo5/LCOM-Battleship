@@ -45,7 +45,7 @@ Bitmap* loadBitmap(const char* filename) {
 	fseek(fileptr, bitmapFileHeader.offset, SEEK_SET);
 
 	// allocate enough memory for the bitmap image data
-	unsigned char* bitmapImage = (unsigned char*) malloc(bitmapInfo.imageSize);
+	unsigned short* bitmapImage = (unsigned short*) malloc(bitmapInfo.imageSize);
 
 	// verify memory allocation
 	if (!bitmapImage) {
@@ -82,7 +82,7 @@ void drawBitmap(Bitmap* bmp, int x, int y) {
 
 	if (x + width < 0 || x > getHRes() || y + height < 0 || y > getVRes())
 		return;
-	aloca_pixmap(x,y,(unsigned short*)bmp->Data,width,height);
+	aloca_pixmap(x,y,bmp->Data,width,height);
 
 
 }

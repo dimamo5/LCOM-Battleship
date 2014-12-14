@@ -4,7 +4,7 @@ COMPILER_TYPE= gnu
 CC= gcc
 
 PROG = battleship
-SRCS = main.c bitmap.c vbe.c graphics.c rtc.c keyboard_mouse.c handler.S
+SRCS = main.c bitmap.c vbe.c graphics.c rtc.c keyboard_mouse.c timer.c handler.S battleship.c
 
 CCFLAGS= -Wall
 
