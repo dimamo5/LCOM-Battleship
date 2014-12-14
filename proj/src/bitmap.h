@@ -29,7 +29,7 @@ typedef struct {
 /// Represents a Bitmap
 typedef struct {
 	BitmapInfo bitmapInfo;
-	unsigned char* Data;
+	unsigned short* Data;
 } Bitmap;
 
 /**

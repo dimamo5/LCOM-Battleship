@@ -1,12 +1,15 @@
 #include <minix/syslib.h>
 #include <minix/drivers.h>
-#include <machine/int86.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <stdio.h>
+#include <stdint.h>
+#include <machine/int86.h>
+#include <minix/sysutil.h>
 
 #include "vbe.h"
 #include "graphics.h"
+#include "keyboard_mouse.h"
+
 /* Constants for VBE 0x105 mode */
 
 /* The physical address may vary from VM to VM.
@@ -19,7 +22,12 @@
 
 /* Private global variables */
 
-static char *video_mem; /* Process address to which VRAM is mapped */
+static short *video_mem; /* Process address to which VRAM is mapped */
+
+/*buffer secondary and mouse buffer*/
+
+static short *second_buffer;
+static short *triple_buffer;
 
 static unsigned h_res; /* Horizontal screen resolution in pixels */
 static unsigned v_res; /* Vertical screen resolution in pixels */
@@ -31,9 +39,6 @@ unsigned getHRes() {
 
 unsigned getVRes() {
 	return v_res;
-}
-char * getVideoMem() {
-	return video_mem;
 }
 
 void * vg_init(unsigned short mode) {
@@ -85,6 +90,10 @@ void * vg_init(unsigned short mode) {
 	if (video_mem == MAP_FAILED)
 		panic("video_gr couldn't map video memory");
 
+	/* Initialize temporary buffer */
+	second_buffer = (short *) malloc(h_res * v_res * bytes_per_pixel);
+	triple_buffer = (short *) malloc(h_res * v_res * bytes_per_pixel);
+
 	/* Save text mode resolution */
 
 	return (void *) video_mem;
@@ -103,13 +112,15 @@ int vg_exit() {
 		return 1;
 	} else
 		return 0;
+	free(second_buffer);
+	free(triple_buffer);
 }
 
 void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color) {
-	unsigned char * mem_temp = video_mem;
+	unsigned short * mem_temp = second_buffer;
 
-	mem_temp = mem_temp + bytes_per_pixel * (h_res * y + x);
-	(*(unsigned short *) mem_temp) = color;
+	mem_temp = second_buffer + h_res * y + x;
+	*mem_temp = color;
 }
 
 void vg_fill(unsigned short x, unsigned short y, unsigned short width,
@@ -183,8 +194,8 @@ void drawRectangle(unsigned short x, unsigned short y, unsigned short width,
 			vg_set_pixel(x + width, y_temp, color);
 		}
 
-		x --;
-		y --;
+		x--;
+		y--;
 		width += 2;
 		height += 2;
 	}
@@ -192,7 +203,6 @@ void drawRectangle(unsigned short x, unsigned short y, unsigned short width,
 void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
 		int width, int height) {
 	unsigned int i = 0;
-	// copy it to graphics memory
 	unsigned short x_original = xi;
 	for (i = 0; i < width * height; i++) {
 		if (map[i] != TRANS_COLOR) {
@@ -204,4 +214,74 @@ void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
 			yi--;
 		}
 	}
+
+}
+void draw_board(unsigned short x, unsigned short y, Board_size size) {
+	unsigned short x_temp = x;
+	unsigned short y_temp = y;
+	unsigned int i;
+	if (size == BIG) {
+		drawRectangle(x, y, 400, 400, 3, 0xffff);
+		for (i = 0; i < 100; i++) {
+			drawRectangle(x_temp, y_temp, 40, 40, 1, 0xffff);
+			if (x_temp == x + 360) {
+				x_temp = x;
+				y_temp += 40;
+			} else {
+				x_temp += 40;
+			}
+		}
+	}
+	if (size == SMALL) {
+		drawRectangle(x, y, 300, 300, 3, 0xffff);
+		for (i = 0; i < 100; i++) {
+			drawRectangle(x_temp, y_temp, 30, 30, 1, 0xffff);
+			if (x_temp == x + 270) {
+				x_temp = x;
+				y_temp += 30;
+			} else {
+				x_temp += 30;
+			}
+		}
+	}
+}
+
+void alocaMouse(unsigned short *map, int width, int height) {
+	memcpy(triple_buffer, second_buffer, v_res * h_res * bytes_per_pixel);
+
+	short * mem_temp;
+	Mouse* mouse = getMouse();
+	unsigned int i = 0;
+	unsigned short xi = mouse->x, yi = mouse->y + height;
+	for (i = 0; i < width * height; i++) {
+		if (map[i] != TRANS_COLOR) {
+			mem_temp = triple_buffer + h_res * yi + xi;
+			*mem_temp = map[i];
+		}
+		xi++;
+		if (xi == width + mouse->x) {
+			xi = mouse->x;
+			yi--;
+		}
+	}
+
+}
+
+void updateBufferSec() {
+	memcpy(video_mem, second_buffer, v_res * h_res * bytes_per_pixel);
+}
+
+void updateBufferTriple() {
+	memcpy(video_mem, triple_buffer, v_res * h_res * bytes_per_pixel);
+}
+
+int rgb(unsigned char r, unsigned char g, unsigned char b) {
+	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+		return -1;
+	}
+	int red = r * 31 / 255;
+	int green = g * 63 / 255;
+	int blue = b * 31 / 255;
+
+	return (red << 11) | (green << 5) | blue;
 }
