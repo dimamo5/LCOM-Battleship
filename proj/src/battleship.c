@@ -53,6 +53,7 @@ void updateBattleship(Battleship* battleship) {
 			}
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_TIMER) {
+				drawMouse();
 				drawBattleship(battleship);
 			}
 

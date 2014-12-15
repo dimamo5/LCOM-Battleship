@@ -87,6 +87,15 @@ void drawMouse() {
 
 }
 
+int kbd_int_handler() {
+	unsigned long code_kbd;
+	if (sys_inb(KBD_BUFF, &code_kbd) != OK) { //sends content from the out buffer to the variable
+		printf("Int Handler Error at sys_inb.");
+		return 1;
+	}
+	return code_kbd;
+}
+
 int kbd_subscribe_int() {
 	unsigned int bit_sel = 2; // bit_sel is different from the one on the timer_subscribe
 	hook_id = bit_sel;
@@ -99,9 +108,6 @@ int kbd_subscribe_int() {
 
 int kbd_unsubscribe_int() {
 
-	if (sys_irqdisable(&hook_id) != OK) {
-		return 1;
-	}
 	if (sys_irqrmpolicy(&hook_id) != OK) {
 		return 1;
 	}
