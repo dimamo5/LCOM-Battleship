@@ -4,6 +4,7 @@
 #include "battleship.h"
 #include "bitmap.h"
 #include "graphics.h"
+#include "MainMenu.h"
 
 Battleship* startBattleship() {
 
@@ -67,23 +68,24 @@ void updateBattleship(Battleship* battleship) {
 	} else {
 		printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 	}
-
 	if (battleship->kb_code == KEY_ESC) {
 		battleship->done = 1;
 	}
+//	updateCurrentState(battleship);
 }
 
 void drawBattleship(Battleship* battleship) {
 
-	Bitmap* sky;
-	sky = loadBitmap("/home/lcom/proj/img/teste1.bmp");
-	Bitmap* death_star;
-	death_star = loadBitmap("/home/lcom/proj/img/star.bmp");
-	drawBitmap(sky, 50, 50);
-	drawBitmap(death_star, 100, 50);
-	drawRectangle(100, 50, death_star->bitmapInfo.width,
-			death_star->bitmapInfo.height, 2, 0x019F);
-	draw_board(200, 200, SMALL);
+	// Isto faz-se dentro das funcoes drawXYZState
+//	Bitmap* sky;
+//	sky = loadBitmap("/home/lcom/proj/img/teste1.bmp");
+//	Bitmap* death_star;
+//	death_star = loadBitmap("/home/lcom/proj/img/star.bmp");
+//	drawBitmap(sky, 50, 50);
+//	drawBitmap(death_star, 100, 50);
+//	drawRectangle(100, 50, death_star->bitmapInfo.width,
+//			death_star->bitmapInfo.height, 2, 0x019F);
+//	draw_board(200, 200, SMALL);
 
 	switch (battleship->currentState) {
 
@@ -174,22 +176,22 @@ void changeState(Battleship* battleship, State programState) {
 void updateCurrentState(Battleship* battleship) {
 	switch (battleship->currentState) {
 	case MAIN_MENU_STATE:
-		//deleteMainMenuState(battleship);
+		//updateMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		//		deletePlaySetship(battleship);
+		//		updatePlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:
-		//		deletePlay(battleship);
+		//		updatePlay(battleship);
 		break;
 	case GAME_PAUSE_STATE:
-		//		deletePause(battleship);
+		//		updatePause(battleship);
 		break;
 	case HIGHSCORE_WRITE_STATE:
-		//		deleteHighscoreWrite(battleship);
+		//		updateHighscoreWrite(battleship);
 		break;
 	case HIGHSCORE_MENU_STATE:
-		//		deleteHighscoreMenu(battleship);
+		//		updateHighscoreMenu(battleship);
 		break;
 
 	default:
