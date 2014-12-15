@@ -302,3 +302,11 @@ void print_packets(unsigned long* packet) {
 			(char) packet[1], (char) packet[2]);
 }
 
+int mouseInsideRect(Button* botao, Mouse* rato) {
+
+	if (rato->x > botao->x_ini && rato->x < botao->x_final
+			&& rato->y > botao->y_ini && rato->y < botao->y_final)
+		return 1;
+
+	return 0;
+}

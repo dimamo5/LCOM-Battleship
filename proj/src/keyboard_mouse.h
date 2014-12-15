@@ -2,6 +2,7 @@
 #define __KEYBOARD_MOUSE_H
 
 
+
 //this struct is from difusal.blogspot.pt
 
 typedef struct {
@@ -117,5 +118,7 @@ int enable_packets();
 int disable_packets();
 int check_first_byte();
 void drawMouse();
+
+int mouseInsideRect(Button* botao,Mouse* rato);
 
 #endif
