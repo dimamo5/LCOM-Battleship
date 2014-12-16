@@ -6,8 +6,17 @@
 static unsigned int hook_id;
 
 //code fetched from the internet
-unsigned char bcd_to_bin(uchar bcd) {
+unsigned char bcd_to_bin(unsigned char bcd) {
 	return ((bcd >> 4) * 10) + (bcd & 0x0F);
+}
+
+unsigned long read_rtc_reg(unsigned long reg) {
+
+	unsigned long data = 0;
+
+	sys_outb(RTC_ADDR_REG, reg);
+	sys_inb(RTC_DATA_REG, &data);
+	return data;
 }
 
 int rtc_subscribe_int() {
@@ -35,8 +44,7 @@ int rtc_unsubscribe_int() {
 void disable_ints() {
 	unsigned char RegB;
 
-	sys_outb(RTC_ADDR_REG, 11);
-	sys_inb(RTC_DATA_REG, RegB);
+	RegB=read_rtc_reg(11);
 
 	RegB &= ~(1 << 6);
 	RegB &= ~(1 << 5);
@@ -47,8 +55,7 @@ void disable_ints() {
 void enable_ints() {
 	unsigned char RegB;
 
-	sys_outb(RTC_ADDR_REG, 11);
-	sys_inb(RTC_DATA_REG, RegB);
+	RegB=read_rtc_reg(11);
 
 	RegB |= 1 << 6;
 	RegB |= 1 << 5;
@@ -63,40 +70,31 @@ void get_time(int *hour, int *min, int *sec) {
 	disable_ints();
 
 	//hour
-	sys_outb(RTC_ADDR_REG, 10);
-	sys_inb(RTC_DATA_REG, RegA);
+	RegA=read_rtc_reg(10);
 
 	while (RegA & 0x80 != 0) {
-		sys_outb(RTC_ADDR_REG, 10);
-		sys_inb(RTC_DATA_REG, RegA);
+		RegA=read_rtc_reg(10);
 	}
 
-	sys_outb(RTC_ADDR_REG, 4);
-	sys_inb(RTC_DATA_REG, *hour);
+	*hour=read_rtc_reg(4);
 
 	//minutes
-	sys_outb(RTC_ADDR_REG, 10);
-	sys_inb(RTC_DATA_REG, RegA);
+	RegA=read_rtc_reg(10);
 
 	while (RegA & 0x80 != 0) {
-		sys_outb(RTC_ADDR_REG, 10);
-		sys_inb(RTC_DATA_REG, RegA);
+		RegA=read_rtc_reg(10);
 	}
 
-	sys_outb(RTC_ADDR_REG, 2);
-	sys_inb(RTC_DATA_REG, *min);
+	*min=read_rtc_reg(2);
 
 	//seconds
 	while (RegA & 0x80 != 0) {
-		sys_outb(RTC_ADDR_REG, 10);
-		sys_inb(RTC_DATA_REG, RegA);
+		RegA=read_rtc_reg(10);
 	}
 
-	sys_outb(RTC_ADDR_REG, 0);
-	sys_inb(RTC_DATA_REG, *sec);
+	*sec=read_rtc_reg(0);
 
-	sys_outb(RTC_ADDR_REG, 11);
-	sys_inb(RTC_DATA_REG, RegB);
+	RegB=read_rtc_reg(11);
 
 	if ((RegB & 0x02) == 0) {
 		*hour = hour + 12;
@@ -121,19 +119,15 @@ void get_date(int *year, int *month, int *day) {
 	disable_ints();
 
 	//year
-	sys_outb(RTC_ADDR_REG, 9);
-	sys_inb(RTC_DATA_REG, *year);
+	*year=read_rtc_reg(9);
 
 	//month
-	sys_outb(RTC_ADDR_REG, 8);
-	sys_inb(RTC_DATA_REG, *month);
+	*month=read_rtc_reg(8);
 
 	//day
-	sys_outb(RTC_ADDR_REG, 7);
-	sys_inb(RTC_DATA_REG, *day);
+	*day=read_rtc_reg(7);
 
-	sys_outb(RTC_ADDR_REG, 11);
-	sys_inb(RTC_DATA_REG, RegB);
+	RegB=read_rtc_reg(11);
 
 	if ((RegB & 0x04) == 0) {
 		*year = bcd2bin(*year);
@@ -146,3 +140,5 @@ void get_date(int *year, int *month, int *day) {
 	enable_ints();
 
 }
+
+

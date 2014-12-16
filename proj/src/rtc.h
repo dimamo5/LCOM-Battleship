@@ -1,7 +1,7 @@
 #ifndef __RTC_H
 #define __RTC_H
 
-#include "keyboard.h"
+#include "keyboard_mouse.h"
 
 #define RTC_ADDR_REG 0x70
 #define RTC_DATA_REG 0x71
@@ -70,7 +70,9 @@ int rtc_enable_square_wave();
 int set_alarm(unsigned long delta_s);
 
 /**@}*/
+/*
 void get_time(int *hour, int *min, int *sec);
 unsigned char bcd_to_bin(uchar bcd);
 void get_date(int *year, int *month, int *day);
+*/
 #endif

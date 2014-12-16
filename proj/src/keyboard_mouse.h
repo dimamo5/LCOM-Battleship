@@ -119,6 +119,6 @@ int disable_packets();
 int check_first_byte();
 void drawMouse();
 
-int mouseInsideRect(Button* botao,Mouse* rato);
+//int mouseInsideRect(Button* botao,Mouse* rato);
 
 #endif
