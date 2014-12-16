@@ -3,6 +3,8 @@
 
 #include "rtc.h"
 
+static unsigned int hook_id;
+
 //code fetched from the internet
 unsigned char bcd_to_bin(uchar bcd) {
 	return ((bcd >> 4) * 10) + (bcd & 0x0F);
