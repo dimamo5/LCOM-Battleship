@@ -1,6 +1,8 @@
 #ifndef __RTC_H
 #define __RTC_H
 
+#include "keyboard.h"
+
 #define RTC_ADDR_REG 0x70
 #define RTC_DATA_REG 0x71
 #define RTC_IRQ 8
@@ -42,14 +44,14 @@ int rtc_unsubscribe_int();
  *
  * @param ints ...
  */
-int enable_ints(unsigned char ints);
+void enable_ints();
 
 /*
  * @brief Desativa as interrupcoes do RTC.
  *
  * @param ints ...
  */
-int disable_ints(unsigned char ints);
+void disable_ints();
 
 /*
  * @brief Ativa a frequencia de onda do RTC.
@@ -68,4 +70,7 @@ int rtc_enable_square_wave();
 int set_alarm(unsigned long delta_s);
 
 /**@}*/
+void get_time(int *hour, int *min, int *sec);
+unsigned char bcd_to_bin(uchar bcd);
+void get_date(int *year, int *month, int *day);
 #endif
