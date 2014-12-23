@@ -1,5 +1,6 @@
 #include "keyboard_mouse.h"
 #include "timer.h"
+#include "game.h"
 #include "button.h"
 #include "battleship.h"
 #include "bitmap.h"
@@ -18,16 +19,14 @@ Battleship* startBattleship() {
 
 	getMouse();
 
-	enable_packets();
-
-	// Por frequencia do timer a 30 (30 fps)
-	timer_set_square(0, 30);
+	// Por frequencia do timer a 60
+	timer_set_square(0, 60);
 
 	// Inicializar Variaveis
 	// currentState inicial e o menu inicial
 	battle->kb_code = 0;
 	battle->currentState = MAIN_MENU_STATE;
-	//battle->state = newMainMenuState();
+	battle->state = newMainMenuState();
 
 	// finish initialization
 	battle->done = 0, battle->draw = 1;
@@ -53,12 +52,18 @@ void updateBattleship(Battleship* battleship) {
 			}
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_TIMER) {
-				drawMouse();
-				drawBattleship(battleship);
+				if (battleship->timer_cnt % (60 / FPS) == 0) {
+					battleship->timer_ticked = !battleship->timer_ticked;
+				}
+
+				battleship->timer_cnt++;
+				if (battleship->timer_cnt == 60) {
+					battleship->timer_cnt = 0;
+				}
 			}
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_KEYBOARD) {
-				battleship->kb_code = scan_kb_asm();
+				battleship->kb_code = kbd_int_handler();
 			}
 
 			break;
@@ -72,32 +77,22 @@ void updateBattleship(Battleship* battleship) {
 	if (battleship->kb_code == KEY_ESC) {
 		battleship->done = 1;
 	}
-//	updateCurrentState(battleship);
+
+	updateCurrentState(battleship);
 }
 
 void drawBattleship(Battleship* battleship) {
 
-	// Isto faz-se dentro das funcoes drawXYZState
-//	Bitmap* sky;
-//	sky = loadBitmap("/home/lcom/proj/img/teste1.bmp");
-//	Bitmap* death_star;
-//	death_star = loadBitmap("/home/lcom/proj/img/star.bmp");
-//	drawBitmap(sky, 50, 50);
-//	drawBitmap(death_star, 100, 50);
-//	drawRectangle(100, 50, death_star->bitmapInfo.width,
-//			death_star->bitmapInfo.height, 2, 0x019F);
-//	draw_board(200, 200, SMALL);
-
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
-		//drawMainMenuState(battleship);
+		drawMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-//		drawPlaySetship(battleship);
+		drawPlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:
-//		drawPlay(battleship);
+		drawGame(battleship);
 		break;
 	case GAME_PAUSE_STATE:
 //		drawPause(battleship);
@@ -118,15 +113,14 @@ void drawBattleship(Battleship* battleship) {
 
 void stopBattleship(Battleship* battleship) {
 
+	deleteCurrentState(battleship);
+
 	if (mouse_unsubscribe_int() != OK) {
 		printf("Unsubscribe mouse failed");
 	}
 
-	disable_packets();
+	kbd_unsubscribe_int();
 
-	if (kbd_unsubscribe_int() != OK) {
-		printf("Unsubscribe kbd failed");
-	}
 	if (timer_unsubscribe_int() != OK) {
 		printf("Unsubscribe timer failed");
 	}
@@ -134,11 +128,13 @@ void stopBattleship(Battleship* battleship) {
 	deleteMouse();
 
 	free(battleship);
+
+	vg_exit();
 }
 
 void changeState(Battleship* battleship, State programState) {
 
-//Apagar o state atual
+//Apagar o state atual -> tem um switch que chama a funcao deleteNomeState
 	deleteCurrentState(battleship);
 
 //Fazer set ao state atual para aquele que se queria
@@ -148,24 +144,26 @@ void changeState(Battleship* battleship, State programState) {
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
-		//battleship->state = newMainMenuState(battleship);
+		battleship->state = (MainMenuState *) newMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		//		battleship->state = newPlaySetship(battleship);
+		battleship->state = (SetShipState *) newPlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:
-		//		battleship->state = newPlay(battleship);
-		break;
-	case GAME_PAUSE_STATE:
-		//		battleship->state = newPause(battleship);
-		break;
-	case HIGHSCORE_WRITE_STATE:
-		//		battleship->state = newHighscoreWrite(battleship);
-		break;
-	case HIGHSCORE_MENU_STATE:
-		//		battleship->state = newHighscoreMenu(battleship);
-		break;
-
+		battleship->state = (game*) newGame(battleship);
+//		break;
+//	case GAME_PAUSE_STATE:
+//			battleship->state = newPause(battleship);
+//		break;
+//	case HIGHSCORE_WRITE_STATE:
+//				battleship->state = newHighscoreWrite(battleship);
+//		break;
+//	case HIGHSCORE_MENU_STATE:
+//				battleship->state = newHighscoreMenu(battleship);
+//		break;
+	case EXIT_STATE:
+		battleship->done = 1;
+				break;
 	default:
 		break;
 	}
@@ -175,15 +173,16 @@ void changeState(Battleship* battleship, State programState) {
 //Esta funcao verifica se e necessario chamar changeState e chama esta funcao, se necessario, consoante
 //certas condicoes
 void updateCurrentState(Battleship* battleship) {
+	State statetochange;
 	switch (battleship->currentState) {
 	case MAIN_MENU_STATE:
-		//updateMainMenuState(battleship);
+		statetochange = updateMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		//		updatePlaySetship(battleship);
+		statetochange = updatePlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:
-		//		updatePlay(battleship);
+		statetochange = updateGame(battleship);
 		break;
 	case GAME_PAUSE_STATE:
 		//		updatePause(battleship);
@@ -199,29 +198,32 @@ void updateCurrentState(Battleship* battleship) {
 		break;
 	}
 
+	if (((MainMenuState *) battleship->state)->done) {
+		changeState(battleship, statetochange);
+	}
 }
 
 void deleteCurrentState(Battleship* battleship) {
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
-		//deleteMainMenuState(battleship);
+		deleteMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-//		deletePlaySetship(battleship);
+		deletePlaySetship(battleship);
 		break;
-	case GAME_PLAY_STATE:
-//		deletePlay(battleship);
-		break;
-	case GAME_PAUSE_STATE:
+//	case GAME_PLAY_STATE:
+		deleteGame(battleship);
+//		break;
+//	case GAME_PAUSE_STATE:
 //		deletePause(battleship);
-		break;
-	case HIGHSCORE_WRITE_STATE:
+//		break;
+//	case HIGHSCORE_WRITE_STATE:
 //		deleteHighscoreWrite(battleship);
-		break;
-	case HIGHSCORE_MENU_STATE:
+//		break;
+//	case HIGHSCORE_MENU_STATE:
 //		deleteHighscoreMenu(battleship);
-		break;
+//		break;
 
 	default:
 		break;

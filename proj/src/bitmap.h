@@ -2,6 +2,8 @@
  * @{
  * Functions for manipulating bitmaps
  */
+#ifndef _BITMAP_H_
+#define _BITMAP_H_
 
 #define BITMAP_TYPE 0x4D42 //B M ASCII
 
@@ -57,4 +59,5 @@ void drawBitmap(Bitmap* bitmap, int x, int y);
  */
 void deleteBitmap(Bitmap* bmp);
 
+#endif
 /**@}*/

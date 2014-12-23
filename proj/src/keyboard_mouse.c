@@ -5,10 +5,10 @@
 #include <minix/drivers.h>
 
 static unsigned int hook_id;
-static unsigned long code;
+static long code;
 Mouse* mouse = NULL;
 
-void print_packets(unsigned long* packet);
+void print_packets(long* packet);
 
 Mouse* getMouse() {
 	if (mouse == NULL) {
@@ -20,6 +20,8 @@ Mouse* getMouse() {
 		mouse->leftButtonDown = 0;
 		mouse->rightButtonDown = 0;
 		mouse->draw = 0;
+		mouse->mouse_up = loadBitmap("home/lcom/proj/img/mouse_up.bmp");
+		mouse->mouse_down = loadBitmap("home/lcom/proj/img/mouse_down.bmp");
 	} else {
 		return mouse;
 	}
@@ -30,6 +32,8 @@ void deleteMouse() {
 }
 
 void updateMouse() {
+	short mouse_sign_x, mouse_sign_y;
+
 	mouse_int_handler();
 
 	if (mouse->bytesRead == 1) {
@@ -42,20 +46,29 @@ void updateMouse() {
 	mouse->packets[mouse->bytesRead - 1] = code;
 
 	if (mouse->bytesRead == 3) {
-		print_packets(mouse->packets);
-
-		mouse->x += (char) (mouse->packets[1] * mouse->speedMultiplier);
+		if (mouse->packets[0] & BIT(4)) {
+			mouse_sign_x = -1 << 8;
+		} else {
+			mouse_sign_x = 0;
+		}
+		if (mouse->packets[0] & BIT(5)) {
+			mouse_sign_y = -1 << 8;
+		} else {
+			mouse_sign_y = 0;
+		}
+		mouse->x += mouse->packets[1] | mouse_sign_x;
 
 		if (mouse->x < 0) {
 			mouse->x = 0;
-		} else if (mouse->x > getHRes()) {
-			mouse->x = getHRes();
+		} else if (mouse->x + mouse->mouse_up->bitmapInfo.width > getHRes()) {
+			mouse->x = getHRes() - mouse->mouse_up->bitmapInfo.width;
 		}
-		mouse->y -= (char) (mouse->packets[2] * mouse->speedMultiplier);
+		mouse->y -= mouse->packets[2] | mouse_sign_y;
+
 		if (mouse->y < 0) {
 			mouse->y = 0;
-		} else if (mouse->y > getVRes()) {
-			mouse->y = getVRes();
+		} else if (mouse->y + mouse->mouse_up->bitmapInfo.height > getVRes()) {
+			mouse->y = getVRes() - mouse->mouse_up->bitmapInfo.height;
 		}
 		mouse->draw = 0;
 		mouse->bytesRead = 1;
@@ -68,19 +81,17 @@ void updateMouse() {
 }
 
 void drawMouse() {
-	Bitmap* mouse_bmp;
 	if (mouse->draw == 1) {
 		return;
 	}
 
 	if (mouse->leftButtonDown || mouse->rightButtonDown) {
-		mouse_bmp = loadBitmap("/home/lcom/proj/img/mouse_down.bmp");
+		alocaMouse(mouse->mouse_down->Data, mouse->mouse_up->bitmapInfo.width,
+				mouse->mouse_up->bitmapInfo.height);
 	} else {
-		mouse_bmp = loadBitmap("/home/lcom/proj/img/mouse_up.bmp");
+		alocaMouse(mouse->mouse_up->Data, mouse->mouse_up->bitmapInfo.width,
+				mouse->mouse_up->bitmapInfo.height);
 	}
-
-	alocaMouse(mouse_bmp->Data, mouse_bmp->bitmapInfo.width,
-			mouse_bmp->bitmapInfo.height);
 
 	updateBufferTriple();
 	mouse->draw = 1;
@@ -292,7 +303,7 @@ int check_first_byte() {
 		return 0;
 }
 
-void print_packets(unsigned long* packet) {
+void print_packets(long* packet) {
 	//B1=0x8	B2=0x12	B3=0x14	LB=0	MB=0	RB=0	XOV=0	YOV=0	X=18	Y=20
 	printf(
 			"B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
@@ -301,8 +312,8 @@ void print_packets(unsigned long* packet) {
 			(packet[0] & BIT(6)) >> 6, (packet[0] & BIT(7)) >> 7,
 			(char) packet[1], (char) packet[2]);
 }
-/*
-int mouseInsideRect(Button* botao, Mouse* rato) {
+
+int mouseInsideButton(Button* botao, Mouse* rato) {
 
 	if (rato->x > botao->x_ini && rato->x < botao->x_final
 			&& rato->y > botao->y_ini && rato->y < botao->y_final)
@@ -310,4 +321,4 @@ int mouseInsideRect(Button* botao, Mouse* rato) {
 
 	return 0;
 }
-*/
+

@@ -2,10 +2,10 @@
 #define KBD_STATUS 0x64
 #define OUTBUFF_FULL 0x01
 
-.global _scan_kb_asm
+.global _handler_kbd
 
 .text
-_scan_kb_asm:
+_handler_kbd:
 // the next 4 lines verify if the output buffer is full and ready for reading
 
 	inb $KBD_STATUS,%al		//Saving the status register to the AL register
