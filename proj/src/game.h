@@ -37,8 +37,8 @@ typedef struct {
 	unsigned short nr_hits;
 	unsigned short destroyed;
 	unsigned int x_central, y_central;
-	char orientacao;
-	unsigned int tamanho;
+	char direction;
+	unsigned int size;
 } ship;
 
 typedef struct {
@@ -66,7 +66,8 @@ typedef struct{
 
 typedef struct{
 	tabuleiro tab;
-	type_ship ship_selected;
+	int ship_selected;
+	ship ship_temp;
 	Button* fighter;
 	Button* death_star;
 	Button* cruser;
@@ -87,4 +88,6 @@ void drawPlaySetship(Battleship* battle);
 State updatePlaySetship(Battleship* battle);
 void deletePlaySetship(Battleship* battle);
 
+void getShip(SetShipState* state);
+void updateSetShipBoard(SetShipState* state);
 #endif
