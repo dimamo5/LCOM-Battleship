@@ -70,9 +70,9 @@ int rtc_enable_square_wave();
 int set_alarm(unsigned long delta_s);
 
 /**@}*/
-/*
+
 void get_time(int *hour, int *min, int *sec);
-unsigned char bcd_to_bin(uchar bcd);
+unsigned char bcd_to_bin(unsigned char bcd);
 void get_date(int *year, int *month, int *day);
-*/
+
 #endif

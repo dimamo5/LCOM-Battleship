@@ -124,7 +124,7 @@ void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color) {
 }
 
 void vg_fill(unsigned short x, unsigned short y, unsigned short width,
-		unsigned short height, unsigned long color) {
+		unsigned short height, unsigned short color) {
 	unsigned short x_original = x;
 	unsigned short i;
 

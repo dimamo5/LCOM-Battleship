@@ -1,7 +1,8 @@
 #ifndef __KEYBOARD_MOUSE_H
 #define __KEYBOARD_MOUSE_H
 
-
+#include "button.h"
+#include "bitmap.h"
 
 //this struct is from difusal.blogspot.pt
 
@@ -10,11 +11,12 @@ typedef struct {
 	double speedMultiplier;
 
 	int bytesRead;
-	unsigned long packets[3];
+	long packets[3];
 
 	int leftButtonDown;
 	int rightButtonDown;
-
+	Bitmap* mouse_up;
+	Bitmap* mouse_down;
 	int hasBeenUpdated;
 	int draw;
 } Mouse;
@@ -107,8 +109,8 @@ int mouse_unsubscribe_int();
 /*verifica se a tecla enter, up_arrow ou down_arrow é premida
  * retorna 0 se a tecla for enter, 1 para up_arrow e 2 para down_arrow
  */
-int check_codes_menus();
-int check_codes_game();
+//int check_codes_menus();
+//int check_codes_game();
 
 Mouse* getMouse();
 void deleteMouse();
@@ -118,7 +120,7 @@ int enable_packets();
 int disable_packets();
 int check_first_byte();
 void drawMouse();
+int mouseInsideButton(Button* botao, Mouse* rato);
 
-//int mouseInsideRect(Button* botao,Mouse* rato);
 
 #endif

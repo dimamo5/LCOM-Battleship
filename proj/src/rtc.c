@@ -101,9 +101,9 @@ void get_time(int *hour, int *min, int *sec) {
 	}
 
 	if ((RegB & 0x04) == 0) {
-		*hour = bcd2bin(*hour);
-		*min = bcd2bin(*min);
-		*sec = bcd2bin(*sec);
+		*hour = bcd_to_bin(*hour);
+		*min = bcd_to_bin(*min);
+		*sec = bcd_to_bin(*sec);
 	}
 
 	//enable interrupts
@@ -130,9 +130,9 @@ void get_date(int *year, int *month, int *day) {
 	RegB=read_rtc_reg(11);
 
 	if ((RegB & 0x04) == 0) {
-		*year = bcd2bin(*year);
-		*month = bcd2bin(*month);
-		*day = bcd2bin(*day);
+		*year = bcd_to_bin(*year);
+		*month = bcd_to_bin(*month);
+		*day = bcd_to_bin(*day);
 	}
 
 	//enable interrupts
