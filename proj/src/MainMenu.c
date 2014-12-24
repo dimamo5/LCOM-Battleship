@@ -192,4 +192,5 @@ State updateMainMenuState(Battleship* battle) {
 void deleteMainMenuState(Battleship* battle) {
 	disable_packets();
 	free(battle->state);
+	battle->state=NULL;
 }

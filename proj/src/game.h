@@ -3,6 +3,7 @@
 
 #include "battleship.h"
 #include "button.h"
+#include "bitmap.h"
 
 typedef enum {
 	HUMAN, COMPUTER
@@ -75,6 +76,7 @@ typedef struct{
 	Button* battleship;
 	Button* cruser_2;
 	Button* escape_pod_2;
+	Bitmap* ship_selection;
 }SetShipState;
 
 
