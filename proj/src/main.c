@@ -25,9 +25,6 @@ int main(int argc, char **argv) {
 		if (battleship->kb_code == KEY_ESC) {
 			battleship->done = 1;
 		}
-		if (battleship->kb_code == KEY_ARR_UP) {
-			battleship->done = 1;
-		}
 	}
 	stopBattleship(battleship);
 

@@ -1,6 +1,7 @@
 #include "game.h"
 #include "battleship.h"
 #include "keyboard_mouse.h"
+#include "graphics.h"
 
 game* newGame() {
 }
@@ -26,19 +27,52 @@ SetShipState* newPlaySetship() {
 		state->tab.tab_array[i / 10][i % 10] = water;
 	}
 	state->ship_selected = 1;
+
+	//Inicializacao dos butoes
+	state->fighter = newButton(450, 200, 594, 325, BLUE);
+	state->death_star = newButton(450, 325, 594, 450, BLUE);
+	state->cruser = newButton(450, 450, 594, 575, BLUE);
+	state->escape_pod = newButton(450, 575, 594, 700, BLUE);
+	state->battleship = newButton(594, 200, 730, 325, BLUE);
+	state->fighter = newButton(594, 325, 730, 450, BLUE);
+	state->escape_pod_2 = newButton(594, 450, 730, 575, BLUE);
+
+	state->ship_selection = loadBitmap("home/lcom/proj/img/shipselection.bmp");
+
 }
 void drawPlaySetship(Battleship* battle) {
-
+	if (((SetShipState*) battle->state)->ship_selected != -1) {
+		drawBitmap(((SetShipState*) battle->state)->ship_selection, 700, 100);
+	}
 }
 State updatePlaySetship(Battleship* battle) {
 	if (((SetShipState*) battle->state)->ship_selected == -1) {
 		updateSetShipBoard((SetShipState*) battle->state);
+
 	} else if (battle->kb_code == KEY_ARR_UP) {
+		//desseleciona todos os botoes quando uma tecla é premida
+		((SetShipState*) battle->state)->fighter->mouse_hover = 0;
+		((SetShipState*) battle->state)->death_star->mouse_hover = 0;
+		((SetShipState*) battle->state)->cruser->mouse_hover = 0;
+		((SetShipState*) battle->state)->escape_pod->mouse_hover = 0;
+		((SetShipState*) battle->state)->battleship->mouse_hover = 0;
+		((SetShipState*) battle->state)->cruser_2->mouse_hover = 0;
+		((SetShipState*) battle->state)->escape_pod_2->mouse_hover = 0;
 		battle->kb_code == KEY_NONE;
 		((SetShipState*) battle->state)->ship_selected--;
+
 	} else if (battle->kb_code == KEY_ARR_DOWN) {
-		((SetShipState*) battle->state)->ship_selected--;
+		//desseleciona todos os botoes quando uma tecla é premida
+		((SetShipState*) battle->state)->fighter->mouse_hover = 0;
+		((SetShipState*) battle->state)->death_star->mouse_hover = 0;
+		((SetShipState*) battle->state)->cruser->mouse_hover = 0;
+		((SetShipState*) battle->state)->escape_pod->mouse_hover = 0;
+		((SetShipState*) battle->state)->battleship->mouse_hover = 0;
+		((SetShipState*) battle->state)->cruser_2->mouse_hover = 0;
+		((SetShipState*) battle->state)->escape_pod_2->mouse_hover = 0;
+		((SetShipState*) battle->state)->ship_selected++;
 		battle->kb_code == KEY_NONE;
+
 	} else if (battle->kb_code == KEY_ENTER) {
 		battle->kb_code == KEY_NONE;
 		((SetShipState*) battle->state)->ship_selected = -1;
@@ -94,12 +128,20 @@ State updatePlaySetship(Battleship* battle) {
 }
 
 void deletePlaySetship(Battleship* battle) {
+	deleteButton(((SetShipState*) battle->state)->fighter);
+	deleteButton(((SetShipState*) battle->state)->death_star);
+	deleteButton(((SetShipState*) battle->state)->cruser);
+	deleteButton(((SetShipState*) battle->state)->escape_pod);
+	deleteButton(((SetShipState*) battle->state)->battleship);
+	deleteButton(((SetShipState*) battle->state)->cruser_2);
+	deleteButton(((SetShipState*) battle->state)->escape_pod_2);
+	free(battle->state);
 
 }
 
 void getShip(SetShipState* state) {
-	state->ship_temp.nr_hits = 0;		//Inicializacao de variaveis do ship
-	state->ship_temp.destroyed = 0;		//Iguais para todas a naves no inicio do jogo
+	state->ship_temp.nr_hits = 0; //Inicializacao de variaveis do ship
+	state->ship_temp.destroyed = 0; //Iguais para todas a naves no inicio do jogo
 	state->ship_temp.x_central = 0;
 	state->ship_temp.y_central = 0;
 	state->ship_temp.direction = 'h';
@@ -108,12 +150,13 @@ void getShip(SetShipState* state) {
 	case 1:
 		state->ship_temp.t_ship = FIGHTER;
 		state->ship_temp.size = 1;
-		state->ship_temp.ship_array = malloc(sizeof(ship_part) * state->ship_temp.size);
+		state->ship_temp.ship_array = malloc(
+				sizeof(ship_part) * state->ship_temp.size);
 		ship_part temp_1;
-		temp_1.hit=0;
-		temp_1.selected=0;
-		temp_1.t_part=FIRST;
-		*state->ship_temp.ship_array=temp_1;
+		temp_1.hit = 0;
+		temp_1.selected = 0;
+		temp_1.t_part = FIRST;
+		*state->ship_temp.ship_array = temp_1;
 	}
 
 }

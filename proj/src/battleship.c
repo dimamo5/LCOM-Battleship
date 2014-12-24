@@ -137,13 +137,10 @@ void stopBattleship(Battleship* battleship) {
 }
 
 void changeState(Battleship* battleship, State programState) {
-
 //Apagar o state atual -> tem um switch que chama a funcao deleteNomeState
 	deleteCurrentState(battleship);
-
 //Fazer set ao state atual para aquele que se queria
 	battleship->currentState = programState;
-
 //Dependendo do estado que estamos a querer, vai-se criar esse estado
 	switch (battleship->currentState) {
 
