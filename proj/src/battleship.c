@@ -64,7 +64,7 @@ void updateBattleship(Battleship* battleship) {
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_KEYBOARD) {
 				if (battleship->kb_code == 0xE0) {
-					battleship->kb_code = battleship->kb_code << 8;	//2 Bytes Makecode
+					battleship->kb_code = battleship->kb_code << 8; //2 Bytes Makecode
 					battleship->kb_code |= kbd_int_handler();
 				} else
 					battleship->kb_code = kbd_int_handler();
@@ -93,6 +93,7 @@ void drawBattleship(Battleship* battleship) {
 		drawMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
+		printf("tenta desenhar");
 		drawPlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:
@@ -146,9 +147,12 @@ void changeState(Battleship* battleship, State programState) {
 
 	case MAIN_MENU_STATE:
 		battleship->state = (MainMenuState *) newMainMenuState(battleship);
+//		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
+		printf("muda de estado");
 		battleship->state = (SetShipState *) newPlaySetship(battleship);
+		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_STATE:
 		battleship->state = (game*) newGame(battleship);
@@ -175,9 +179,13 @@ void changeState(Battleship* battleship, State programState) {
 //certas condicoes
 void updateCurrentState(Battleship* battleship) {
 	State statetochange;
+
 	switch (battleship->currentState) {
 	case MAIN_MENU_STATE:
 		statetochange = updateMainMenuState(battleship);
+		if (((MainMenuState *) battleship->state)->done) {
+			changeState(battleship, statetochange);
+		}
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
 		statetochange = updatePlaySetship(battleship);
@@ -199,9 +207,6 @@ void updateCurrentState(Battleship* battleship) {
 		break;
 	}
 
-	if (((MainMenuState *) battleship->state)->done) {
-		changeState(battleship, statetochange);
-	}
 }
 
 void deleteCurrentState(Battleship* battleship) {
@@ -213,7 +218,7 @@ void deleteCurrentState(Battleship* battleship) {
 	case GAME_PLAY_SETSHIP_STATE:
 		deletePlaySetship(battleship);
 		break;
-//	case GAME_PLAY_STATE:
+	case GAME_PLAY_STATE:
 		deleteGame(battleship);
 //		break;
 //	case GAME_PAUSE_STATE:
