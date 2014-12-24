@@ -21,9 +21,12 @@ int main(int argc, char **argv) {
 
 		if (battleship->timer_ticked) {
 			drawBattleship(battleship);
+			printf("entra");
 		}
+
 		if (battleship->kb_code == KEY_ESC) {
 			battleship->done = 1;
+
 		}
 	}
 	stopBattleship(battleship);

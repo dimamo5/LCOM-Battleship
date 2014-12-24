@@ -41,6 +41,7 @@ SetShipState* newPlaySetship() {
 
 }
 void drawPlaySetship(Battleship* battle) {
+	printf("teste");
 	if (((SetShipState*) battle->state)->ship_selected != -1) {
 		drawBitmap(((SetShipState*) battle->state)->ship_selection, 700, 100);
 	}
@@ -78,7 +79,6 @@ State updatePlaySetship(Battleship* battle) {
 		((SetShipState*) battle->state)->ship_selected = -1;
 		getShip((SetShipState*) battle->state);
 	}
-
 	switch (((SetShipState*) battle->state)->ship_selected) {
 	case 1:
 		if (((SetShipState*) battle->state)->fighter->available)
@@ -125,6 +125,7 @@ State updatePlaySetship(Battleship* battle) {
 	default:
 		((SetShipState*) battle->state)->ship_selected = 1;
 	}
+	printf("teste2");
 }
 
 void deletePlaySetship(Battleship* battle) {
