@@ -91,10 +91,12 @@ void drawBattleship(Battleship* battleship) {
 
 	case MAIN_MENU_STATE:
 		drawMainMenuState(battleship);
+		drawMouse();
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		printf("tenta desenhar");
+		cleanBufferSec();
 		drawPlaySetship(battleship);
+		updateBufferSec();
 		break;
 	case GAME_PLAY_STATE:
 		drawGame(battleship);
@@ -113,7 +115,6 @@ void drawBattleship(Battleship* battleship) {
 		break;
 	}
 
-	drawMouse();
 }
 
 void stopBattleship(Battleship* battleship) {
@@ -150,8 +151,7 @@ void changeState(Battleship* battleship, State programState) {
 //		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		printf("muda de estado");
-		battleship->state = (SetShipState *) newPlaySetship(battleship);
+		battleship->state =newPlaySetship(battleship);
 		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_STATE:
@@ -213,11 +213,9 @@ void deleteCurrentState(Battleship* battleship) {
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
-		printf("quando entars aqui?");
 		deleteMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		printf("deu coco");
 		deletePlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:

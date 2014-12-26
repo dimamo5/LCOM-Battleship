@@ -13,8 +13,8 @@ void print_packets(long* packet);
 Mouse* getMouse() {
 	if (mouse == NULL) {
 		mouse = (Mouse *) malloc(sizeof(Mouse));
-		mouse->x = 0;
-		mouse->y = 0;
+		mouse->x = 50;
+		mouse->y = 50;
 		mouse->speedMultiplier = 1;
 		mouse->bytesRead = 1;
 		mouse->leftButtonDown = 0;
