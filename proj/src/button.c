@@ -4,6 +4,7 @@
 
 Button* newButton(int xi, int yi, int xf, int yf, short color) {
 	Button* botao = (Button*) malloc(sizeof(Button));
+	printf("botao:0x%X",botao);
 	botao->x_ini = xi;
 	botao->y_ini = yi;
 	botao->x_final = xf;

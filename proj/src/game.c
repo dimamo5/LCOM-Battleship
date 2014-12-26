@@ -37,20 +37,24 @@ SetShipState* newPlaySetship() {
 	state->fighter = newButton(594, 325, 730, 450, BLUE);
 	state->escape_pod_2 = newButton(594, 450, 730, 575, BLUE);
 
+	printf("botao inizializacao:0x%X",newButton(450, 200, 594, 325, BLUE));
+
 	state->ship_selection = loadBitmap("home/lcom/proj/img/shipselection.bmp");
 
 }
 void drawPlaySetship(Battleship* battle) {
-	printf("teste");
+	printf("\nteste");
 	if (((SetShipState*) battle->state)->ship_selected != -1) {
 		drawBitmap(((SetShipState*) battle->state)->ship_selection, 700, 100);
 	}
 }
 State updatePlaySetship(Battleship* battle) {
+	printf("\n0x%X", battle->state);
 	if (((SetShipState*) battle->state)->ship_selected == -1) {
 		updateSetShipBoard((SetShipState*) battle->state);
 
 	} else if (battle->kb_code == KEY_ARR_UP) {
+		printf("keyup");
 		//desseleciona todos os botoes quando uma tecla é premida
 		((SetShipState*) battle->state)->fighter->mouse_hover = 0;
 		((SetShipState*) battle->state)->death_star->mouse_hover = 0;
@@ -63,6 +67,7 @@ State updatePlaySetship(Battleship* battle) {
 		((SetShipState*) battle->state)->ship_selected--;
 
 	} else if (battle->kb_code == KEY_ARR_DOWN) {
+		printf("keydown");
 		//desseleciona todos os botoes quando uma tecla é premida
 		((SetShipState*) battle->state)->fighter->mouse_hover = 0;
 		((SetShipState*) battle->state)->death_star->mouse_hover = 0;
@@ -75,48 +80,68 @@ State updatePlaySetship(Battleship* battle) {
 		battle->kb_code == KEY_NONE;
 
 	} else if (battle->kb_code == KEY_ENTER) {
+		printf("keyenter");
 		battle->kb_code == KEY_NONE;
 		((SetShipState*) battle->state)->ship_selected = -1;
 		getShip((SetShipState*) battle->state);
 	}
+
+	printf("\nsel:%d", ((SetShipState*) battle->state)->ship_selected);
 	switch (((SetShipState*) battle->state)->ship_selected) {
 	case 1:
-		if (((SetShipState*) battle->state)->fighter->available)
+		printf("\n1");
+		/**--------------------------------------------------------------
+		 * HÁ 3 DIAS PARADO NESTA BOSTA DE BUG!!!!! JA ESTOU A FRITAR
+		 * ---------------------------------------------------------------
+		 */
+
+		printf("\nsel2:%d", ((SetShipState*) battle->state)->ship_selected);
+		printf("estado botao:%d",((SetShipState*) battle->state)->fighter->mouse_hover);
+
+		if (((SetShipState*) battle->state)->fighter->available) {
+			printf("erro1");
 			((SetShipState*) battle->state)->fighter->mouse_hover = 1;
-		else
+			printf("erro");
+		} else
 			((SetShipState*) battle->state)->ship_selected++;
 		break;
 	case 2:
+		printf("\n2");
 		if (((SetShipState*) battle->state)->death_star->available)
 			((SetShipState*) battle->state)->death_star->mouse_hover = 1;
 		else
 			((SetShipState*) battle->state)->ship_selected++;
 		break;
 	case 3:
+		printf("\n3");
 		if (((SetShipState*) battle->state)->cruser->available)
 			((SetShipState*) battle->state)->cruser->mouse_hover = 1;
 		else
 			((SetShipState*) battle->state)->ship_selected++;
 		break;
 	case 4:
+		printf("\n4");
 		if (((SetShipState*) battle->state)->escape_pod->available)
 			((SetShipState*) battle->state)->escape_pod->mouse_hover = 1;
 		else
 			((SetShipState*) battle->state)->ship_selected++;
 		break;
 	case 5:
+		printf("\n5");
 		if (((SetShipState*) battle->state)->battleship->available)
 			((SetShipState*) battle->state)->battleship->mouse_hover = 1;
 		else
 			((SetShipState*) battle->state)->ship_selected++;
 		break;
 	case 6:
+		printf("\n6");
 		if (((SetShipState*) battle->state)->cruser_2->available)
 			((SetShipState*) battle->state)->cruser_2->mouse_hover = 1;
 		else
 			((SetShipState*) battle->state)->ship_selected++;
 		break;
 	case 7:
+		printf("\n7");
 		if (((SetShipState*) battle->state)->escape_pod_2->available)
 			((SetShipState*) battle->state)->escape_pod_2->mouse_hover = 1;
 		else
@@ -124,6 +149,7 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 	default:
 		((SetShipState*) battle->state)->ship_selected = 1;
+		break;
 	}
 	printf("teste2");
 }

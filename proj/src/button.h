@@ -6,7 +6,7 @@ typedef struct {
 	int width, height;
 	int mouse_hover;
 	short color_border;
-	int available;
+	unsigned short available;
 } Button;
 
 // Cria um "objeto" do botao, com as coordenadas especificadas
