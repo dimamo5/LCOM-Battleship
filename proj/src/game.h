@@ -10,7 +10,7 @@ typedef enum {
 } type_player;
 
 typedef enum {
-	FIGHTER, DEATH_STAR, CRUSER, ESCAPE_SHUTTLE, BATTLESHIP
+	WATER,FIGHTER, DEATH_STAR, CRUSER, ESCAPE_SHUTTLE, BATTLESHIP
 } type_ship;
 
 typedef enum {
@@ -29,6 +29,7 @@ typedef enum {
 typedef struct {
 	unsigned short selected;
 	type_part t_part;
+	type_ship t_ship;
 	unsigned short hit;
 } ship_part;
 
@@ -46,7 +47,8 @@ typedef struct {
 	ship_part* tab_array[10][10];
 	unsigned int selected_x;
 	unsigned int selected_y;
-	ship ship_array[8]; //water and the other 7 ships
+	ship ship_array[7]; //water and the other 7 ships
+	short ship_on_board;
 } tabuleiro;
 
 typedef struct {

@@ -20,6 +20,7 @@ SetShipState* newPlaySetship() {
 
 	ship_part* water = (ship_part*) malloc(sizeof(ship_part));
 	water->t_part = WATER;
+	water->t_ship = WATER;
 	water->hit = 0;
 	water->selected = 0;
 	unsigned int i;
@@ -33,7 +34,7 @@ SetShipState* newPlaySetship() {
 	state->death_star = newButton(700, 225, 845, 350, BLUE);
 	state->cruser = newButton(700, 350, 845, 475, BLUE);
 	state->escape_pod = newButton(700, 475, 845, 600, BLUE);
-	state->battleship = newButton(845, 100, 990, 225, BLUE);
+	state->battleship = newButton(845, 100, 990, 350, BLUE);
 	state->cruser_2 = newButton(845, 225, 990, 745, BLUE);
 	state->escape_pod_2 = newButton(845, 350, 990, 475, BLUE);
 
@@ -50,6 +51,7 @@ void drawPlaySetship(Battleship* battle) {
 	drawRectangle(((SetShipState*) battle->state)->battleship);
 	drawRectangle(((SetShipState*) battle->state)->cruser_2);
 	drawRectangle(((SetShipState*) battle->state)->escape_pod_2);
+	draw_board(200,200,BIG);
 }
 State updatePlaySetship(Battleship* battle) {
 	if (((SetShipState*) battle->state)->ship_selected == -1) {
