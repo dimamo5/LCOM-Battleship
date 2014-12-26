@@ -9,6 +9,7 @@
 #include "vbe.h"
 #include "graphics.h"
 #include "keyboard_mouse.h"
+#include "game.h"
 
 /* Constants for VBE 0x105 mode */
 
@@ -185,19 +186,21 @@ void drawRectangle(Button* b) {
 	short border = 0;
 	short width = b->width;
 	short height = b->height;
-	unsigned short x_temp, y_temp;
+	short x_temp, y_temp;
 
 	for (border; border < 2; border++) {
 		x_temp = b->x_ini - border;
 		y_temp = b->y_ini - border;
 
 		for (x_temp; x_temp <= width + b->x_ini; x_temp++) {
-			vg_set_pixel(x_temp, b->y_ini, b->color_border);
-			vg_set_pixel(x_temp, b->y_ini + height, b->color_border);
+			vg_set_pixel(x_temp, y_temp, b->color_border);
+			vg_set_pixel(x_temp, y_temp + height, b->color_border);
 		}
+		x_temp = b->x_ini - border;
+		y_temp = b->y_ini - border;
 		for (y_temp; y_temp <= height + b->y_ini; y_temp++) {
-			vg_set_pixel(b->x_ini, y_temp, b->color_border);
-			vg_set_pixel(b->x_ini + width, y_temp, b->color_border);
+			vg_set_pixel(x_temp, y_temp, b->color_border);
+			vg_set_pixel(x_temp + width, y_temp, b->color_border);
 		}
 
 		width += 2;
@@ -220,36 +223,93 @@ void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
 	}
 
 }
-void draw_board(unsigned short x, unsigned short y, Board_size size) {
-	unsigned short x_temp = x;
-	unsigned short y_temp = y;
-	unsigned int i;
-	if (size == BIG) {
-//		drawRectangle(x, y, 400, 400, 3, 0xffff);
-		for (i = 0; i < 100; i++) {
-//			drawRectangle(x_temp, y_temp, 40, 40, 1, 0xffff);
-			if (x_temp == x + 360) {
-				x_temp = x;
-				y_temp += 40;
-			} else {
-				x_temp += 40;
-			}
+
+void drawLine(unsigned short x, unsigned short y, unsigned short length,
+		char dir, unsigned short color) {
+	unsigned short i;
+	if (dir == 'h') {
+		for (i = 0; i < length; i++) {
+			vg_set_pixel(x + i, y, color);
 		}
-	}
-	if (size == SMALL) {
-//		drawRectangle(x, y, 300, 300, 3, 0xffff);
-		for (i = 0; i < 100; i++) {
-//			drawRectangle(x_temp, y_temp, 30, 30, 1, 0xffff);
-			if (x_temp == x + 270) {
-				x_temp = x;
-				y_temp += 30;
-			} else {
-				x_temp += 30;
-			}
+	} else if (dir == 'v') {
+		for (i = 0; i < length; i++) {
+			vg_set_pixel(x, y + i, color);
 		}
 	}
 }
+void draw_board(unsigned short x, unsigned short y, Board_size size) {
+	unsigned short x_temp = x - 2;
+	unsigned short y_temp = y - 2;
+	unsigned int i = 0;
 
+	for (; i < 11; i++) {
+		if (i == 0 || i == 10) {
+			drawLine(x_temp, y_temp, 402, 'h', WHITE);
+			drawLine(x_temp, y_temp + 1, 402, 'h', WHITE);
+		} else {
+			drawLine(x_temp, y_temp, 402, 'h', WHITE);
+
+		}
+		y_temp += 40;
+
+	}
+
+	i = 0;
+	x_temp = x - 2;
+	y_temp = y - 2;
+
+	for (; i < 11; i++) {
+		if (i == 0 || i == 10) {
+			drawLine(x_temp, y_temp, 402, 'v', WHITE);
+			drawLine(x_temp + 1, y_temp, 402, 'v', WHITE);
+		} else {
+			drawLine(x_temp, y_temp, 402, 'v', WHITE);
+
+		}
+		x_temp += 40;
+	}
+
+//	for (x_temp; x_temp <= width + b->x_ini; x_temp++) {
+//		vg_set_pixel(x_temp, y_temp, b->color_border);
+//		vg_set_pixel(x_temp, y_temp + height, b->color_border);
+//	}
+//	x_temp = b->x_ini - border;
+//	y_temp = b->y_ini - border;
+//	for (y_temp; y_temp <= height + b->y_ini; y_temp++) {
+//		vg_set_pixel(x_temp, y_temp, b->color_border);
+//		vg_set_pixel(x_temp + width, y_temp, b->color_border);
+//	}
+//
+//	if (size == BIG) {
+////		drawRectangle(x, y, 400, 400, 3, 0xffff);
+//		for (i = 0; i < 100; i++) {
+////			drawRectangle(x_temp, y_temp, 40, 40, 1, 0xffff);
+//			if (x_temp == x + 360) {
+//				x_temp = x;
+//				y_temp += 40;
+//			} else {
+//				x_temp += 40;
+//			}
+//		}
+//	}
+//	if (size == SMALL) {
+////		drawRectangle(x, y, 300, 300, 3, 0xffff);
+//		for (i = 0; i < 100; i++) {
+////			drawRectangle(x_temp, y_temp, 30, 30, 1, 0xffff);
+//			if (x_temp == x + 270) {
+//				x_temp = x;
+//				y_temp += 30;
+//			} else {
+//				x_temp += 30;
+//			}
+//		}
+//	}
+}
+void drawSetTabuleiro(unsigned x,unsigned y,tabuleiro tab,ship s){
+	unsigned short i=0;
+	draw_board(x,y,BIG);
+	for(i;i<100;)
+}
 void alocaMouse(unsigned short *map, int width, int height) {
 	memcpy(triple_buffer, second_buffer, v_res * h_res * bytes_per_pixel);
 
