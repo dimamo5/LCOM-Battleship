@@ -1,6 +1,8 @@
 #ifndef __VIDEO_GR_H
 #define __VIDEO_GR_H
 
+#include "button.h"
+
 typedef enum {
 	SMALL, BIG
 } Board_size;

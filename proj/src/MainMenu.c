@@ -70,26 +70,26 @@ void drawMainMenuState(Battleship* battle) {
 	// Checks which button is pressed and correspondingly draws a square around it
 
 	if (((MainMenuState *) battle->state)->play_ai_button->mouse_hover == 1) {
-		drawRectangle(287, 256, 435, 80, 2, WHITE);
+		drawRectangle(((MainMenuState *) battle->state)->play_ai_button);
 	}
 
 	else if (((MainMenuState *) battle->state)->play_pvp_button->mouse_hover
 			== 1) {
-		drawRectangle(212, 341, 583, 79, 2, WHITE);
+		drawRectangle(((MainMenuState *) battle->state)->play_pvp_button);
 	}
 
 	else if (((MainMenuState *) battle->state)->exit_button->mouse_hover == 1) {
-		drawRectangle(417, 646, 165, 75, 2, WHITE);
+		drawRectangle(((MainMenuState *) battle->state)->exit_button);
 	}
 
 	else if (((MainMenuState *) battle->state)->instructions_button->mouse_hover
 			== 1) {
-		drawRectangle(287, 449, 409, 79, 2, WHITE);
+		drawRectangle(((MainMenuState *) battle->state)->instructions_button);
 	}
 
 	else if (((MainMenuState *) battle->state)->highscores_button->mouse_hover
 			== 1) {
-		drawRectangle(323, 545, 359, 90, 2, WHITE);
+		drawRectangle(((MainMenuState *) battle->state)->highscores_button);
 	}
 
 }
@@ -177,8 +177,9 @@ State updateMainMenuState(Battleship* battle) {
 
 		if (getMouse()->leftButtonDown) {
 			((MainMenuState *) battle->state)->done = 1;
+			return EXIT_STATE;
 		}
-		return EXIT_STATE;
+
 	}
 	// IF NO BUTTON IS SELECTED
 	else {

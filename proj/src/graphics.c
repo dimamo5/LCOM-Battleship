@@ -178,24 +178,28 @@ void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
 
 }
 
-void drawRectangle(unsigned short x, unsigned short y, unsigned short width,
-		unsigned short height, unsigned short border, unsigned short color) {
+void drawRectangle(Button* b) {
+	if (!b->available || !b->mouse_hover) {
+		return;
+	}
+	short border = 0;
+	short width = b->width;
+	short height = b->height;
+	unsigned short x_temp, y_temp;
 
-	for (border; border; border--) {
-		unsigned short x_temp = x;
-		unsigned short y_temp = y;
+	for (border; border < 2; border++) {
+		x_temp = b->x_ini - border;
+		y_temp = b->y_ini - border;
 
-		for (x_temp; x_temp <= width + x; x_temp++) {
-			vg_set_pixel(x_temp, y, color);
-			vg_set_pixel(x_temp, y + height, color);
+		for (x_temp; x_temp <= width + b->x_ini; x_temp++) {
+			vg_set_pixel(x_temp, b->y_ini, b->color_border);
+			vg_set_pixel(x_temp, b->y_ini + height, b->color_border);
 		}
-		for (y_temp; y_temp <= height + y; y_temp++) {
-			vg_set_pixel(x, y_temp, color);
-			vg_set_pixel(x + width, y_temp, color);
+		for (y_temp; y_temp <= height + b->y_ini; y_temp++) {
+			vg_set_pixel(b->x_ini, y_temp, b->color_border);
+			vg_set_pixel(b->x_ini + width, y_temp, b->color_border);
 		}
 
-		x--;
-		y--;
 		width += 2;
 		height += 2;
 	}
@@ -221,9 +225,9 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 	unsigned short y_temp = y;
 	unsigned int i;
 	if (size == BIG) {
-		drawRectangle(x, y, 400, 400, 3, 0xffff);
+//		drawRectangle(x, y, 400, 400, 3, 0xffff);
 		for (i = 0; i < 100; i++) {
-			drawRectangle(x_temp, y_temp, 40, 40, 1, 0xffff);
+//			drawRectangle(x_temp, y_temp, 40, 40, 1, 0xffff);
 			if (x_temp == x + 360) {
 				x_temp = x;
 				y_temp += 40;
@@ -233,9 +237,9 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 		}
 	}
 	if (size == SMALL) {
-		drawRectangle(x, y, 300, 300, 3, 0xffff);
+//		drawRectangle(x, y, 300, 300, 3, 0xffff);
 		for (i = 0; i < 100; i++) {
-			drawRectangle(x_temp, y_temp, 30, 30, 1, 0xffff);
+//			drawRectangle(x_temp, y_temp, 30, 30, 1, 0xffff);
 			if (x_temp == x + 270) {
 				x_temp = x;
 				y_temp += 30;
@@ -265,6 +269,9 @@ void alocaMouse(unsigned short *map, int width, int height) {
 		}
 	}
 
+}
+void cleanBufferSec() {
+	memset(second_buffer, 0, v_res * h_res * bytes_per_pixel);
 }
 
 void updateBufferSec() {

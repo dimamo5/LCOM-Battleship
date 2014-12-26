@@ -4,7 +4,6 @@
 
 Button* newButton(int xi, int yi, int xf, int yf, short color) {
 	Button* botao = (Button*) malloc(sizeof(Button));
-	printf("botao:0x%X",botao);
 	botao->x_ini = xi;
 	botao->y_ini = yi;
 	botao->x_final = xf;
@@ -24,7 +23,7 @@ void updateButton(Button* b) {
 			&& mouse->y < b->y_final) {
 		b->mouse_hover = 1;
 	}
-	drawRectangle(b->x_ini, b->y_ini, b->width, b->height, 2, b->color_border);
+//	drawRectangle(b->x_ini, b->y_ini, b->width, b->height, 2, b->color_border);
 }
 
 void deleteButton(Button* botao) {
