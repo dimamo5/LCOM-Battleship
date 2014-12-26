@@ -29,7 +29,7 @@ Battleship* startBattleship() {
 	battle->state = newMainMenuState();
 
 	// finish initialization
-	battle->done = 0, battle->draw = 1;
+	battle->done = 0;
 
 	return battle;
 }
@@ -213,9 +213,11 @@ void deleteCurrentState(Battleship* battleship) {
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
+		printf("quando entars aqui?");
 		deleteMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
+		printf("deu coco");
 		deletePlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:

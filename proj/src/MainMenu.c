@@ -20,6 +20,7 @@ MainMenuState* newMainMenuState() {
 	int y1 = 256;
 	int y2 = y1 + height;
 	state->play_ai_button = newButton(x1, y1, x2, y2, WHITE);
+
 	// WHITE - this is the button color, but it might be useless here
 	// since drawRectange is where we choose the border color
 
@@ -191,6 +192,11 @@ State updateMainMenuState(Battleship* battle) {
 
 void deleteMainMenuState(Battleship* battle) {
 	disable_packets();
+	deleteButton(((MainMenuState *) battle->state)->play_ai_button);
+	deleteButton(((MainMenuState *) battle->state)->play_pvp_button);
+	deleteButton(((MainMenuState *) battle->state)->instructions_button);
+	deleteButton(((MainMenuState *) battle->state)->highscores_button);
+	deleteButton(((MainMenuState *) battle->state)->exit_button);
 	free(battle->state);
 	battle->state=NULL;
 }
