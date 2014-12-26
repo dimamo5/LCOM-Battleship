@@ -189,6 +189,9 @@ void updateCurrentState(Battleship* battleship) {
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
 		statetochange = updatePlaySetship(battleship);
+		if (((SetShipState *) battleship->state)->done) {
+					changeState(battleship, statetochange);
+				}
 		break;
 	case GAME_PLAY_STATE:
 		statetochange = updateGame(battleship);
