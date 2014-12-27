@@ -15,6 +15,7 @@ typedef enum {
 
 typedef enum {
 	WATER,
+	FULL,
 	UPPER_LEFT,
 	UPPER_RIGHT,
 	BOTTOM_LEFT,
@@ -27,7 +28,6 @@ typedef enum {
 } type_part;
 
 typedef struct {
-	unsigned short selected;
 	type_part t_part;
 	type_ship t_ship;
 	unsigned short hit;
@@ -35,7 +35,7 @@ typedef struct {
 
 typedef struct {
 	type_ship t_ship;
-	ship_part* ship_array;
+	ship_part* parts_array;
 	unsigned short nr_hits;
 	unsigned short destroyed;
 	unsigned int x_central, y_central;
@@ -47,7 +47,7 @@ typedef struct {
 	ship_part* tab_array[10][10];
 	unsigned int selected_x;
 	unsigned int selected_y;
-	ship ship_array[7]; //water and the other 7 ships
+	ship ship_array[7]; //7 ships
 	short ship_on_board;
 } tabuleiro;
 
@@ -70,7 +70,7 @@ typedef struct{
 typedef struct{
 	tabuleiro tab;
 	int ship_selected;
-	ship ship_temp;
+	ship* ship_temp;
 	Button* fighter;
 	Button* death_star;
 	Button* cruser;
@@ -92,6 +92,6 @@ void drawPlaySetship(Battleship* battle);
 State updatePlaySetship(Battleship* battle);
 void deletePlaySetship(Battleship* battle);
 
-void getShip(SetShipState* state);
+void initShip(SetShipState* state);
 void updateSetShipBoard(SetShipState* state);
 #endif

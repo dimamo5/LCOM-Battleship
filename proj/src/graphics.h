@@ -2,6 +2,8 @@
 #define __VIDEO_GR_H
 
 #include "button.h"
+#include "game.h"
+#include "bitmap.h"
 
 typedef enum {
 	SMALL, BIG
@@ -44,6 +46,8 @@ void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color);
 void updateBufferSec();
 
 int rgb(unsigned char r, unsigned char g, unsigned char b);
+
+void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp);
 
 /** @} end of video_gr */
 
