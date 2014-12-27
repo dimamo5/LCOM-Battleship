@@ -10,7 +10,7 @@ typedef enum {
 } type_player;
 
 typedef enum {
-	WATER,FIGHTER, DEATH_STAR, CRUSER, ESCAPE_SHUTTLE, BATTLESHIP
+	NOTHING,FIGHTER, DEATH_STAR, CRUSER, ESCAPE_SHUTTLE, BATTLESHIP
 } type_ship;
 
 typedef enum {
@@ -18,7 +18,7 @@ typedef enum {
 	UPPER_LEFT,
 	UPPER_RIGHT,
 	BOTTOM_LEFT,
-	BOTTOM_RIGTH,
+	BOTTOM_RIGHT,
 	FIRST,
 	SECOND,
 	THIRD,

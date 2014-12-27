@@ -305,11 +305,11 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 //		}
 //	}
 }
-void drawSetTabuleiro(unsigned x,unsigned y,tabuleiro tab,ship s){
-	unsigned short i=0;
-	draw_board(x,y,BIG);
-	for(i;i<100;)
-}
+//void drawSetTabuleiro(unsigned x,unsigned y,tabuleiro tab,ship s){
+//	unsigned short i=0;
+//	draw_board(x,y,BIG);
+//	for(i;i<100;)
+//}
 void alocaMouse(unsigned short *map, int width, int height) {
 	memcpy(triple_buffer, second_buffer, v_res * h_res * bytes_per_pixel);
 
