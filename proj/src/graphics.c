@@ -9,7 +9,6 @@
 #include "vbe.h"
 #include "graphics.h"
 #include "keyboard_mouse.h"
-#include "game.h"
 
 /* Constants for VBE 0x105 mode */
 
@@ -305,11 +304,31 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 //		}
 //	}
 }
-//void drawSetTabuleiro(unsigned x,unsigned y,tabuleiro tab,ship s){
-//	unsigned short i=0;
-//	draw_board(x,y,BIG);
-//	for(i;i<100;)
-//}
+void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship s) {
+	Bitmap * b = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
+	ship_part t;
+	t.t_part = FULL;
+	t.t_ship = NOTHING;
+	t.hit = 0;
+	unsigned short x_temp = 0;
+	unsigned short y_temp = 0;
+
+	unsigned short i = 0;
+	draw_board(x, y, BIG);
+	for (i; i < 100; i++) {
+		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41,
+				*(tab.tab_array[i % 10][i / 10]), b);
+	}
+
+	for (i = 0; i < s.size; i++) {
+		if (tab.tab_array[s.x_central][s.y_central]->t_ship == NOTHING) {
+			drawQuadricula(s.x_central, s.y_central, s.parts_array[i], b);
+		} else {
+			drawQuadricula(s.x_central, s.y_central, t, b);
+		}
+	}
+
+}
 void alocaMouse(unsigned short *map, int width, int height) {
 	memcpy(triple_buffer, second_buffer, v_res * h_res * bytes_per_pixel);
 
@@ -351,4 +370,90 @@ int rgb(unsigned char r, unsigned char g, unsigned char b) {
 	int blue = b * 31 / 255;
 
 	return (red << 11) | (green << 5) | blue;
+}
+
+void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp) {
+
+	unsigned short pos_x, pos_y, i;
+
+	switch (p.t_ship) {
+	case NOTHING:
+		if (p.t_part == WATER) {
+			return;
+		} else if (p.t_part == FULL) {
+			pos_x = 3;
+			pos_y = 2;
+		}
+		break;
+	case DEATH_STAR:
+		if (p.t_part == UPPER_LEFT) {
+			pos_x = 1;
+			pos_y = 3;
+		} else if (p.t_part == UPPER_RIGHT) {
+			pos_x = 2;
+			pos_y = 3;
+		} else if (p.t_part == BOTTOM_LEFT) {
+			pos_x = 1;
+			pos_y = 4;
+		} else if (p.t_part == BOTTOM_RIGHT) {
+			pos_x = 2;
+			pos_y = 4;
+		}
+		break;
+
+	case BATTLESHIP:
+		if (p.t_part == FIRST) {
+			pos_x = 0;
+			pos_y = 0;
+		} else if (p.t_part == SECOND) {
+			pos_x = 0;
+			pos_y = 1;
+		} else if (p.t_part == THIRD) {
+			pos_x = 0;
+			pos_y = 2;
+		} else if (p.t_part == FOURTH) {
+			pos_x = 0;
+			pos_y = 3;
+		} else if (p.t_part == FIFTH) {
+			pos_x = 0;
+			pos_y = 4;
+		}
+		break;
+
+	case CRUSER:
+		if (p.t_part == FIRST) {
+			pos_x = 2;
+			pos_y = 0;
+		} else if (p.t_part == SECOND) {
+			pos_x = 2;
+			pos_y = 1;
+		} else if (p.t_part == THIRD) {
+			pos_x = 2;
+			pos_y = 2;
+		}
+		break;
+
+	case FIGHTER:
+		if (p.t_part == FIRST) {
+			pos_x = 1;
+			pos_y = 1;
+		} else if (p.t_part == SECOND) {
+			pos_x = 1;
+			pos_y = 2;
+		}
+		break;
+
+	case ESCAPE_SHUTTLE:
+		if (p.t_part == FIRST) {
+			pos_x = 1;
+			pos_y = 0;
+		}
+		break;
+	}
+
+	for (i = 0; i < 40 * 40; i++) {
+		vg_set_pixel(x + i % 40, y + i / 40,
+				bmp->Data[(40 * pos_x + i % 40)
+						+ (bmp->bitmapInfo.height - pos_y * i / 40)]);
+	}
 }
