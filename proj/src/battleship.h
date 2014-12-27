@@ -1,8 +1,8 @@
-#pragma once
+#ifndef _BATTLESHIP_H_
+#define _BATTLESHIP_H_
 
 #include <minix/syslib.h>
 #include <minix/drivers.h>
-#include <machine/int86.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <stdio.h>
@@ -46,4 +46,4 @@ void changeState(Battleship* battleship, State programState);
 void updateCurrentState(Battleship* battleship);
 void deleteCurrentState(Battleship* battleship);
 
-
+#endif
