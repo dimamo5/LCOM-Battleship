@@ -43,7 +43,7 @@ SetShipState* newPlaySetship() {
 	state->cruser_2 = newButton(845, 225, 990, 745, BLUE);
 	state->escape_pod_2 = newButton(845, 350, 990, 475, BLUE);
 
-	state->ship_selection = loadBitmap("home/lcom/proj/img/shipselection.bmp");
+	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
 
 	return state;
 }
@@ -56,51 +56,51 @@ void drawPlaySetship(Battleship* battle) {
 //	drawRectangle(((SetShipState*) battle->state)->battleship);
 //	drawRectangle(((SetShipState*) battle->state)->cruser_2);
 //	drawRectangle(((SetShipState*) battle->state)->escape_pod_2);
-	drawSetTabuleiro(200, 200, ((SetShipState*) battle->state)->tab,
-			*((SetShipState*) battle->state)->ship_temp);
+	drawSetTabuleiro(200, 200, ((SetShipState*) battle->state)->tab, ((SetShipState*) battle->state)->ship_temp);
+//	ship_part t;
+//	t.t_part = FIFTH;
+//	t.t_ship = BATTLESHIP;
+//	t.hit = 0;
+//	Bitmap * b = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
+//	drawQuadricula(50, 50, t, b);
 }
+
 State updatePlaySetship(Battleship* battle) {
-	if (((SetShipState*) battle->state)->ship_selected == -1) {
-		updateSetShipBoard((SetShipState*) battle->state);
+	switch (battle->kb_code) {
+	case KEY_ARR_UP_BRK:
+		if (((SetShipState*) battle->state)->ship_temp->y_central != 0) {
+			((SetShipState*) battle->state)->ship_temp->y_central--;
+		}
+	case KEY_ARR_DOWN_BRK:
+		if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
+			if (((SetShipState*) battle->state)->ship_temp->y_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
+				((SetShipState*) battle->state)->ship_temp->y_central++;
+			}
 
-	} else if (battle->kb_code == KEY_ARR_UP) {
+		} else if (((SetShipState*) battle->state)->ship_temp->y_central) {
+			((SetShipState*) battle->state)->ship_temp->y_central++;
+		}
 
-		printf("keyup");
-		//desseleciona todos os botoes quando uma tecla é premida
-		((SetShipState*) battle->state)->fighter->mouse_hover = 0;
-		((SetShipState*) battle->state)->death_star->mouse_hover = 0;
-		((SetShipState*) battle->state)->cruser->mouse_hover = 0;
-		((SetShipState*) battle->state)->escape_pod->mouse_hover = 0;
-		((SetShipState*) battle->state)->battleship->mouse_hover = 0;
-		((SetShipState*) battle->state)->cruser_2->mouse_hover = 0;
-		((SetShipState*) battle->state)->escape_pod_2->mouse_hover = 0;
-		battle->kb_code = KEY_NONE;
-		((SetShipState*) battle->state)->ship_selected--;
-		printf("\nsel:%d", ((SetShipState*) battle->state)->ship_selected);
+		break;
 
-	} else if (battle->kb_code == KEY_ARR_DOWN) {
+	case KEY_ARR_LEFT_BRK:
+		if (((SetShipState*) battle->state)->ship_temp->x_central != 0) {
+			((SetShipState*) battle->state)->ship_temp->x_central--;
+		}
+		break;
 
-		printf("keydown");
-		//desseleciona todos os botoes quando uma tecla é premida
-		((SetShipState*) battle->state)->fighter->mouse_hover = 0;
-		((SetShipState*) battle->state)->death_star->mouse_hover = 0;
-		((SetShipState*) battle->state)->cruser->mouse_hover = 0;
-		((SetShipState*) battle->state)->escape_pod->mouse_hover = 0;
-		((SetShipState*) battle->state)->battleship->mouse_hover = 0;
-		((SetShipState*) battle->state)->cruser_2->mouse_hover = 0;
-		((SetShipState*) battle->state)->escape_pod_2->mouse_hover = 0;
-		((SetShipState*) battle->state)->ship_selected++;
-		printf("\nsel:%d", ((SetShipState*) battle->state)->ship_selected);
-		battle->kb_code = KEY_NONE;
+	case KEY_ARR_RIGHT_BRK:
+		if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
+			if (((SetShipState*) battle->state)->ship_temp->x_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
+				((SetShipState*) battle->state)->ship_temp->x_central++;
+			}
 
-	} else if (battle->kb_code == KEY_ENTER) {
-		printf("\nsel:%d", ((SetShipState*) battle->state)->ship_selected);
-		printf("keyenter");
-		battle->kb_code = KEY_NONE;
-		((SetShipState*) battle->state)->ship_selected = -1;
-//		getShip((SetShipState*) battle->state);
+		} else if (((SetShipState*) battle->state)->ship_temp->x_central) {
+			((SetShipState*) battle->state)->ship_temp->x_central++;
+		}
+		break;
 	}
-
+	battle->kb_code = KEY_NONE;
 //	switch (((SetShipState*) battle->state)->ship_selected) {
 //	case 1:
 //		/**--------------------------------------------------------------
@@ -333,6 +333,7 @@ void initShip(SetShipState* state) {
 	state->tab.ship_array[6].size = 1;
 
 }
+
 void updateSetShipBoard(SetShipState* state) {
 
 }

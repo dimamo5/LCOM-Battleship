@@ -92,6 +92,10 @@ typedef enum {
     KEY_ARR_LEFT = 0xE04B,
     KEY_ARR_RIGHT = 0xE04D,
     KEY_ARR_DOWN = 0xE050,
+    KEY_ARR_UP_BRK = 0xE0C8,
+    KEY_ARR_LEFT_BRK = 0xE0CB,
+    KEY_ARR_RIGHT_BRK = 0xE0CD,
+    KEY_ARR_DOWN_BRK = 0xE0D0,
     KEY_PGDN = 0xE051,
     KEY_DEL = 0xE053,
 } KEY;

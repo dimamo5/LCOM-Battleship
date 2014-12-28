@@ -123,8 +123,7 @@ void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color) {
 	*mem_temp = color;
 }
 
-void vg_fill(unsigned short x, unsigned short y, unsigned short width,
-		unsigned short height, unsigned short color) {
+void vg_fill(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short color) {
 	unsigned short x_original = x;
 	unsigned short i;
 
@@ -138,8 +137,7 @@ void vg_fill(unsigned short x, unsigned short y, unsigned short width,
 	}
 }
 
-void vg_line(unsigned short xi, unsigned short yi, unsigned short xf,
-		unsigned short yf, unsigned long color) {
+void vg_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color) {
 
 	int err, err_temp, dx = abs(xf - xi), dy = abs(yf - yi), sx, sy;
 
@@ -206,8 +204,7 @@ void drawRectangle(Button* b) {
 		height += 2;
 	}
 }
-void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
-		int width, int height) {
+void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map, int width, int height) {
 	unsigned int i = 0;
 	unsigned short x_original = xi;
 	for (i = 0; i < width * height; i++) {
@@ -223,8 +220,7 @@ void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
 
 }
 
-void drawLine(unsigned short x, unsigned short y, unsigned short length,
-		char dir, unsigned short color) {
+void drawLine(unsigned short x, unsigned short y, unsigned short length, char dir, unsigned short color) {
 	unsigned short i;
 	if (dir == 'h') {
 		for (i = 0; i < length; i++) {
@@ -243,13 +239,13 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 
 	for (; i < 11; i++) {
 		if (i == 0 || i == 10) {
-			drawLine(x_temp, y_temp, 402, 'h', WHITE);
-			drawLine(x_temp, y_temp + 1, 402, 'h', WHITE);
+			drawLine(x_temp, y_temp, 412, 'h', WHITE);
+			drawLine(x_temp, y_temp + 1, 412, 'h', WHITE);
 		} else {
-			drawLine(x_temp, y_temp, 402, 'h', WHITE);
+			drawLine(x_temp, y_temp, 412, 'h', WHITE);
 
 		}
-		y_temp += 40;
+		y_temp += 41;
 
 	}
 
@@ -259,72 +255,50 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 
 	for (; i < 11; i++) {
 		if (i == 0 || i == 10) {
-			drawLine(x_temp, y_temp, 402, 'v', WHITE);
-			drawLine(x_temp + 1, y_temp, 402, 'v', WHITE);
+			drawLine(x_temp, y_temp, 412, 'v', WHITE);
+			drawLine(x_temp + 1, y_temp, 412, 'v', WHITE);
 		} else {
-			drawLine(x_temp, y_temp, 402, 'v', WHITE);
+			drawLine(x_temp, y_temp, 412, 'v', WHITE);
 
 		}
-		x_temp += 40;
+		x_temp += 41;
 	}
 
-//	for (x_temp; x_temp <= width + b->x_ini; x_temp++) {
-//		vg_set_pixel(x_temp, y_temp, b->color_border);
-//		vg_set_pixel(x_temp, y_temp + height, b->color_border);
-//	}
-//	x_temp = b->x_ini - border;
-//	y_temp = b->y_ini - border;
-//	for (y_temp; y_temp <= height + b->y_ini; y_temp++) {
-//		vg_set_pixel(x_temp, y_temp, b->color_border);
-//		vg_set_pixel(x_temp + width, y_temp, b->color_border);
-//	}
-//
-//	if (size == BIG) {
-////		drawRectangle(x, y, 400, 400, 3, 0xffff);
-//		for (i = 0; i < 100; i++) {
-////			drawRectangle(x_temp, y_temp, 40, 40, 1, 0xffff);
-//			if (x_temp == x + 360) {
-//				x_temp = x;
-//				y_temp += 40;
-//			} else {
-//				x_temp += 40;
-//			}
-//		}
-//	}
-//	if (size == SMALL) {
-////		drawRectangle(x, y, 300, 300, 3, 0xffff);
-//		for (i = 0; i < 100; i++) {
-////			drawRectangle(x_temp, y_temp, 30, 30, 1, 0xffff);
-//			if (x_temp == x + 270) {
-//				x_temp = x;
-//				y_temp += 30;
-//			} else {
-//				x_temp += 30;
-//			}
-//		}
-//	}
 }
-void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship s) {
+void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
 	Bitmap * b = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
-	ship_part t;
-	t.t_part = FULL;
-	t.t_ship = NOTHING;
-	t.hit = 0;
+	ship_part f;
+	f.t_part = FULL;
+	f.t_ship = NOTHING;
+	f.hit = 0;
 	unsigned short x_temp = 0;
 	unsigned short y_temp = 0;
 
 	unsigned short i = 0;
 	draw_board(x, y, BIG);
+
 	for (i; i < 100; i++) {
-		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41,
-				*(tab.tab_array[i % 10][i / 10]), b);
+		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
 	}
 
-	for (i = 0; i < s.size; i++) {
-		if (tab.tab_array[s.x_central][s.y_central]->t_ship == NOTHING) {
-			drawQuadricula(s.x_central, s.y_central, s.parts_array[i], b);
+	for (i = 0; i < s->size; i++) {
+		if (tab.tab_array[s->x_central][s->y_central]->t_ship == NOTHING) {
+			if (s->t_ship == DEATH_STAR) {
+				drawQuadricula(x + 41 * s->x_central, y + y * s->y_central, s->parts_array[0], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central + 41, y + y * s->y_central, s->parts_array[1], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central, y + y * s->y_central + 41, s->parts_array[2], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central + 41, y + y * s->y_central + 41, s->parts_array[3], b, s->direction);
+			} else if (s->direction == 'h') {
+				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central, s->parts_array[i], b, s->direction);
+			} else if (s->direction == 'v') {
+				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central + i * 41, s->parts_array[i], b, s->direction);
+			}
 		} else {
-			drawQuadricula(s.x_central, s.y_central, t, b);
+			if (s->direction == 'h') {
+				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central, f, b, s->direction);
+			} else if (s->direction == 'v') {
+				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central + i * 41, f, b, s->direction);
+			}
 		}
 	}
 
@@ -372,7 +346,7 @@ int rgb(unsigned char r, unsigned char g, unsigned char b) {
 	return (red << 11) | (green << 5) | blue;
 }
 
-void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp) {
+void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) {
 
 	unsigned short pos_x, pos_y, i;
 
@@ -450,10 +424,18 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp) {
 		}
 		break;
 	}
+	pos_x = 40 * pos_x; //Mudar de posicao relativa na imagens para a real
+	pos_y = 40 * pos_y;
+
+	int pos = (bmp->bitmapInfo.height - 1 - pos_y) * bmp->bitmapInfo.width + pos_x;
 
 	for (i = 0; i < 40 * 40; i++) {
-		vg_set_pixel(x + i % 40, y + i / 40,
-				bmp->Data[(40 * pos_x + i % 40)
-						+ (bmp->bitmapInfo.height - pos_y * i / 40)]);
+		vg_set_pixel(x + i % 40, y + i / 40, bmp->Data[pos]);
+		//bmp->Data[(pos_x + i % 40) + (bmp->bitmapInfo.width * ((bmp->bitmapInfo.height - 1) - pos_y))
+		//		- (bmp->bitmapInfo.width * i / 40)]);
+		pos++;
+		if (i % 40 == 0 && i > 0) {
+			pos -= (bmp->bitmapInfo.width + 40);
+		}
 	}
 }

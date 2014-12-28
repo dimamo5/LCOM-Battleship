@@ -47,7 +47,9 @@ void updateBufferSec();
 
 int rgb(unsigned char r, unsigned char g, unsigned char b);
 
-void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp);
+void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori);
+
+void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s);
 
 /** @} end of video_gr */
 
