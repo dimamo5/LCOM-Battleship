@@ -64,6 +64,7 @@ typedef enum {
     KEY_O = 0x0018,
     KEY_P = 0x0019,
     KEY_ENTER = 0x001C,
+    KEY_ENTER_BRK=0x009C,
     KEY_L_CTRL = 0x001D,
     KEY_A = 0x001E,
     KEY_S = 0x001F,

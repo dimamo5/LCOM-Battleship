@@ -62,8 +62,13 @@ State updatePlaySetship(Battleship* battle) {
 		}
 		battle->kb_code = KEY_NONE;
 		break;
+
 	case KEY_ARR_DOWN_BRK:
-		if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
+		if (((SetShipState*) battle->state)->ship_temp->t_ship == DEATH_STAR) {
+			if (((SetShipState*) battle->state)->ship_temp->y_central + 1 != 9) {
+				((SetShipState*) battle->state)->ship_temp->y_central++;
+			}
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
 			if (((SetShipState*) battle->state)->ship_temp->y_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
 				((SetShipState*) battle->state)->ship_temp->y_central++;
 			}
@@ -71,6 +76,7 @@ State updatePlaySetship(Battleship* battle) {
 		} else if (((SetShipState*) battle->state)->ship_temp->y_central) {
 			((SetShipState*) battle->state)->ship_temp->y_central++;
 		}
+
 		battle->kb_code = KEY_NONE;
 		break;
 
@@ -82,7 +88,11 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 
 	case KEY_ARR_RIGHT_BRK:
-		if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
+		if (((SetShipState*) battle->state)->ship_temp->t_ship == DEATH_STAR) {
+			if (((SetShipState*) battle->state)->ship_temp->x_central + 1 != 9) {
+				((SetShipState*) battle->state)->ship_temp->x_central++;
+			}
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
 			if (((SetShipState*) battle->state)->ship_temp->x_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
 				((SetShipState*) battle->state)->ship_temp->x_central++;
 			}
@@ -92,60 +102,33 @@ State updatePlaySetship(Battleship* battle) {
 		}
 		battle->kb_code = KEY_NONE;
 		break;
+
+	case KEY_ENTER_BRK:
+		if (checkColission(((SetShipState*) battle->state)->tab, ((SetShipState*) battle->state)->ship_temp)) {
+			battle->kb_code = KEY_NONE;
+			return;
+		}
+		unsigned int i = 0;
+		short x = ((SetShipState*) battle->state)->ship_temp->x_central;
+		short y = ((SetShipState*) battle->state)->ship_temp->y_central;
+
+		if (((SetShipState*) battle->state)->ship_temp->t_ship == DEATH_STAR) {
+			((SetShipState*) battle->state)->tab.tab_array[x][y] = &((SetShipState*) battle->state)->ship_temp->parts_array[0];
+			((SetShipState*) battle->state)->tab.tab_array[x + 1][y] = &((SetShipState*) battle->state)->ship_temp->parts_array[1];
+			((SetShipState*) battle->state)->tab.tab_array[x][y + 1] = &((SetShipState*) battle->state)->ship_temp->parts_array[2];
+			((SetShipState*) battle->state)->tab.tab_array[x + 1][y + 1] = &((SetShipState*) battle->state)->ship_temp->parts_array[3];
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
+			for (i = 0; i < ((SetShipState*) battle->state)->ship_temp->size; i++) {
+				((SetShipState*) battle->state)->tab.tab_array[x + i][y] = &((SetShipState*) battle->state)->ship_temp->parts_array[i];
+			}
+
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
+			((SetShipState*) battle->state)->tab.tab_array[x][y + i] = &((SetShipState*) battle->state)->ship_temp->parts_array[i];
+		}
+
+		break;
 	}
 
-//	switch (((SetShipState*) battle->state)->ship_selected) {
-//	case 1:
-//		/**--------------------------------------------------------------
-//		 * HÁ 3 DIAS PARADO NESTA BOSTA DE BUG!!!!! JA ESTOU A FRITAR
-//		 * ---------------------------------------------------------------
-//		 */
-//
-//		if (((SetShipState*) battle->state)->fighter->available) {
-//			((SetShipState*) battle->state)->fighter->mouse_hover = 1;
-//		} else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	case 2:
-//		if (((SetShipState*) battle->state)->death_star->available)
-//			((SetShipState*) battle->state)->death_star->mouse_hover = 1;
-//		else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	case 3:
-//		if (((SetShipState*) battle->state)->cruser->available)
-//			((SetShipState*) battle->state)->cruser->mouse_hover = 1;
-//		else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	case 4:
-//		if (((SetShipState*) battle->state)->escape_pod->available)
-//			((SetShipState*) battle->state)->escape_pod->mouse_hover = 1;
-//		else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	case 5:
-//		if (((SetShipState*) battle->state)->battleship->available)
-//			((SetShipState*) battle->state)->battleship->mouse_hover = 1;
-//		else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	case 6:
-//		if (((SetShipState*) battle->state)->cruser_2->available)
-//			((SetShipState*) battle->state)->cruser_2->mouse_hover = 1;
-//		else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	case 7:
-//		if (((SetShipState*) battle->state)->escape_pod_2->available)
-//			((SetShipState*) battle->state)->escape_pod_2->mouse_hover = 1;
-//		else
-//			((SetShipState*) battle->state)->ship_selected++;
-//		break;
-//	default:
-//		((SetShipState*) battle->state)->ship_selected = 1;
-//		break;
-//	}
 }
 
 void deletePlaySetship(Battleship* battle) {
@@ -161,24 +144,6 @@ void deletePlaySetship(Battleship* battle) {
 }
 
 void initShip(SetShipState* state) {
-//	state->ship_temp.nr_hits = 0; //Inicializacao de variaveis do ship
-//	state->ship_temp.destroyed = 0; //Iguais para todas a naves no inicio do jogo
-//	state->ship_temp.x_central = 0;
-//	state->ship_temp.y_central = 0;
-//	state->ship_temp.direction = 'h';
-//
-//	switch (state->ship_selected) {
-//	case 1:
-//		state->ship_temp.t_ship = FIGHTER;
-//		state->ship_temp.size = 1;
-//		state->ship_temp.ship_array = malloc(
-//				sizeof(ship_part) * state->ship_temp.size);
-//		ship_part temp_1;
-//		temp_1.hit = 0;
-//		temp_1.selected = 0;
-//		temp_1.t_part = FIRST;
-//		*state->ship_temp.ship_array = temp_1;
-//	}
 
 	/**
 	 * DEATH STAR INIT
@@ -327,7 +292,6 @@ void initShip(SetShipState* state) {
 
 }
 
-void updateSetShipBoard(SetShipState* state) {
+int checkColission(tabuleiro tab, ship* s) {
 
 }
-
