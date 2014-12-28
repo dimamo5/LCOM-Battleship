@@ -78,7 +78,8 @@ typedef struct{
 	Button* battleship;
 	Button* cruser_2;
 	Button* escape_pod_2;
-	Bitmap* ship_selection;
+	Bitmap* ship_map;
+	int done;
 }SetShipState;
 
 
