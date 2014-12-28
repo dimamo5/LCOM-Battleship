@@ -95,4 +95,5 @@ void deletePlaySetship(Battleship* battle);
 
 void initShip(SetShipState* state);
 void updateSetShipBoard(SetShipState* state);
+int checkColission(tabuleiro tab,ship* s);
 #endif

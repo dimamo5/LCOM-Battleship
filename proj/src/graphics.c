@@ -284,10 +284,10 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
 	for (i = 0; i < s->size; i++) {
 		if (tab.tab_array[s->x_central][s->y_central]->t_ship == NOTHING) {
 			if (s->t_ship == DEATH_STAR) {
-				drawQuadricula(x + 41 * s->x_central, y + y * s->y_central, s->parts_array[0], b, s->direction);
-				drawQuadricula(x + 41 * s->x_central + 41, y + y * s->y_central, s->parts_array[1], b, s->direction);
-				drawQuadricula(x + 41 * s->x_central, y + y * s->y_central + 41, s->parts_array[2], b, s->direction);
-				drawQuadricula(x + 41 * s->x_central + 41, y + y * s->y_central + 41, s->parts_array[3], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central, s->parts_array[0], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central, s->parts_array[1], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + 41, s->parts_array[2], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central + 41, s->parts_array[3], b, s->direction);
 			} else if (s->direction == 'h') {
 				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central, s->parts_array[i], b, s->direction);
 			} else if (s->direction == 'v') {
