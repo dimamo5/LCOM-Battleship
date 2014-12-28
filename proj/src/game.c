@@ -48,29 +48,20 @@ SetShipState* newPlaySetship() {
 	return state;
 }
 void drawPlaySetship(Battleship* battle) {
-//	drawBitmap(((SetShipState*) battle->state)->ship_selection, 700, 100);
-//	drawRectangle(((SetShipState*) battle->state)->fighter);
-//	drawRectangle(((SetShipState*) battle->state)->death_star);
-//	drawRectangle(((SetShipState*) battle->state)->cruser);
-//	drawRectangle(((SetShipState*) battle->state)->escape_pod);
-//	drawRectangle(((SetShipState*) battle->state)->battleship);
-//	drawRectangle(((SetShipState*) battle->state)->cruser_2);
-//	drawRectangle(((SetShipState*) battle->state)->escape_pod_2);
+
 	drawSetTabuleiro(200, 200, ((SetShipState*) battle->state)->tab, ((SetShipState*) battle->state)->ship_temp);
-//	ship_part t;
-//	t.t_part = FIFTH;
-//	t.t_ship = BATTLESHIP;
-//	t.hit = 0;
-//	Bitmap * b = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
-//	drawQuadricula(50, 50, t, b);
+
 }
 
 State updatePlaySetship(Battleship* battle) {
+
 	switch (battle->kb_code) {
 	case KEY_ARR_UP_BRK:
 		if (((SetShipState*) battle->state)->ship_temp->y_central != 0) {
 			((SetShipState*) battle->state)->ship_temp->y_central--;
 		}
+		battle->kb_code = KEY_NONE;
+		break;
 	case KEY_ARR_DOWN_BRK:
 		if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
 			if (((SetShipState*) battle->state)->ship_temp->y_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
@@ -80,13 +71,14 @@ State updatePlaySetship(Battleship* battle) {
 		} else if (((SetShipState*) battle->state)->ship_temp->y_central) {
 			((SetShipState*) battle->state)->ship_temp->y_central++;
 		}
-
+		battle->kb_code = KEY_NONE;
 		break;
 
 	case KEY_ARR_LEFT_BRK:
 		if (((SetShipState*) battle->state)->ship_temp->x_central != 0) {
 			((SetShipState*) battle->state)->ship_temp->x_central--;
 		}
+		battle->kb_code = KEY_NONE;
 		break;
 
 	case KEY_ARR_RIGHT_BRK:
@@ -98,9 +90,10 @@ State updatePlaySetship(Battleship* battle) {
 		} else if (((SetShipState*) battle->state)->ship_temp->x_central) {
 			((SetShipState*) battle->state)->ship_temp->x_central++;
 		}
+		battle->kb_code = KEY_NONE;
 		break;
 	}
-	battle->kb_code = KEY_NONE;
+
 //	switch (((SetShipState*) battle->state)->ship_selected) {
 //	case 1:
 //		/**--------------------------------------------------------------
