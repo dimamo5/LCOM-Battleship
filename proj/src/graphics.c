@@ -123,20 +123,6 @@ void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color) {
 	*mem_temp = color;
 }
 
-void vg_fill(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short color) {
-	unsigned short x_original = x;
-	unsigned short i;
-
-	for (i = 0; i < width * height; i++) {
-		vg_set_pixel(x, y, color);
-		x++;
-		if (x == width + x_original) {
-			x = x_original;
-			y++;
-		}
-	}
-}
-
 void vg_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color) {
 
 	int err, err_temp, dx = abs(xf - xi), dy = abs(yf - yi), sx, sy;
@@ -259,7 +245,6 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 			drawLine(x_temp + 1, y_temp, 412, 'v', WHITE);
 		} else {
 			drawLine(x_temp, y_temp, 412, 'v', WHITE);
-
 		}
 		x_temp += 41;
 	}
@@ -278,7 +263,7 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
 	draw_board(x, y, BIG);
 
 	for (i; i < 100; i++) {
-		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
+		drawQuadricula(x + (i % 10) * 40, y + (i / 10) * 40, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
 	}
 
 // Desenha ship temporaria
@@ -325,6 +310,49 @@ void alocaMouse(unsigned short *map, int width, int height) {
 	}
 
 }
+
+void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b) {
+	unsigned int i, m;
+
+	ship_part sel;
+	sel.t_part = SELECTED;
+	sel.t_ship = NOTHING;
+	sel.hit = 0;
+
+	//Desenha tab_hum
+	for (i = 0; i < 7; i++) {
+		if (i == 0) {
+			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
+					tab_hum.ship_array[i].parts_array[0], b, tab_hum.ship_array[i].direction);
+			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central + 1, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
+					tab_hum.ship_array[i].parts_array[1], b, tab_hum.ship_array[i].direction);
+			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central, Y_BOARD_HUM + tab_hum.ship_array[i].y_central + 1,
+					tab_hum.ship_array[i].parts_array[2], b, tab_hum.ship_array[i].direction);
+			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central + 1, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
+					tab_hum.ship_array[i].parts_array[3], b, tab_hum.ship_array[i].direction);
+		} else if (tab_hum.ship_array[i].direction == 'h') {
+			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
+				drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central + m, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
+						tab_hum.ship_array[i].parts_array[m], b, tab_hum.ship_array[i].direction);
+			}
+		} else if (tab_hum.ship_array[i].direction == 'v') {
+			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
+				drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central, Y_BOARD_HUM + tab_hum.ship_array[i].y_central + m,
+						tab_hum.ship_array[i].parts_array[m], b, tab_hum.ship_array[i].direction);
+			}
+		}
+	}
+	//Desenha tab_com
+	for (i; i < 100; i++) {
+		if (tab_com.tab_array[i % 10][i / 10]->hit == 1) {
+			drawQuadricula(X_BOARD_COM + (i % 10) * 40, Y_BOARD_COM + (i / 10) * 40, *(tab_com.tab_array[i % 10][i / 10]), b, 'h');
+		}
+	}
+	//Desenha Selecionado
+
+	drawQuadricula(X_BOARD_COM + tab_com.selected_x * 40, Y_BOARD_COM + tab_com.selected_y * 40, sel, b, 'h');
+}
+
 void cleanBufferSec() {
 	memset(second_buffer, 0, v_res * h_res * bytes_per_pixel);
 }
@@ -351,81 +379,91 @@ int rgb(unsigned char r, unsigned char g, unsigned char b) {
 void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) {
 
 	unsigned short pos_x, pos_y, i;
+	if (p.hit == 1 && p.t_part != WATER) {
+		pos_x = 3;
+		pos_y = 0;
+	} else
+		switch (p.t_ship) {
+		case NOTHING:
+			if (p.t_part == WATER) {
+				if (p.hit == 1) {
+					pos_x = 3;
+					pos_y = 1;
+				} else if (p.t_part == SELECTED) {
+					pos_x = 3;
+					pos_y = 3;
+				} else
+					return;
+			} else if (p.t_part == FULL) {
+				pos_x = 3;
+				pos_y = 2;
+			}
+			break;
+		case DEATH_STAR:
+			if (p.t_part == UPPER_LEFT) {
+				pos_x = 1;
+				pos_y = 3;
+			} else if (p.t_part == UPPER_RIGHT) {
+				pos_x = 2;
+				pos_y = 3;
+			} else if (p.t_part == BOTTOM_LEFT) {
+				pos_x = 1;
+				pos_y = 4;
+			} else if (p.t_part == BOTTOM_RIGHT) {
+				pos_x = 2;
+				pos_y = 4;
+			}
+			break;
 
-	switch (p.t_ship) {
-	case NOTHING:
-		if (p.t_part == WATER) {
-			return;
-		} else if (p.t_part == FULL) {
-			pos_x = 3;
-			pos_y = 2;
-		}
-		break;
-	case DEATH_STAR:
-		if (p.t_part == UPPER_LEFT) {
-			pos_x = 1;
-			pos_y = 3;
-		} else if (p.t_part == UPPER_RIGHT) {
-			pos_x = 2;
-			pos_y = 3;
-		} else if (p.t_part == BOTTOM_LEFT) {
-			pos_x = 1;
-			pos_y = 4;
-		} else if (p.t_part == BOTTOM_RIGHT) {
-			pos_x = 2;
-			pos_y = 4;
-		}
-		break;
+		case BATTLESHIP:
+			if (p.t_part == FIRST) {
+				pos_x = 0;
+				pos_y = 0;
+			} else if (p.t_part == SECOND) {
+				pos_x = 0;
+				pos_y = 1;
+			} else if (p.t_part == THIRD) {
+				pos_x = 0;
+				pos_y = 2;
+			} else if (p.t_part == FOURTH) {
+				pos_x = 0;
+				pos_y = 3;
+			} else if (p.t_part == FIFTH) {
+				pos_x = 0;
+				pos_y = 4;
+			}
+			break;
 
-	case BATTLESHIP:
-		if (p.t_part == FIRST) {
-			pos_x = 0;
-			pos_y = 0;
-		} else if (p.t_part == SECOND) {
-			pos_x = 0;
-			pos_y = 1;
-		} else if (p.t_part == THIRD) {
-			pos_x = 0;
-			pos_y = 2;
-		} else if (p.t_part == FOURTH) {
-			pos_x = 0;
-			pos_y = 3;
-		} else if (p.t_part == FIFTH) {
-			pos_x = 0;
-			pos_y = 4;
-		}
-		break;
+		case CRUSER:
+			if (p.t_part == FIRST) {
+				pos_x = 2;
+				pos_y = 0;
+			} else if (p.t_part == SECOND) {
+				pos_x = 2;
+				pos_y = 1;
+			} else if (p.t_part == THIRD) {
+				pos_x = 2;
+				pos_y = 2;
+			}
+			break;
 
-	case CRUSER:
-		if (p.t_part == FIRST) {
-			pos_x = 2;
-			pos_y = 0;
-		} else if (p.t_part == SECOND) {
-			pos_x = 2;
-			pos_y = 1;
-		} else if (p.t_part == THIRD) {
-			pos_x = 2;
-			pos_y = 2;
-		}
-		break;
+		case FIGHTER:
+			if (p.t_part == FIRST) {
+				pos_x = 1;
+				pos_y = 1;
+			} else if (p.t_part == SECOND) {
+				pos_x = 1;
+				pos_y = 2;
+			}
+			break;
 
-	case FIGHTER:
-		if (p.t_part == FIRST) {
-			pos_x = 1;
-			pos_y = 1;
-		} else if (p.t_part == SECOND) {
-			pos_x = 1;
-			pos_y = 2;
+		case ESCAPE_SHUTTLE:
+			if (p.t_part == FIRST) {
+				pos_x = 1;
+				pos_y = 0;
+			}
+			break;
 		}
-		break;
-
-	case ESCAPE_SHUTTLE:
-		if (p.t_part == FIRST) {
-			pos_x = 1;
-			pos_y = 0;
-		}
-		break;
-	}
 	pos_x = 40 * pos_x; //Mudar de posicao relativa na imagens para a real
 	pos_y = 40 * pos_y;
 
@@ -433,11 +471,34 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 
 	for (i = 0; i < 40 * 40; i++) {
 		vg_set_pixel(x + i % 40, y + i / 40, bmp->Data[pos]);
-		//bmp->Data[(pos_x + i % 40) + (bmp->bitmapInfo.width * ((bmp->bitmapInfo.height - 1) - pos_y))
-		//		- (bmp->bitmapInfo.width * i / 40)]);
 		pos++;
 		if (i % 40 == 0 && i > 0) {
 			pos -= (bmp->bitmapInfo.width + 40);
+		}
+	}
+}
+
+void drawClock(unsigned int time) {
+	unsigned short ms, ls, pos;
+	ls = time % 10;
+	ms = time / 10;
+//	drawPortionBitmap();
+}
+
+void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, unsigned short y_rel, unsigned short x_size,
+		unsigned short y_size, Bitmap* bmp) {
+
+	unsigned short x_temp = x_rel * x_size;
+	unsigned short y_temp = y_rel * y_size;
+	unsigned short i;
+
+	int pos = (bmp->bitmapInfo.height - 1 - y_temp) * bmp->bitmapInfo.width + x_temp;
+
+	for (i = 0; i < x_size * y_size; i++) {
+		vg_set_pixel(x + i % x_size, y + i / x_size, bmp->Data[pos]);
+		pos++;
+		if (i % x_size == 0 && i > 0) {
+			pos -= (bmp->bitmapInfo.width + x_size);
 		}
 	}
 }

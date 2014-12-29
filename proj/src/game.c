@@ -7,16 +7,29 @@ static tabuleiro* tab_player;
 static tabuleiro* tab_computer;
 
 GameState* newGame() {
-	GameSate* state = (GameSate*) malloc(sizeof(GameSate));
+	GameState* state = (GameState*) malloc(sizeof(GameState));
+	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
 
+	state->turn = 1; //1- player turn 0-player turn
+	state->turn_time_counter = TURN_TIME;
+	state->done = 0;
+
+	initPlayer(HUMAN, state);
+
+	initPlayer(COMPUTER, state);
+
+	printf("passa da inicializacao");
+	return state;
 }
 
 void drawGame(Battleship* battle) {
-
+	printf("dá bosta aqui");
+	drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map);
 }
 
 State updateGame(Battleship* battle) {
 
+	return GAME_PLAY_STATE;
 }
 void deleteGame(Battleship* battle) {
 
@@ -28,7 +41,7 @@ SetShipState* newPlaySetship() {
 
 	SetShipState* state = (SetShipState*) malloc(sizeof(SetShipState));
 
-//initialize player tab
+	//initialize player tab
 	initShip(&state->tab);
 	//initialize computer tab
 	initShip(&state->tab_com);
@@ -43,7 +56,7 @@ SetShipState* newPlaySetship() {
 }
 void drawPlaySetship(Battleship* battle) {
 
-	drawSetTabuleiro(500, 200, set_ship->tab, set_ship->ship_temp);
+	drawSetTabuleiro(400, 200, set_ship->tab, set_ship->ship_temp);
 }
 
 State updatePlaySetship(Battleship* battle) {
@@ -402,12 +415,28 @@ void randTabuleiro(tabuleiro* tab) {
 			}
 		}
 	}
-//	printf("DeathStar x:%d y:%d", tab->ship_array[0].x_central, tab->ship_array[0].y_central);
-//	printf("Battleship x:%d y:%d", tab->ship_array[1].x_central, tab->ship_array[1].y_central);
-//	printf("Cruiser1 x:%d y:%d", tab->ship_array[2].x_central, tab->ship_array[2].y_central);
-//	printf("Cruiser2 x:%d y:%d", tab->ship_array[3].x_central, tab->ship_array[3].y_central);
-//	printf("Fighter x:%d y:%d", tab->ship_array[4].x_central, tab->ship_array[4].y_central);
-//	printf("Fighter x:%d y:%d", tab->ship_array[5].x_central, tab->ship_array[5].y_central);
-//	printf("Escape pod x:%d y:%d", tab->ship_array[6].x_central, tab->ship_array[6].y_central);
+	printf("DeathStar x:%d y:%d", tab->ship_array[0].x_central, tab->ship_array[0].y_central);
+	printf("Battleship x:%d y:%d", tab->ship_array[1].x_central, tab->ship_array[1].y_central);
+	printf("Cruiser1 x:%d y:%d", tab->ship_array[2].x_central, tab->ship_array[2].y_central);
+	printf("Cruiser2 x:%d y:%d", tab->ship_array[3].x_central, tab->ship_array[3].y_central);
+	printf("Fighter x:%d y:%d", tab->ship_array[4].x_central, tab->ship_array[4].y_central);
+	printf("Fighter x:%d y:%d", tab->ship_array[5].x_central, tab->ship_array[5].y_central);
+	printf("Escape pod x:%d y:%d", tab->ship_array[6].x_central, tab->ship_array[6].y_central);
 
+}
+
+void initPlayer(type_player t, GameState* state) {
+	if (t == HUMAN) {
+		state->hum.shots_missed = 0;
+		state->hum.time_played = 0;
+		state->hum.turns_missed = 0;
+		state->hum.t_player = HUMAN;
+		state->hum.tab = *tab_player;
+	} else if (t == COMPUTER) {
+		state->com.shots_missed = 0;
+		state->com.time_played = 0;
+		state->com.turns_missed = 0;
+		state->com.t_player = COMPUTER;
+		state->com.tab = *tab_computer;
+	}
 }
