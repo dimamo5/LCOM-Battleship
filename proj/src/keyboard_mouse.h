@@ -57,6 +57,7 @@ typedef enum {
     KEY_W = 0x0011,
     KEY_E = 0x0012,
     KEY_R = 0x0013,
+    KEY_R_BRK = 0x0093,
     KEY_T = 0x0014,
     KEY_Y = 0x0015,
     KEY_U = 0x0016,

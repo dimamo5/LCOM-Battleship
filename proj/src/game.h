@@ -5,6 +5,9 @@
 #include "button.h"
 #include "bitmap.h"
 
+#define set_ship ((SetShipState*) battle->state)
+#define game_state ((GameState*) battle->state)
+
 typedef enum {
 	HUMAN, COMPUTER
 } type_player;
@@ -68,10 +71,11 @@ typedef struct{
 
 	Bitmap* ship_map;
 	int done;
-}game;
+}GameState;
 
 typedef struct{
 	tabuleiro tab;
+	tabuleiro tab_com;
 	ship* ship_temp;
 
 	Bitmap* ship_map;
@@ -79,7 +83,7 @@ typedef struct{
 }SetShipState;
 
 
-game* newGame();
+GameState* newGame();
 void drawGame(Battleship* battle);
 State updateGame(Battleship* battle);
 void deleteGame(Battleship* battle);
@@ -89,7 +93,9 @@ void drawPlaySetship(Battleship* battle);
 State updatePlaySetship(Battleship* battle);
 void deletePlaySetship(Battleship* battle);
 
-void initShip(SetShipState* state);
+void initShip(tabuleiro* tab);
 void updateSetShipBoard(SetShipState* state);
 int checkColission(tabuleiro tab,ship* s);
+void randTabuleiro(tabuleiro* tab);
+
 #endif
