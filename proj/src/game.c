@@ -66,7 +66,7 @@ State updatePlaySetship(Battleship* battle) {
 				((SetShipState*) battle->state)->ship_temp->y_central++;
 			}
 
-		} else if (((SetShipState*) battle->state)->ship_temp->y_central) {
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
 			((SetShipState*) battle->state)->ship_temp->y_central++;
 		}
 
@@ -90,7 +90,7 @@ State updatePlaySetship(Battleship* battle) {
 				((SetShipState*) battle->state)->ship_temp->x_central++;
 			}
 
-		} else if (((SetShipState*) battle->state)->ship_temp->x_central) {
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
 			((SetShipState*) battle->state)->ship_temp->x_central++;
 		}
 		battle->kb_code = KEY_NONE;
