@@ -61,13 +61,13 @@ State updatePlaySetship(Battleship* battle) {
 			if (((SetShipState*) battle->state)->ship_temp->y_central + 1 != 9) {
 				((SetShipState*) battle->state)->ship_temp->y_central++;
 			}
-		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
-			if (((SetShipState*) battle->state)->ship_temp->y_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
+			if (((SetShipState*) battle->state)->ship_temp->y_central + ((SetShipState*) battle->state)->ship_temp->size != 10) {
 				((SetShipState*) battle->state)->ship_temp->y_central++;
 			}
 
-		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
-			((SetShipState*) battle->state)->ship_temp->y_central++;
+		} else if (((SetShipState*) battle->state)->ship_temp->x_central != 10) {
+			((SetShipState*) battle->state)->ship_temp->x_central++;
 		}
 
 		battle->kb_code = KEY_NONE;
@@ -85,12 +85,12 @@ State updatePlaySetship(Battleship* battle) {
 			if (((SetShipState*) battle->state)->ship_temp->x_central + 1 != 9) {
 				((SetShipState*) battle->state)->ship_temp->x_central++;
 			}
-		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
-			if (((SetShipState*) battle->state)->ship_temp->x_central + ((SetShipState*) battle->state)->ship_temp->size != 9) {
+		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
+			if (((SetShipState*) battle->state)->ship_temp->x_central + ((SetShipState*) battle->state)->ship_temp->size != 10) {
 				((SetShipState*) battle->state)->ship_temp->x_central++;
 			}
 
-		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
+		} else if (((SetShipState*) battle->state)->ship_temp->x_central != 10) {
 			((SetShipState*) battle->state)->ship_temp->x_central++;
 		}
 		battle->kb_code = KEY_NONE;
@@ -119,13 +119,16 @@ State updatePlaySetship(Battleship* battle) {
 			}
 
 		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'v') {
-			((SetShipState*) battle->state)->tab.tab_array[x][y + i] = &((SetShipState*) battle->state)->ship_temp->parts_array[i];
+			for (i = 0; i < ((SetShipState*) battle->state)->ship_temp->size; i++) {
+				((SetShipState*) battle->state)->tab.tab_array[x][y + i] = &((SetShipState*) battle->state)->ship_temp->parts_array[i];
+			}
 		}
 
 		((SetShipState*) battle->state)->tab.ship_on_board++;
 		((SetShipState*) battle->state)->ship_temp =
 				&((SetShipState*) battle->state)->tab.ship_array[((SetShipState*) battle->state)->tab.ship_on_board];
 
+		printf("\n%d",((SetShipState*) battle->state)->tab.ship_on_board);
 		break;
 	}
 	return GAME_PLAY_SETSHIP_STATE;

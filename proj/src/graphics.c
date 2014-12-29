@@ -281,23 +281,25 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
 		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
 	}
 
+// Desenha ship temporaria
+
 	for (i = 0; i < s->size; i++) {
-		if (tab.tab_array[s->x_central][s->y_central]->t_ship == NOTHING) {
+		if (tab.tab_array[s->x_central][s->y_central]->t_part == WATER) {
 			if (s->t_ship == DEATH_STAR) {
 				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central, s->parts_array[0], b, s->direction);
 				drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central, s->parts_array[1], b, s->direction);
 				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + 41, s->parts_array[2], b, s->direction);
 				drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central + 41, s->parts_array[3], b, s->direction);
 			} else if (s->direction == 'h') {
-				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central, s->parts_array[i], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central + i * 41, y + 41 * s->y_central, s->parts_array[i], b, s->direction);
 			} else if (s->direction == 'v') {
-				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central + i * 41, s->parts_array[i], b, s->direction);
+				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + i * 41, s->parts_array[i], b, s->direction);
 			}
 		} else {
 			if (s->direction == 'h') {
-				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central, f, b, s->direction);
+				drawQuadricula(x + 41 * s->x_central + i * 41, y + 41 * s->y_central, f, b, s->direction);
 			} else if (s->direction == 'v') {
-				drawQuadricula(x + 41 * s->x_central + i * 41, y + y * s->y_central + i * 41, f, b, s->direction);
+				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + i * 41, f, b, s->direction);
 			}
 		}
 	}
