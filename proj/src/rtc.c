@@ -18,48 +18,49 @@ unsigned long read_rtc_reg(unsigned long reg) {
 	sys_inb(RTC_DATA_REG, &data);
 	return data;
 }
-
+/*
 int rtc_subscribe_int() {
 	unsigned int bit_sel = 4; // bit_sel is different from the timer, mouse and keyboard one.
 	hook_id = bit_sel;
 	if (sys_irqsetpolicy(RTC_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id) != OK)
 		return -1;
+
 	if (sys_irqenable(&hook_id) != OK)
 		return -1;
+
+	unsigned char RegB = read_rtc_reg(11);
+	RegB |= 1 << 6;
+	//falta escrever
+
+	unsigned char RegA = read_rtc_reg(10);
+	RegA |= 1 << 0;
+	RegA |= 1 << 1;
+	RegA |= 1 << 2;
+	RegA |= 1 << 3;
+	//escrever no registo
+
+	unsigned char RegC = read_rtc_reg(12);
+	RegC |= 1 << 6;
+	//escrever
+
 	return BIT(bit_sel);
 }
 
 int rtc_unsubscribe_int() {
 
-	if (sys_irqdisable(&hook_id) != OK) {
-		return 1;
-	}
 	if (sys_irqrmpolicy(&hook_id) != OK) {
 		return 1;
 	}
 
 	return 0;
 }
-
+*/
 void disable_ints() {
-	unsigned char RegB;
-
-	RegB=read_rtc_reg(11);
-
-	RegB &= ~(1 << 6);
-	RegB &= ~(1 << 5);
-	RegB &= ~(1 << 4);
-
+	clear_interrupts_asm();
 }
 
 void enable_ints() {
-	unsigned char RegB;
-
-	RegB=read_rtc_reg(11);
-
-	RegB |= 1 << 6;
-	RegB |= 1 << 5;
-	RegB |= 1 << 4;
+	set_interrupts_asm();
 }
 
 void get_time(int *hour, int *min, int *sec) {
@@ -70,31 +71,31 @@ void get_time(int *hour, int *min, int *sec) {
 	disable_ints();
 
 	//hour
-	RegA=read_rtc_reg(10);
+	RegA = read_rtc_reg(10);
 
 	while (RegA & 0x80 != 0) {
-		RegA=read_rtc_reg(10);
+		RegA = read_rtc_reg(10);
 	}
 
-	*hour=read_rtc_reg(4);
+	*hour = read_rtc_reg(4);
 
 	//minutes
-	RegA=read_rtc_reg(10);
+	RegA = read_rtc_reg(10);
 
 	while (RegA & 0x80 != 0) {
-		RegA=read_rtc_reg(10);
+		RegA = read_rtc_reg(10);
 	}
 
-	*min=read_rtc_reg(2);
+	*min = read_rtc_reg(2);
 
 	//seconds
 	while (RegA & 0x80 != 0) {
-		RegA=read_rtc_reg(10);
+		RegA = read_rtc_reg(10);
 	}
 
-	*sec=read_rtc_reg(0);
+	*sec = read_rtc_reg(0);
 
-	RegB=read_rtc_reg(11);
+	RegB = read_rtc_reg(11);
 
 	if ((RegB & 0x02) == 0) {
 		*hour = hour + 12;
@@ -119,15 +120,15 @@ void get_date(int *year, int *month, int *day) {
 	disable_ints();
 
 	//year
-	*year=read_rtc_reg(9);
+	*year = read_rtc_reg(9);
 
 	//month
-	*month=read_rtc_reg(8);
+	*month = read_rtc_reg(8);
 
 	//day
-	*day=read_rtc_reg(7);
+	*day = read_rtc_reg(7);
 
-	RegB=read_rtc_reg(11);
+	RegB = read_rtc_reg(11);
 
 	if ((RegB & 0x04) == 0) {
 		*year = bcd_to_bin(*year);
@@ -140,5 +141,4 @@ void get_date(int *year, int *month, int *day) {
 	enable_ints();
 
 }
-
 

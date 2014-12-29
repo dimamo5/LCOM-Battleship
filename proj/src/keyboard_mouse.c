@@ -119,9 +119,9 @@ int kbd_subscribe_int() {
 
 int kbd_unsubscribe_int() {
 
-	if (sys_irqrmpolicy(&hook_id) != OK) {
-		return 1;
-	}
+		if (sys_irqrmpolicy(&hook_id) != OK) {
+			return 1;
+		}
 
 	return 0;
 
