@@ -63,11 +63,11 @@ void updateBattleship(Battleship* battleship) {
 			}
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_KEYBOARD) {
-					if (battleship->kb_code == 0xE0) {
-						battleship->kb_code = battleship->kb_code << 8; //2 Bytes Makecode
-						battleship->kb_code |= kbd_int_handler();
-					} else
-						battleship->kb_code = kbd_int_handler();
+				if (battleship->kb_code == 0xE0) {
+					battleship->kb_code = battleship->kb_code << 8; //2 Bytes Makecode
+					battleship->kb_code |= kbd_int_handler();
+				} else
+					battleship->kb_code = kbd_int_handler();
 			}
 
 			break;
@@ -152,10 +152,10 @@ void changeState(Battleship* battleship, State programState) {
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
 		battleship->state = newPlaySetship(battleship);
-		updateCurrentState(battleship);
+//		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_STATE:
-		battleship->state = (game*) newGame(battleship);
+		battleship->state = newGame(battleship);
 		break;
 //	case GAME_PAUSE_STATE:
 //			battleship->state = newPause(battleship);
@@ -194,7 +194,9 @@ void updateCurrentState(Battleship* battleship) {
 		}
 		break;
 	case GAME_PLAY_STATE:
-		statetochange = updateGame(battleship);
+		if (((SetShipState *) battleship->state)->done) {
+			statetochange = updateGame(battleship);
+		}
 		break;
 	case GAME_PAUSE_STATE:
 		//		updatePause(battleship);

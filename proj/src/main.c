@@ -2,12 +2,16 @@
 #include <minix/syslib.h>
 #include <minix/com.h>
 #include <minix/sysutil.h>
+#include <time.h>
 #include "graphics.h"
 #include "bitmap.h"
 #include "keyboard_mouse.h"
 #include "battleship.h"
 
 int main(int argc, char **argv) {
+
+	srand(time(NULL));
+
 	sef_startup();
 	//Handler em ASM
 	sys_enable_iop(SELF);
