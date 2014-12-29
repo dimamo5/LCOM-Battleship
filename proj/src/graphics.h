@@ -15,6 +15,13 @@ typedef enum {
 #define BLUE rgb(0,0,255)
 #define WHITE rgb(255,255,255)
 
+
+#define PART_SIZE 40
+#define X_BOARD_HUM 50
+#define Y_BOARD_HUM 50
+#define X_BOARD_COM 500
+#define Y_BOARD_COM 250
+
 /** @defgroup video_gr video_gr
  * @{
  *
