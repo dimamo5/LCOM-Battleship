@@ -34,15 +34,6 @@ SetShipState* newPlaySetship() {
 
 	state->ship_temp = &state->tab.ship_array[0];
 
-	//Inicializacao dos butoes
-	state->fighter = newButton(700, 100, 845, 225, BLUE);
-	state->death_star = newButton(700, 225, 845, 350, BLUE);
-	state->cruser = newButton(700, 350, 845, 475, BLUE);
-	state->escape_pod = newButton(700, 475, 845, 600, BLUE);
-	state->battleship = newButton(845, 100, 990, 350, BLUE);
-	state->cruser_2 = newButton(845, 225, 990, 745, BLUE);
-	state->escape_pod_2 = newButton(845, 350, 990, 475, BLUE);
-
 	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
 
 	return state;
@@ -117,6 +108,9 @@ State updatePlaySetship(Battleship* battle) {
 			((SetShipState*) battle->state)->tab.tab_array[x + 1][y] = &((SetShipState*) battle->state)->ship_temp->parts_array[1];
 			((SetShipState*) battle->state)->tab.tab_array[x][y + 1] = &((SetShipState*) battle->state)->ship_temp->parts_array[2];
 			((SetShipState*) battle->state)->tab.tab_array[x + 1][y + 1] = &((SetShipState*) battle->state)->ship_temp->parts_array[3];
+
+			printf("coloca a death star no sitio");
+
 		} else if (((SetShipState*) battle->state)->ship_temp->direction == 'h') {
 			for (i = 0; i < ((SetShipState*) battle->state)->ship_temp->size; i++) {
 				((SetShipState*) battle->state)->tab.tab_array[x + i][y] = &((SetShipState*) battle->state)->ship_temp->parts_array[i];
@@ -126,19 +120,17 @@ State updatePlaySetship(Battleship* battle) {
 			((SetShipState*) battle->state)->tab.tab_array[x][y + i] = &((SetShipState*) battle->state)->ship_temp->parts_array[i];
 		}
 
+		((SetShipState*) battle->state)->tab.ship_on_board++;
+		((SetShipState*) battle->state)->ship_temp =
+				((SetShipState*) battle->state)->tab.ship_array[((SetShipState*) battle->state)->tab.ship_on_board];
+
 		break;
 	}
 
 }
 
 void deletePlaySetship(Battleship* battle) {
-	deleteButton(((SetShipState*) battle->state)->fighter);
-	deleteButton(((SetShipState*) battle->state)->death_star);
-	deleteButton(((SetShipState*) battle->state)->cruser);
-	deleteButton(((SetShipState*) battle->state)->escape_pod);
-	deleteButton(((SetShipState*) battle->state)->battleship);
-	deleteButton(((SetShipState*) battle->state)->cruser_2);
-	deleteButton(((SetShipState*) battle->state)->escape_pod_2);
+
 	free(battle->state);
 
 }
@@ -289,9 +281,10 @@ void initShip(SetShipState* state) {
 	state->tab.ship_array[6].y_central = 0;
 	state->tab.ship_array[6].direction = 'v';
 	state->tab.ship_array[6].size = 1;
-
 }
 
 int checkColission(tabuleiro tab, ship* s) {
+	if(s->t_ship==DEATH_STAR){
 
+	}
 }

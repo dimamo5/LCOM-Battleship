@@ -65,19 +65,15 @@ typedef struct{
 	unsigned short ready;
 	player hum;
 	player com;
+
+	Bitmap* ship_map;
+	int done;
 }game;
 
 typedef struct{
 	tabuleiro tab;
-	int ship_selected;
 	ship* ship_temp;
-	Button* fighter;
-	Button* death_star;
-	Button* cruser;
-	Button* escape_pod;
-	Button* battleship;
-	Button* cruser_2;
-	Button* escape_pod_2;
+
 	Bitmap* ship_map;
 	int done;
 }SetShipState;
