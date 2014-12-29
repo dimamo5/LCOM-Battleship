@@ -5,9 +5,11 @@
 
 game* newGame() {
 }
+
 void drawGame(Battleship* battle) {
 
 }
+
 State updateGame(Battleship* battle) {
 
 }
@@ -122,11 +124,11 @@ State updatePlaySetship(Battleship* battle) {
 
 		((SetShipState*) battle->state)->tab.ship_on_board++;
 		((SetShipState*) battle->state)->ship_temp =
-				((SetShipState*) battle->state)->tab.ship_array[((SetShipState*) battle->state)->tab.ship_on_board];
+				&((SetShipState*) battle->state)->tab.ship_array[((SetShipState*) battle->state)->tab.ship_on_board];
 
 		break;
 	}
-
+	return GAME_PLAY_SETSHIP_STATE;
 }
 
 void deletePlaySetship(Battleship* battle) {
@@ -284,7 +286,33 @@ void initShip(SetShipState* state) {
 }
 
 int checkColission(tabuleiro tab, ship* s) {
-	if(s->t_ship==DEATH_STAR){
+	unsigned int i;
 
+	if (s->t_ship == DEATH_STAR) {
+		if (tab.tab_array[s->x_central][s->y_central]->t_part != WATER) {
+			return 1;
+		}
+		if (tab.tab_array[s->x_central + 1][s->y_central]->t_part != WATER) {
+			return 1;
+		}
+		if (tab.tab_array[s->x_central][s->y_central + 1]->t_part != WATER) {
+			return 1;
+		}
+		if (tab.tab_array[s->x_central + 1][s->y_central + 1]->t_part != WATER) {
+			return 1;
+		}
+	} else {
+		for (i = 0; i < s->size; i++) {
+			if (s->direction == 'h') {
+				if (tab.tab_array[s->x_central + i][s->y_central]->t_part != WATER) {
+					return 1;
+				}
+			} else if (s->direction == 'v') {
+				if (tab.tab_array[s->x_central][s->y_central + i]->t_part != WATER) {
+					return 1;
+				}
+			}
+		}
 	}
+	return 0;
 }
