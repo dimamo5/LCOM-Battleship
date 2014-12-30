@@ -99,7 +99,9 @@ void drawBattleship(Battleship* battleship) {
 		updateBufferSec();
 		break;
 	case GAME_PLAY_STATE:
+		cleanBufferSec();
 		drawGame(battleship);
+		updateBufferSec();
 		break;
 	case GAME_PAUSE_STATE:
 //		drawPause(battleship);

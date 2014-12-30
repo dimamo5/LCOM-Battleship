@@ -8,6 +8,7 @@ static tabuleiro* tab_computer;
 
 GameState* newGame() {
 	GameState* state = (GameState*) malloc(sizeof(GameState));
+
 	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
 
 	state->turn = 1; //1- player turn 0-player turn
@@ -18,20 +19,77 @@ GameState* newGame() {
 
 	initPlayer(COMPUTER, state);
 
-	printf("passa da inicializacao");
 	return state;
 }
 
 void drawGame(Battleship* battle) {
-	printf("dá bosta aqui");
+	printf("entra draw");
 	drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map);
+
 }
 
 State updateGame(Battleship* battle) {
 
+	if (game_state->turn == 0) {
+		bot_play(battle);
+		return GAME_PLAY_STATE;
+	}
+	printf("passa bot");
+	if (battle->timer_cnt == 0) {
+		game_state->turn_time_counter--;
+	}
+	printf("passa timer");
+
+	if (game_state->turn_time_counter == 0) {
+		game_state->hum.turns_missed++;
+		if (game_state->hum.turns_missed == 3) {
+			game_state->done = 1;
+			return MAIN_MENU_STATE;
+		}
+	}
+	printf("passa turno");
+
+	switch (battle->kb_code) {
+	case KEY_ARR_UP_BRK:
+		game_state->com.tab.selected_y--;
+		break;
+	case KEY_ARR_DOWN_BRK:
+		if (game_state->com.tab.selected_y != 9)
+			game_state->com.tab.selected_y++;
+		break;
+	case KEY_ARR_RIGHT_BRK:
+		if (game_state->com.tab.selected_x != 9)
+			game_state->com.tab.selected_x++;
+		break;
+	case KEY_ARR_LEFT_BRK:
+		game_state->com.tab.selected_x--;
+		break;
+	case KEY_ENTER_BRK:
+		if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit) {
+			return GAME_PLAY_STATE;
+		} else {
+
+			game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit = 1;
+		}
+
+		if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->t_part == WATER) {
+			game_state->turn = !game_state->turn;
+			game_state->hum.shots_missed++;
+		} else {
+
+			game_state->turn_time_counter = TURN_TIME;
+		}
+		break;
+	}
+	printf("passa no switch!");
+	battle->kb_code = KEY_NONE;
 	return GAME_PLAY_STATE;
 }
 void deleteGame(Battleship* battle) {
+
+}
+
+void bot_play(Battleship* battles) {
 
 }
 
@@ -54,6 +112,7 @@ SetShipState* newPlaySetship() {
 
 	return state;
 }
+
 void drawPlaySetship(Battleship* battle) {
 
 	drawSetTabuleiro(400, 200, set_ship->tab, set_ship->ship_temp);
@@ -160,6 +219,7 @@ State updatePlaySetship(Battleship* battle) {
 		battle->kb_code = KEY_NONE;
 		break;
 	}
+
 	return GAME_PLAY_SETSHIP_STATE;
 }
 
@@ -438,5 +498,7 @@ void initPlayer(type_player t, GameState* state) {
 		state->com.turns_missed = 0;
 		state->com.t_player = COMPUTER;
 		state->com.tab = *tab_computer;
+		state->com.tab.selected_x = 0;
+		state->com.tab.selected_y = 0;
 	}
 }
