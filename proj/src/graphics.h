@@ -15,7 +15,6 @@ typedef enum {
 #define BLUE rgb(0,0,255)
 #define WHITE rgb(255,255,255)
 
-
 #define PART_SIZE 40
 #define X_BOARD_HUM 50
 #define Y_BOARD_HUM 50
@@ -57,6 +56,8 @@ int rgb(unsigned char r, unsigned char g, unsigned char b);
 void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori);
 
 void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s);
+
+void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp);
 
 /** @} end of video_gr */
 
