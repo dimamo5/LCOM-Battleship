@@ -55,7 +55,7 @@ typedef struct {
 
 typedef struct {
 	unsigned short turn_time_counter;
-	unsigned short turn;
+	unsigned short turn; //turn 1 player turn else computer
 	player hum;
 	player com;
 
@@ -89,5 +89,6 @@ void randTabuleiro(tabuleiro* tab);
 
 void initPlayer(type_player t, GameState* state);
 
+void bot_play(Battleship* battles);
 //1000/0.05*hit_missed+0.01*timed_total
 #endif

@@ -227,6 +227,7 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 		if (i == 0 || i == 10) {
 			drawLine(x_temp, y_temp, 412, 'h', WHITE);
 			drawLine(x_temp, y_temp + 1, 412, 'h', WHITE);
+			y_temp++;
 		} else {
 			drawLine(x_temp, y_temp, 412, 'h', WHITE);
 
@@ -243,6 +244,7 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 		if (i == 0 || i == 10) {
 			drawLine(x_temp, y_temp, 412, 'v', WHITE);
 			drawLine(x_temp + 1, y_temp, 412, 'v', WHITE);
+			x_temp++;
 		} else {
 			drawLine(x_temp, y_temp, 412, 'v', WHITE);
 		}
@@ -263,7 +265,7 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
 	draw_board(x, y, BIG);
 
 	for (i; i < 100; i++) {
-		drawQuadricula(x + (i % 10) * 40, y + (i / 10) * 40, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
+		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
 	}
 
 // Desenha ship temporaria
@@ -320,37 +322,42 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b) {
 	sel.hit = 0;
 
 	//Desenha tab_hum
+	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
+
 	for (i = 0; i < 7; i++) {
 		if (i == 0) {
-			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
+			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central,
 					tab_hum.ship_array[i].parts_array[0], b, tab_hum.ship_array[i].direction);
-			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central + 1, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
-					tab_hum.ship_array[i].parts_array[1], b, tab_hum.ship_array[i].direction);
-			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central, Y_BOARD_HUM + tab_hum.ship_array[i].y_central + 1,
-					tab_hum.ship_array[i].parts_array[2], b, tab_hum.ship_array[i].direction);
-			drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central + 1, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
-					tab_hum.ship_array[i].parts_array[3], b, tab_hum.ship_array[i].direction);
+			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + 41,
+					tab_hum.ship_array[i].parts_array[1], b, 41 * tab_hum.ship_array[i].direction);
+			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central,
+					tab_hum.ship_array[i].parts_array[2], b, 41 * tab_hum.ship_array[i].direction);
+			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + 41,
+					tab_hum.ship_array[i].parts_array[3], b, 41 * tab_hum.ship_array[i].direction);
 		} else if (tab_hum.ship_array[i].direction == 'h') {
 			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
-				drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central + m, Y_BOARD_HUM + tab_hum.ship_array[i].y_central,
-						tab_hum.ship_array[i].parts_array[m], b, tab_hum.ship_array[i].direction);
+				drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41 * m,
+						Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central, tab_hum.ship_array[i].parts_array[m], b,
+						tab_hum.ship_array[i].direction);
 			}
 		} else if (tab_hum.ship_array[i].direction == 'v') {
 			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
-				drawQuadricula(X_BOARD_HUM + tab_hum.ship_array[i].x_central, Y_BOARD_HUM + tab_hum.ship_array[i].y_central + m,
-						tab_hum.ship_array[i].parts_array[m], b, tab_hum.ship_array[i].direction);
+				drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central,
+						Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + m * 41 + m, tab_hum.ship_array[i].parts_array[m], b,
+						tab_hum.ship_array[i].direction);
 			}
 		}
 	}
 	//Desenha tab_com
+	draw_board(X_BOARD_COM, Y_BOARD_COM, BIG);
 	for (i; i < 100; i++) {
 		if (tab_com.tab_array[i % 10][i / 10]->hit == 1) {
-			drawQuadricula(X_BOARD_COM + (i % 10) * 40, Y_BOARD_COM + (i / 10) * 40, *(tab_com.tab_array[i % 10][i / 10]), b, 'h');
+			drawQuadricula(X_BOARD_COM + (i % 10) * 41, Y_BOARD_COM + (i / 10) * 41, *(tab_com.tab_array[i % 10][i / 10]), b, 'h');
 		}
 	}
 	//Desenha Selecionado
 
-	drawQuadricula(X_BOARD_COM + tab_com.selected_x * 40, Y_BOARD_COM + tab_com.selected_y * 40, sel, b, 'h');
+	drawQuadricula(X_BOARD_COM + tab_com.selected_x * 41, Y_BOARD_COM + tab_com.selected_y * 41, sel, b, 'h');
 }
 
 void cleanBufferSec() {
@@ -464,6 +471,7 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 			}
 			break;
 		}
+
 	pos_x = 40 * pos_x; //Mudar de posicao relativa na imagens para a real
 	pos_y = 40 * pos_y;
 
