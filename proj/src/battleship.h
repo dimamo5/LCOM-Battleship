@@ -16,7 +16,6 @@ typedef enum {
 	GAME_PLAY_STATE,
 	GAME_PAUSE_STATE,
 	HIGHSCORE_WRITE_STATE,
-	HIGHSCORE_MENU_STATE,
 	EXIT_STATE
 } State;
 
@@ -30,6 +29,8 @@ typedef struct {
 	int done, draw;
 
 	int timer_cnt;
+
+	int highscore_winner;
 
 	int timer_ticked;
 	State currentState;

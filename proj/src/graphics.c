@@ -123,45 +123,6 @@ void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color) {
 	*mem_temp = color;
 }
 
-void vg_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color) {
-
-	int err, err_temp, dx = abs(xf - xi), dy = abs(yf - yi), sx, sy;
-
-	if (xi < xf) {
-		sx = 1;
-	} else {
-		sx = -1;
-	}
-
-	if (yi < yf) {
-		sy = 1;
-	} else {
-		sy = -1;
-	}
-
-	if (dx > dy) {
-		err = dx / 2;
-	} else {
-		err = -dy / 2;
-	}
-
-	while (1) {
-		vg_set_pixel(xi, yi, color);
-		if (xi == xf && yi == yf)
-			break;
-		err_temp = err;
-		if (err_temp > -dx) {
-			err -= dy;
-			xi += sx;
-		}
-		if (err_temp < dy) {
-			err += dx;
-			yi += sy;
-		}
-	}
-
-}
-
 void drawRectangle(Button* b) {
 	if (!b->available || !b->mouse_hover) {
 		return;
@@ -313,7 +274,7 @@ void alocaMouse(unsigned short *map, int width, int height) {
 
 }
 
-void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b) {
+void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int turn) {
 	unsigned int i, m;
 
 	ship_part sel;
@@ -348,6 +309,12 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b) {
 			}
 		}
 	}
+	for (i = 0; i < 100; i++) {
+		if (tab_hum.tab_array[i % 10][i / 10]->t_part == WATER) {
+			drawQuadricula(X_BOARD_HUM + (i % 10) * 41, Y_BOARD_HUM + (i / 10) * 41, *(tab_hum.tab_array[i % 10][i / 10]), b, 'h');
+		}
+	}
+
 	//Desenha tab_com
 	draw_board(X_BOARD_COM, Y_BOARD_COM, BIG);
 	for (i; i < 100; i++) {
@@ -355,9 +322,11 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b) {
 			drawQuadricula(X_BOARD_COM + (i % 10) * 41, Y_BOARD_COM + (i / 10) * 41, *(tab_com.tab_array[i % 10][i / 10]), b, 'h');
 		}
 	}
-	//Desenha Selecionado
 
-	drawQuadricula(X_BOARD_COM + tab_com.selected_x * 41, Y_BOARD_COM + tab_com.selected_y * 41, sel, b, 'h');
+	//Desenha Selecionado
+	if (turn) {
+		drawQuadricula(X_BOARD_COM + tab_com.selected_x * 41, Y_BOARD_COM + tab_com.selected_y * 41, sel, b, 'h');
+	}
 }
 
 void cleanBufferSec() {
@@ -384,7 +353,6 @@ int rgb(unsigned char r, unsigned char g, unsigned char b) {
 }
 
 void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) {
-
 	unsigned short pos_x, pos_y, i;
 	if (p.hit == 1 && p.t_part != WATER) {
 		pos_x = 3;
@@ -396,16 +364,17 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 				if (p.hit == 1) {
 					pos_x = 3;
 					pos_y = 1;
-				} else if (p.t_part == SELECTED) {
-					pos_x = 3;
-					pos_y = 3;
 				} else
 					return;
+			} else if (p.t_part == SELECTED) {
+				pos_x = 3;
+				pos_y = 3;
 			} else if (p.t_part == FULL) {
 				pos_x = 3;
 				pos_y = 2;
 			}
 			break;
+
 		case DEATH_STAR:
 			if (p.t_part == UPPER_LEFT) {
 				pos_x = 1;
@@ -508,5 +477,13 @@ void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, uns
 		if (i % x_size == 0 && i > 0) {
 			pos -= (bmp->bitmapInfo.width + x_size);
 		}
+	}
+}
+
+void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp) {
+	unsigned int i;
+	aloca_pixmap(x, y, bmp->Data, bmp->bitmapInfo.width, bmp->bitmapInfo.height);
+	for (i = 0; i < count; i++) {
+		drawLine(x, y + 25 * i + 12, 100, 'h', RED);
 	}
 }

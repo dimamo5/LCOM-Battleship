@@ -18,7 +18,7 @@ typedef enum {
 } type_ship;
 
 typedef enum {
-	WATER, FULL,SELECTED, UPPER_LEFT, UPPER_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, FIRST, SECOND, THIRD, FOURTH, FIFTH
+	WATER, FULL, SELECTED, UPPER_LEFT, UPPER_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, FIRST, SECOND, THIRD, FOURTH, FIFTH
 } type_part;
 
 typedef struct {
@@ -54,11 +54,21 @@ typedef struct {
 } player;
 
 typedef struct {
+        unsigned int last_x_hit;
+        unsigned int last_y_hit;
+        unsigned int previous_hit;  //diz se o hit anterior foi numa peca de navio
+        char direction;
+        unsigned int orientation; // 0 goes back and 1 goes forward
+        unsigned int orientation_was_inverted;
+} bot_ai;
+
+
+typedef struct {
 	unsigned short turn_time_counter;
 	unsigned short turn; //turn 1 player turn else computer
 	player hum;
 	player com;
-
+	bot_ai ai_comp;
 	Bitmap* ship_map;
 	int done;
 } GameState;
@@ -67,7 +77,7 @@ typedef struct {
 	tabuleiro tab;
 	tabuleiro tab_com;
 	ship* ship_temp;
-
+	Bitmap* ship_list;
 	Bitmap* ship_map;
 	int done;
 } SetShipState;
@@ -90,5 +100,8 @@ void randTabuleiro(tabuleiro* tab);
 void initPlayer(type_player t, GameState* state);
 
 void bot_play(Battleship* battle);
+
+int checkShips(Battleship* battle);
+
 //1000/0.05*hit_missed+0.01*timed_total
 #endif

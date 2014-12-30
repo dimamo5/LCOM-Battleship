@@ -28,6 +28,8 @@ Battleship* startBattleship() {
 	battle->currentState = MAIN_MENU_STATE;
 	battle->state = newMainMenuState();
 
+	battle->highscore_winner = -1;
+
 	// finish initialization
 	battle->done = 0;
 
@@ -108,9 +110,6 @@ void drawBattleship(Battleship* battleship) {
 		break;
 	case HIGHSCORE_WRITE_STATE:
 //		drawHighscoreWrite;
-		break;
-	case HIGHSCORE_MENU_STATE:
-//		drawHighscoreMenu;
 		break;
 
 	default:
@@ -205,9 +204,6 @@ void updateCurrentState(Battleship* battleship) {
 		break;
 	case HIGHSCORE_WRITE_STATE:
 		//		updateHighscoreWrite(battleship);
-		break;
-	case HIGHSCORE_MENU_STATE:
-		//		updateHighscoreMenu(battleship);
 		break;
 
 	default:
