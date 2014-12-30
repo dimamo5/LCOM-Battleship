@@ -84,6 +84,7 @@ State updateGame(Battleship* battle) {
 	battle->kb_code = KEY_NONE;
 	return GAME_PLAY_STATE;
 }
+
 void deleteGame(Battleship* battle) {
 
 }

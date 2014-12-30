@@ -56,19 +56,21 @@ int rtc_unsubscribe_int() {
 }
 */
 void disable_ints() {
-	__asm__("cli");
+	//__asm__("cli");
 }
 
 void enable_ints() {
-	__asm__("sti");
+	//__asm__("sti");
 }
 
-void get_time(int *hour, int *min, int *sec) {
+void get_time(int *day, int *hour, int *min) {
 	unsigned char RegA, RegB;
 
 	//disable interrupts
 	//not sure
-	disable_ints();
+	//disable_ints();
+	//day
+	*day = read_rtc_reg(7);
 
 	//hour
 	RegA = read_rtc_reg(10);
@@ -88,12 +90,6 @@ void get_time(int *hour, int *min, int *sec) {
 
 	*min = read_rtc_reg(2);
 
-	//seconds
-	while (RegA & 0x80 != 0) {
-		RegA = read_rtc_reg(10);
-	}
-
-	*sec = read_rtc_reg(0);
 
 	RegB = read_rtc_reg(11);
 
@@ -102,43 +98,16 @@ void get_time(int *hour, int *min, int *sec) {
 	}
 
 	if ((RegB & 0x04) == 0) {
+		*day = bcd_to_bin(*day);
 		*hour = bcd_to_bin(*hour);
 		*min = bcd_to_bin(*min);
-		*sec = bcd_to_bin(*sec);
 	}
+
 
 	//enable interrupts
 	//not sure
-	enable_ints();
+	//enable_ints();
 }
 
-void get_date(int *year, int *month, int *day) {
-	unsigned char RegB;
 
-	//disable interrupts
-	//not sure
-	disable_ints();
-
-	//year
-	*year = read_rtc_reg(9);
-
-	//month
-	*month = read_rtc_reg(8);
-
-	//day
-	*day = read_rtc_reg(7);
-
-	RegB = read_rtc_reg(11);
-
-	if ((RegB & 0x04) == 0) {
-		*year = bcd_to_bin(*year);
-		*month = bcd_to_bin(*month);
-		*day = bcd_to_bin(*day);
-	}
-
-	//enable interrupts
-	//not sure
-	enable_ints();
-
-}
 
