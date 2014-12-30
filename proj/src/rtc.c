@@ -56,11 +56,11 @@ int rtc_unsubscribe_int() {
 }
 */
 void disable_ints() {
-	clear_interrupts_asm();
+	__asm__("cli");
 }
 
 void enable_ints() {
-	set_interrupts_asm();
+	__asm__("sti");
 }
 
 void get_time(int *hour, int *min, int *sec) {
