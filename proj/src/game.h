@@ -89,6 +89,6 @@ void randTabuleiro(tabuleiro* tab);
 
 void initPlayer(type_player t, GameState* state);
 
-void bot_play(Battleship* battles);
+void bot_play(Battleship* battle);
 //1000/0.05*hit_missed+0.01*timed_total
 #endif
