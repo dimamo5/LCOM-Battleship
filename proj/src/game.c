@@ -34,7 +34,6 @@ State updateGame(Battleship* battle) {
 
 	if (game_state->turn == 0) {
 		bot_play(battle);
-		printf("BOT TURN");
 		return GAME_PLAY_STATE;
 	}
 
@@ -51,30 +50,35 @@ State updateGame(Battleship* battle) {
 	}
 
 	switch (battle->kb_code) {
+
 	case KEY_ARR_UP_BRK:
 		if (game_state->com.tab.selected_y > 0) {
 			game_state->com.tab.selected_y--;
 		}
 		battle->kb_code = KEY_NONE;
 		break;
+
 	case KEY_ARR_DOWN_BRK:
 		if (game_state->com.tab.selected_y != 9) {
 			game_state->com.tab.selected_y++;
 		}
 		battle->kb_code = KEY_NONE;
 		break;
+
 	case KEY_ARR_RIGHT_BRK:
 		if (game_state->com.tab.selected_x != 9) {
 			game_state->com.tab.selected_x++;
 		}
 		battle->kb_code = KEY_NONE;
 		break;
+
 	case KEY_ARR_LEFT_BRK:
 		if (game_state->com.tab.selected_x > 0) {
 			game_state->com.tab.selected_x--;
 		}
 		battle->kb_code = KEY_NONE;
 		break;
+
 	case KEY_ENTER_BRK:
 		if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit) {
 			return GAME_PLAY_STATE;
@@ -95,7 +99,6 @@ State updateGame(Battleship* battle) {
 
 	return GAME_PLAY_STATE;
 }
-
 void deleteGame(Battleship* battle) {
 
 }
@@ -124,6 +127,7 @@ void drawPlaySetship(Battleship* battle) {
 
 	drawSetTabuleiro(300, 200, set_ship->tab, set_ship->ship_temp);
 	drawListShipSet(750, 200, set_ship->tab.ship_on_board, set_ship->ship_list);
+	drawClock(10);
 }
 
 State updatePlaySetship(Battleship* battle) {
