@@ -457,9 +457,11 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 
 void drawClock(unsigned int time) {
 	unsigned short ms, ls, pos;
+	Bitmap* bmp = loadBitmap("home/lcom/proj/img/alarm_clock.bmp");
 	ls = time % 10;
 	ms = time / 10;
-//	drawPortionBitmap();
+	drawPortionBitmap(700, 50, ms, 0, 40, 50, bmp);
+	drawPortionBitmap(740, 50, ls, 0, 40, 50, bmp);
 }
 
 void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, unsigned short y_rel, unsigned short x_size,
@@ -472,7 +474,9 @@ void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, uns
 	int pos = (bmp->bitmapInfo.height - 1 - y_temp) * bmp->bitmapInfo.width + x_temp;
 
 	for (i = 0; i < x_size * y_size; i++) {
-		vg_set_pixel(x + i % x_size, y + i / x_size, bmp->Data[pos]);
+		if (bmp->Data[pos] != TRANS_COLOR) {
+			vg_set_pixel(x + i % x_size, y + i / x_size, bmp->Data[pos]);
+		}
 		pos++;
 		if (i % x_size == 0 && i > 0) {
 			pos -= (bmp->bitmapInfo.width + x_size);

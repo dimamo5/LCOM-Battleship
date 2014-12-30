@@ -59,6 +59,9 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s);
 
 void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp);
 
+void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, unsigned short y_rel, unsigned short x_size,
+		unsigned short y_size, Bitmap* bmp);
+
 /** @} end of video_gr */
 
 #endif /* __VIDEO_GR_H */

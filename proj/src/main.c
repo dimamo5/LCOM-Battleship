@@ -11,14 +11,13 @@
 
 int main(int argc, char **argv) {
 
-	//srand(time(NULL));
+	srand(time(NULL));
 
 	sef_startup();
 	//Handler em ASM
 	sys_enable_iop(SELF);
-	//srand(time(NULL));
-	//vg_init(0x117);
-/*
+	vg_init(0x117);
+
 	Battleship* battleship = (Battleship *) startBattleship();
 
 	while (!battleship->done) {
@@ -34,13 +33,6 @@ int main(int argc, char **argv) {
 		}
 	}
 	stopBattleship(battleship);
-*/
-	printf("teste\n");
-	int day;
-	int hour;
-	int min;
-	get_time(&day, &hour, &min);
-	printf("%d %02d:%02d \n", day, hour, min);
 
 	return 0;
 }
