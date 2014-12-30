@@ -23,7 +23,6 @@ GameState* newGame() {
 }
 
 void drawGame(Battleship* battle) {
-	printf("entra draw");
 	drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map);
 
 }
