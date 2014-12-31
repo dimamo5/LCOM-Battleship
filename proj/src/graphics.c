@@ -456,12 +456,12 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 }
 
 void drawClock(unsigned int time) {
-	unsigned short ms, ls, pos;
+	unsigned short ms, ls;
 	Bitmap* bmp = loadBitmap("home/lcom/proj/img/alarm_clock.bmp");
 	ls = time % 10;
 	ms = time / 10;
-	drawPortionBitmap(700, 50, ms, 0, 40, 50, bmp);
-	drawPortionBitmap(740, 50, ls, 0, 40, 50, bmp);
+	drawPortionBitmap(800, 50, ms, 0, 40, 50, bmp);
+	drawPortionBitmap(840, 50, ls, 0, 40, 50, bmp);
 }
 
 void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, unsigned short y_rel, unsigned short x_size,

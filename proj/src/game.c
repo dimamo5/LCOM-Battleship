@@ -28,17 +28,22 @@ GameState* newGame() {
 
 void drawGame(Battleship* battle) {
 	drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map, game_state->turn);
+	drawClock(game_state->turn_time_counter);
 }
 
 State updateGame(Battleship* battle) {
-
-	if (game_state->turn == 0) {
-		bot_play(battle);
-		return GAME_PLAY_STATE;
-	}
+	int tempo_bot_espera;
 
 	if (battle->timer_cnt == 0) {
 		game_state->turn_time_counter--;
+	}
+
+	if (game_state->turn == 0) {
+
+		tempo_bot_espera = rand() % 29 + 26;
+		if (game_state->turn_time_counter == tempo_bot_espera)
+			bot_play(battle);
+		return GAME_PLAY_STATE;
 	}
 
 	if (game_state->turn_time_counter == 0) {
@@ -127,7 +132,6 @@ void drawPlaySetship(Battleship* battle) {
 
 	drawSetTabuleiro(300, 200, set_ship->tab, set_ship->ship_temp);
 	drawListShipSet(750, 200, set_ship->tab.ship_on_board, set_ship->ship_list);
-	drawClock(10);
 }
 
 State updatePlaySetship(Battleship* battle) {
@@ -533,7 +537,7 @@ int checkShips(Battleship* battle) {
 				game_state->hum.tab.ship_array[i].nr_hits = count;
 				if (game_state->hum.tab.ship_array[i].nr_hits == game_state->hum.tab.ship_array[i].size) {
 					game_state->hum.tab.ship_array[i].destroyed = 1;
-					return i+1;
+					return i + 1;
 				}
 			}
 		} else {
@@ -547,7 +551,7 @@ int checkShips(Battleship* battle) {
 				game_state->com.tab.ship_array[i].nr_hits = count;
 				if (game_state->com.tab.ship_array[i].nr_hits == game_state->com.tab.ship_array[i].size) {
 					game_state->com.tab.ship_array[i].destroyed = 1;
-					return 1;
+					return i + 1;
 				}
 			}
 		}
