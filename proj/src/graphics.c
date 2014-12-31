@@ -317,7 +317,7 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 
 	//Desenha tab_com
 	draw_board(X_BOARD_COM, Y_BOARD_COM, BIG);
-	for (i; i < 100; i++) {
+	for (i = 0; i < 100; i++) {
 		if (tab_com.tab_array[i % 10][i / 10]->hit == 1) {
 			drawQuadricula(X_BOARD_COM + (i % 10) * 41, Y_BOARD_COM + (i / 10) * 41, *(tab_com.tab_array[i % 10][i / 10]), b, 'h');
 		}
@@ -364,6 +364,7 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 				if (p.hit == 1) {
 					pos_x = 3;
 					pos_y = 1;
+
 				} else
 					return;
 			} else if (p.t_part == SELECTED) {
@@ -447,7 +448,9 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 	int pos = (bmp->bitmapInfo.height - 1 - pos_y) * bmp->bitmapInfo.width + pos_x;
 
 	for (i = 0; i < 40 * 40; i++) {
-		vg_set_pixel(x + i % 40, y + i / 40, bmp->Data[pos]);
+		if (bmp->Data[pos] != TRANS_COLOR) {
+			vg_set_pixel(x + i % 40, y + i / 40, bmp->Data[pos]);
+		}
 		pos++;
 		if (i % 40 == 0 && i > 0) {
 			pos -= (bmp->bitmapInfo.width + 40);

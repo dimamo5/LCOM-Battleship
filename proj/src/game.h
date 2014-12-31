@@ -62,7 +62,6 @@ typedef struct {
         unsigned int orientation_was_inverted;
 } bot_ai;
 
-
 typedef struct {
 	unsigned short turn_time_counter;
 	unsigned short turn; //turn 1 player turn else computer
@@ -103,5 +102,5 @@ void bot_play(Battleship* battle);
 
 int checkShips(Battleship* battle);
 
-//1000/0.05*hit_missed+0.01*timed_total
+
 #endif

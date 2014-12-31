@@ -18,6 +18,7 @@ GameState* newGame() {
 	state->ai_comp.previous_hit = 0;
 	state->ai_comp.orientation = 2;
 	state->ai_comp.orientation_was_inverted = 0;
+	state->ai_comp.direction = 'n';
 
 	initPlayer(HUMAN, state);
 
@@ -32,17 +33,16 @@ void drawGame(Battleship* battle) {
 }
 
 State updateGame(Battleship* battle) {
-	int tempo_bot_espera;
+	static int tempo_bot_espera;
 
 	if (battle->timer_cnt == 0) {
 		game_state->turn_time_counter--;
 	}
 
 	if (game_state->turn == 0) {
-
-		tempo_bot_espera = rand() % 29 + 26;
-		if (game_state->turn_time_counter == tempo_bot_espera)
+		if (game_state->turn_time_counter == tempo_bot_espera) {
 			bot_play(battle);
+		}
 		return GAME_PLAY_STATE;
 	}
 
@@ -86,6 +86,7 @@ State updateGame(Battleship* battle) {
 
 	case KEY_ENTER_BRK:
 		if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit) {
+
 			return GAME_PLAY_STATE;
 		} else {
 
@@ -93,17 +94,21 @@ State updateGame(Battleship* battle) {
 		}
 
 		if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->t_part == WATER) {
+//			checkShips(battle); // CheckShips
 			game_state->turn = !game_state->turn;
+			tempo_bot_espera = rand() % 3 + 7;
+
 			game_state->hum.shots_missed++;
-		} else {
-			game_state->turn_time_counter = TURN_TIME;
 		}
+
+		game_state->turn_time_counter = TURN_TIME;
 		battle->kb_code = KEY_NONE;
 		break;
 	}
 
 	return GAME_PLAY_STATE;
 }
+
 void deleteGame(Battleship* battle) {
 
 }
@@ -563,21 +568,24 @@ void bot_play(Battleship* battle) {
 
 	unsigned int selected_x;
 	unsigned int selected_y;
+	unsigned int bot_destroyed_ship = checkShips(battle);
 
 	if (!game_state->ai_comp.previous_hit) { // Se antes falhou o hit,
+		printf("\nEstado 1");
 		selected_x = rand() % 10; // agora vai fazer random do sitio onde jogar
 		selected_y = rand() % 10;
 		game_state->ai_comp.last_x_hit = selected_x;
 		game_state->ai_comp.last_y_hit = selected_y;
-	} else if (checkShips(battle)) {
+	} else if (bot_destroyed_ship) {
+		printf("\nEstado 2");
 		selected_x = rand() % 10; // agora vai fazer random do sitio onde jogar
 		selected_y = rand() % 10;
 		game_state->ai_comp.last_x_hit = selected_x;
 		game_state->ai_comp.last_y_hit = selected_y;
 
 	} else { // Se acertou o ultimo hit mas nao destruiu um ship
-		printf("\nacertou numa ship!");
-		if ((game_state->ai_comp.direction != 'h') && (game_state->ai_comp.direction != 'v')) {
+		printf("\nEstado 3");
+		if (game_state->ai_comp.direction == 'n') {
 			//se ainda nao tinha direcao definida porque
 			unsigned int dir = rand() % 2; //era a 1a vez que tinha acertado, decide
 			if (dir) //direcao para onde acha que o navio esta
@@ -587,26 +595,35 @@ void bot_play(Battleship* battle) {
 		}
 
 		if (game_state->ai_comp.direction == 'h') { //Quando chega aqui, ja tem dir. definida
-			printf("direcao horiontal!");
-			if ((game_state->ai_comp.orientation != 0) || (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
+			printf("\ndirecao horizontal!");
+			if ((game_state->ai_comp.orientation != 0) && (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
 				if (game_state->ai_comp.last_x_hit == 9) {
 					game_state->ai_comp.orientation = 0;
 					game_state->ai_comp.orientation_was_inverted = 1;
+
 				} else if (game_state->ai_comp.last_x_hit == 0) {
 					game_state->ai_comp.orientation = 1;
 					game_state->ai_comp.orientation_was_inverted = 1;
+
 				} else {
 					game_state->ai_comp.orientation = rand() % 2;
+
 				}
 			}
 			if (game_state->ai_comp.orientation == 1) { // ORIENTATION = 1 E FORWARD, ORIENTATION = 0 E BACKWARD
+				printf("\n orientacao 1");
 				if (game_state->ai_comp.last_x_hit < 9) {
 					selected_x = game_state->ai_comp.last_x_hit + 1;
+					selected_y = game_state->ai_comp.last_y_hit;
 					game_state->ai_comp.last_x_hit = selected_x;
 
+					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
 					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
+					selected_y = game_state->ai_comp.last_y_hit;
+					selected_x = game_state->ai_comp.last_x_hit;
+					printf("dir inv");
 				} else { // se ja tiver invertido alguma vez a orientacao
 					selected_x = rand() % 10;
 					selected_y = rand() % 10;
@@ -615,15 +632,22 @@ void bot_play(Battleship* battle) {
 					game_state->ai_comp.orientation_was_inverted = 0;
 					game_state->ai_comp.direction = 'n'; // dar reset a direcao, para ser desconhecida
 					game_state->ai_comp.orientation = 2; // dar reset a orientacao, para ser desconhecida
+					printf("y=0");
 				}
 			} else if (game_state->ai_comp.orientation == 0) {
+				printf("\n orientacao 0");
 				if (game_state->ai_comp.last_x_hit > 0) {
 					selected_x = game_state->ai_comp.last_x_hit - 1;
+					selected_y = game_state->ai_comp.last_y_hit;
 					game_state->ai_comp.last_x_hit = selected_x;
-					game_state->ai_comp.last_y_hit = selected_y;
+
+					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
 					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
+					selected_y = game_state->ai_comp.last_y_hit;
+					selected_x = game_state->ai_comp.last_x_hit;
+					printf("dir inv");
 				} else { // se ja tiver invertido alguma vez a orientacao
 					selected_x = rand() % 10;
 					selected_y = rand() % 10;
@@ -632,30 +656,40 @@ void bot_play(Battleship* battle) {
 					game_state->ai_comp.orientation_was_inverted = 0;
 					game_state->ai_comp.direction = 'n'; // dar reset a direcao, para ser desconhecida
 					game_state->ai_comp.orientation = 2; // dar reset a orientacao, para ser desconhecida
+					printf("y=0");
 				}
 			}
 		}
 		if (game_state->ai_comp.direction == 'v') { //Quando chega aqui, ja tem dir. definida
-			printf("direccao vertical!");
-			if ((game_state->ai_comp.orientation != 0) || (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
+			printf("\ndireccao vertical!");
+			if ((game_state->ai_comp.orientation != 0) && (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
 				if (game_state->ai_comp.last_y_hit == 9) {
 					game_state->ai_comp.orientation = 0;
 					game_state->ai_comp.orientation_was_inverted = 1;
+
 				} else if (game_state->ai_comp.last_y_hit == 0) {
 					game_state->ai_comp.orientation = 1;
 					game_state->ai_comp.orientation_was_inverted = 1;
+
 				} else {
 					game_state->ai_comp.orientation = rand() % 2;
+
 				}
 			}
 			if (game_state->ai_comp.orientation == 1) { // ORIENTATION = 1 E FORWARD, ORIENTATION = 0 E BACKWARD
+				printf("\n orientacao 1");
 				if (game_state->ai_comp.last_y_hit < 9) {
 					selected_y = game_state->ai_comp.last_y_hit + 1;
+					selected_x = game_state->ai_comp.last_x_hit;
 					game_state->ai_comp.last_y_hit = selected_y;
 
+					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
 					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
+					selected_y = game_state->ai_comp.last_y_hit;
+					selected_x = game_state->ai_comp.last_x_hit;
+					printf("dir inv");
 				} else { // se ja tiver invertido alguma vez a orientacao
 					selected_x = rand() % 10;
 					selected_y = rand() % 10;
@@ -664,14 +698,21 @@ void bot_play(Battleship* battle) {
 					game_state->ai_comp.orientation_was_inverted = 0;
 					game_state->ai_comp.direction = 'n'; // dar reset a direcao, para ser desconhecida
 					game_state->ai_comp.orientation = 2; // dar reset a orientacao, para ser desconhecida
+					printf("y=0");
 				}
 			} else if (game_state->ai_comp.orientation == 0) {
+				printf("\n orientacao 0");
 				if (game_state->ai_comp.last_y_hit > 0) {
 					selected_y = game_state->ai_comp.last_y_hit - 1;
+					selected_x = game_state->ai_comp.last_x_hit;
 					game_state->ai_comp.last_y_hit = selected_y;
+					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
 					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
+					selected_y = game_state->ai_comp.last_y_hit;
+					selected_x = game_state->ai_comp.last_x_hit;
+					printf("dir inv");
 				} else { // se ja tiver invertido alguma vez a orientacao
 					selected_x = rand() % 10;
 					selected_y = rand() % 10;
@@ -680,6 +721,7 @@ void bot_play(Battleship* battle) {
 					game_state->ai_comp.orientation_was_inverted = 0;
 					game_state->ai_comp.direction = 'n'; // dar reset a direcao, para ser desconhecida
 					game_state->ai_comp.orientation = 2; // dar reset a orientacao, para ser desconhecida
+					printf("y=0");
 				}
 			}
 		}
@@ -687,18 +729,28 @@ void bot_play(Battleship* battle) {
 	}
 
 	if (game_state->hum.tab.tab_array[selected_x][selected_y]->hit) { //peca ja tinha sido atingida antes
+		printf("\nPeca ja estava atingida");
 		return;
 	} else { // Se a peca ainda nao tinha sido atingida, passa a estar -> hit = 1
+		printf("\nPeca atingida pela 1a vez");
 		game_state->hum.tab.tab_array[selected_x][selected_y]->hit = 1;
 		game_state->ai_comp.last_x_hit = selected_x;
 		game_state->ai_comp.last_y_hit = selected_y;
-		game_state->ai_comp.previous_hit = 1;
 	}
 
 	if (game_state->hum.tab.tab_array[selected_x][selected_y]->t_part == WATER) {
+		printf("\nAgua!");
 		game_state->ai_comp.previous_hit = 0;
 		game_state->turn = !game_state->turn;
 	} else {
-		game_state->turn_time_counter = TURN_TIME;
+		printf("\nShip");
+		game_state->ai_comp.previous_hit = 1;
 	}
+
+	game_state->turn_time_counter = TURN_TIME;
+
+}
+
+void calculaScore(Battleship* battle) {
+	battle->highscore_winner = 1000 / (0.05 * game_state->hum.shots_missed + 0.01 * game_state->hum.turns_missed);
 }
