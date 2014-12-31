@@ -51,24 +51,29 @@ typedef struct {
 	unsigned short shots_missed;
 	unsigned short time_played;
 	unsigned short turns_missed;
+	unsigned short destroyed_ship_turn;
 } player;
 
 typedef struct {
-        unsigned int last_x_hit;
-        unsigned int last_y_hit;
-        unsigned int previous_hit;  //diz se o hit anterior foi numa peca de navio
-        char direction;
-        unsigned int orientation; // 0 goes back and 1 goes forward
-        unsigned int orientation_was_inverted;
+	unsigned int last_x_hit;
+	unsigned int last_y_hit;
+	unsigned int previous_hit; //diz se o hit anterior foi numa peca de navio
+	char direction;
+	unsigned int orientation; // 0 goes back and 1 goes forward
+	unsigned int orientation_was_inverted;
 } bot_ai;
 
 typedef struct {
 	unsigned short turn_time_counter;
 	unsigned short turn; //turn 1 player turn else computer
+	unsigned short winner;
 	player hum;
 	player com;
 	bot_ai ai_comp;
 	Bitmap* ship_map;
+	Bitmap* alarm_clock;
+	Bitmap* ship_list;
+	Bitmap* turns;
 	int done;
 } GameState;
 
@@ -102,5 +107,10 @@ void bot_play(Battleship* battle);
 
 int checkShips(Battleship* battle);
 
+int gameOver(Battleship* battle); //winner 1-hum     2-comp     3-none
+
+unsigned int calculaScore(Battleship* battle);
+
+void updateShips(Battleship* battle);
 
 #endif
