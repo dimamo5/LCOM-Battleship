@@ -352,12 +352,9 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b,
 
 	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
 	for (i = 0; i < 100; i++) {
-		if (tab_hum.tab_array[i % 10][i / 10]->hit == 1) {
-			drawQuadricula(X_BOARD_COM + (i % 10) * 41,
-					Y_BOARD_COM + (i / 10) * 41,
-					*(tab_hum.tab_array[i % 10][i / 10]), b,
-					(tab_hum.tab_array[i % 10][i / 10])->direction);
-		}
+		drawQuadricula(X_BOARD_HUM + (i % 10) * 41, Y_BOARD_HUM + (i / 10) * 41,
+				*(tab_hum.tab_array[i % 10][i / 10]), b,
+				(tab_hum.tab_array[i % 10][i / 10])->direction);
 	}
 
 	//Desenha tab_com
