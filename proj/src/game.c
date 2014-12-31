@@ -533,7 +533,7 @@ int checkShips(Battleship* battle) {
 				game_state->hum.tab.ship_array[i].nr_hits = count;
 				if (game_state->hum.tab.ship_array[i].nr_hits == game_state->hum.tab.ship_array[i].size) {
 					game_state->hum.tab.ship_array[i].destroyed = 1;
-					return 1;
+					return i+1;
 				}
 			}
 		} else {
