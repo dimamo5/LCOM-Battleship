@@ -24,6 +24,7 @@ typedef enum {
 typedef struct {
 	type_part t_part;
 	type_ship t_ship;
+	char direction;
 	unsigned short hit;
 } ship_part;
 
@@ -75,6 +76,8 @@ typedef struct {
 	Bitmap* ship_list;
 	Bitmap* turns;
 	int done;
+	unsigned int pause;
+
 } GameState;
 
 typedef struct {
