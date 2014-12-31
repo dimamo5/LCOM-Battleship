@@ -105,10 +105,7 @@ void drawBattleship(Battleship* battleship) {
 		drawGame(battleship);
 		updateBufferSec();
 		break;
-	case GAME_PAUSE_STATE:
-//		drawPause(battleship);
-		break;
-	case HIGHSCORE_WRITE_STATE:
+	case HIGHSCORE_STATE:
 //		drawHighscoreWrite;
 		break;
 
@@ -158,14 +155,8 @@ void changeState(Battleship* battleship, State programState) {
 	case GAME_PLAY_STATE:
 		battleship->state = newGame(battleship);
 		break;
-//	case GAME_PAUSE_STATE:
-//			battleship->state = newPause(battleship);
-//		break;
-//	case HIGHSCORE_WRITE_STATE:
-//				battleship->state = newHighscoreWrite(battleship);
-//		break;
-//	case HIGHSCORE_MENU_STATE:
-//				battleship->state = newHighscoreMenu(battleship);
+	case HIGHSCORE_STATE:
+//				battleship->state = newHighscore(battleship);
 //		break;
 	case EXIT_STATE:
 		battleship->done = 1;
@@ -199,10 +190,7 @@ void updateCurrentState(Battleship* battleship) {
 			statetochange = updateGame(battleship);
 		}
 		break;
-	case GAME_PAUSE_STATE:
-		//		updatePause(battleship);
-		break;
-	case HIGHSCORE_WRITE_STATE:
+	case HIGHSCORE_STATE:
 		//		updateHighscoreWrite(battleship);
 		break;
 
@@ -223,14 +211,8 @@ void deleteCurrentState(Battleship* battleship) {
 		break;
 	case GAME_PLAY_STATE:
 		deleteGame(battleship);
-//		break;
-//	case GAME_PAUSE_STATE:
-//		deletePause(battleship);
-//		break;
-//	case HIGHSCORE_WRITE_STATE:
-//		deleteHighscoreWrite(battleship);
-//		break;
-//	case HIGHSCORE_MENU_STATE:
+		break;
+	case HIGHSCORE_STATE:
 //		deleteHighscoreMenu(battleship);
 //		break;
 

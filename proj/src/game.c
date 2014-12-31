@@ -33,15 +33,29 @@ GameState* newGame() {
 void drawGame(Battleship* battle) {
 	drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map, game_state->turn);
 	drawClock(game_state->turn_time_counter, game_state->alarm_clock);
-
+	drawDestroyedList(battle);
 	if (game_state->winner) {
 		drawWinner(game_state->winner);
 	}
-	drawDestroyedList(battle);
 }
 
 State updateGame(Battleship* battle) {
 	static int tempo_bot_espera;
+
+	if (game_state->winner) {
+		if (game_state->winner == 1) {
+			battle->highscore_winner = calculaScore(battle);
+		}
+
+		if (battle->kb_code == KEY_ESC_BRK) {
+			game_state->done = 1;
+			battle->kb_code = KEY_NONE;
+			if (game_state->winner == 1) {
+				return HIGHSCORE_STATE;
+			} else
+				return MAIN_MENU_STATE;
+		}
+	}
 
 	if (battle->timer_cnt == 0) {
 		game_state->turn_time_counter--;
@@ -50,7 +64,6 @@ State updateGame(Battleship* battle) {
 	if (game_state->turn == 0) {
 		if (game_state->turn_time_counter == tempo_bot_espera) {
 			bot_play(battle);
-			updateShips(battle);
 		}
 //		printf("\nsaiu da bot");
 		return GAME_PLAY_STATE;
@@ -99,13 +112,6 @@ State updateGame(Battleship* battle) {
 		}
 		battle->kb_code = KEY_NONE;
 		break;
-	case KEY_ESC_BRK:
-
-		if (game_state->winner) {
-			game_state->done = 1;
-		}
-		battle->kb_code = KEY_NONE;
-		break;
 
 	case KEY_ENTER_BRK:
 		if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit) {
@@ -126,10 +132,6 @@ State updateGame(Battleship* battle) {
 		updateShips(battle);
 
 		game_state->winner = gameOver(battle);
-
-		if (game_state->winner == 1) {
-			battle->highscore_winner = calculaScore(battle);
-		}
 
 		game_state->turn_time_counter = TURN_TIME;
 		battle->kb_code = KEY_NONE;
@@ -780,7 +782,8 @@ void bot_play(Battleship* battle) {
 	}
 
 	game_state->turn_time_counter = TURN_TIME;
-
+	updateShips(battle);
+	game_state->winner = gameOver(battle);
 }
 
 unsigned int calculaScore(Battleship* battle) {
@@ -795,7 +798,7 @@ int gameOver(Battleship* battle) {
 		}
 	}
 	if (count == 7) {
-		return 2;
+		return 1;
 	}
 	for (i = 0; i < 7; i++) {
 		if (game_state->com.tab.ship_array[i].destroyed) {
