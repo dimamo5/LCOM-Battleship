@@ -213,12 +213,13 @@ void draw_board(unsigned short x, unsigned short y, Board_size size) {
 	}
 
 }
-void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
-	Bitmap * b = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
+void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s, Bitmap* b) {
+
 	ship_part f;
 	f.t_part = FULL;
 	f.t_ship = NOTHING;
 	f.hit = 0;
+
 	unsigned short x_temp = 0;
 	unsigned short y_temp = 0;
 
@@ -232,27 +233,27 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s) {
 // Desenha ship temporaria
 
 	for (i = 0; i < s->size; i++) {
-		if (tab.tab_array[s->x_central][s->y_central]->t_part == WATER) {
-			if (s->t_ship == DEATH_STAR) {
-				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central, s->parts_array[0], b, s->direction);
-				drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central, s->parts_array[1], b, s->direction);
-				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + 41, s->parts_array[2], b, s->direction);
-				drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central + 41, s->parts_array[3], b, s->direction);
-			} else if (s->direction == 'h') {
+		if (s->t_ship == DEATH_STAR) {
+			drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central, s->parts_array[0], b, s->direction);
+			drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central, s->parts_array[1], b, s->direction);
+			drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + 41, s->parts_array[2], b, s->direction);
+			drawQuadricula(x + 41 * s->x_central + 41, y + 41 * s->y_central + 41, s->parts_array[3], b, s->direction);
+		} else if (s->direction == 'h') {
+			if (tab.tab_array[s->x_central + i][s->y_central]->t_part == WATER) {
 				drawQuadricula(x + 41 * s->x_central + i * 41, y + 41 * s->y_central, s->parts_array[i], b, s->direction);
-			} else if (s->direction == 'v') {
-				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + i * 41, s->parts_array[i], b, s->direction);
-			}
-		} else {
-			if (s->direction == 'h') {
+			} else {
 				drawQuadricula(x + 41 * s->x_central + i * 41, y + 41 * s->y_central, f, b, s->direction);
-			} else if (s->direction == 'v') {
+			}
+		} else if (s->direction == 'v') {
+			if (tab.tab_array[s->x_central][s->y_central + i]->t_part == WATER)
+				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + i * 41, s->parts_array[i], b, s->direction);
+			else {
 				drawQuadricula(x + 41 * s->x_central, y + 41 * s->y_central + i * 41, f, b, s->direction);
 			}
 		}
 	}
-
 }
+
 void alocaMouse(unsigned short *map, int width, int height) {
 	memcpy(triple_buffer, second_buffer, v_res * h_res * bytes_per_pixel);
 
@@ -290,11 +291,11 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central,
 					tab_hum.ship_array[i].parts_array[0], b, tab_hum.ship_array[i].direction);
 			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + 41,
-					tab_hum.ship_array[i].parts_array[1], b, 41 * tab_hum.ship_array[i].direction);
+					tab_hum.ship_array[i].parts_array[1], b, tab_hum.ship_array[i].direction);
 			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central,
-					tab_hum.ship_array[i].parts_array[2], b, 41 * tab_hum.ship_array[i].direction);
+					tab_hum.ship_array[i].parts_array[2], b, tab_hum.ship_array[i].direction);
 			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + 41,
-					tab_hum.ship_array[i].parts_array[3], b, 41 * tab_hum.ship_array[i].direction);
+					tab_hum.ship_array[i].parts_array[3], b, tab_hum.ship_array[i].direction);
 		} else if (tab_hum.ship_array[i].direction == 'h') {
 			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
 				drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41 * m,
@@ -304,7 +305,7 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 		} else if (tab_hum.ship_array[i].direction == 'v') {
 			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
 				drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central,
-						Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + m * 41 + m, tab_hum.ship_array[i].parts_array[m], b,
+						Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + m * 41, tab_hum.ship_array[i].parts_array[m], b,
 						tab_hum.ship_array[i].direction);
 			}
 		}
@@ -458,11 +459,11 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 	}
 }
 
-void drawClock(unsigned int time) {
+void drawClock(unsigned int time, Bitmap* bmp) {
 	unsigned short ms, ls;
-	Bitmap* bmp = loadBitmap("home/lcom/proj/img/alarm_clock.bmp");
 	ls = time % 10;
 	ms = time / 10;
+
 	drawPortionBitmap(800, 50, ms, 0, 40, 50, bmp);
 	drawPortionBitmap(840, 50, ls, 0, 40, 50, bmp);
 }
@@ -493,4 +494,36 @@ void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp) {
 	for (i = 0; i < count; i++) {
 		drawLine(x, y + 25 * i + 12, 100, 'h', RED);
 	}
+}
+
+void drawWinner(int winner) {
+	if (winner == 1) {
+		printf("imagem winner");
+	} else if (winner == 2) {
+		printf("imagme loser");
+	}
+}
+
+void drawDestroyedList(Battleship* battle) {
+	unsigned int i;
+	if (!game_state->turn) {
+		drawPortionBitmap(X_BOARD_HUM, Y_BOARD_HUM + 500, 1, 0, 98, 25, game_state->turns);
+	} else {
+		drawPortionBitmap(X_BOARD_COM + 100, Y_BOARD_COM - 100, 0, 0, 98, 25, game_state->turns);
+	}
+
+	aloca_pixmap(X_BOARD_HUM + 450, Y_BOARD_HUM, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
+			game_state->ship_list->bitmapInfo.height);
+	for (i = 0; i < 7; i++) {
+		if (game_state->hum.tab.ship_array[i].destroyed)
+			drawLine(X_BOARD_HUM + 450, Y_BOARD_HUM + 25 * i + 12, 100, 'h', RED);
+	}
+
+	aloca_pixmap(X_BOARD_COM - 200, 500, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
+			game_state->ship_list->bitmapInfo.height);
+	for (i = 0; i < 7; i++) {
+		if (game_state->com.tab.ship_array[i].destroyed)
+			drawLine(X_BOARD_COM - 100, Y_BOARD_COM + 25 * i + 12, 100, 'h', RED);
+	}
+
 }

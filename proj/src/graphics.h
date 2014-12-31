@@ -55,12 +55,16 @@ int rgb(unsigned char r, unsigned char g, unsigned char b);
 
 void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori);
 
-void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s);
+void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s, Bitmap* b);
 
 void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp);
 
+void drawClock(unsigned int time, Bitmap* bmp);
+
 void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, unsigned short y_rel, unsigned short x_size,
 		unsigned short y_size, Bitmap* bmp);
+
+void drawDestroyedList(Battleship* battle);
 
 /** @} end of video_gr */
 

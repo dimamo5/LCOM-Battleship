@@ -51,25 +51,36 @@ void updateMouse() {
 		} else {
 			mouse_sign_x = 0;
 		}
+
 		if (mouse->packets[0] & BIT(5)) {
 			mouse_sign_y = -1 << 8;
 		} else {
 			mouse_sign_y = 0;
 		}
-		mouse->x += mouse->packets[1] | mouse_sign_x;
+
+		if ((mouse->packets[1] | mouse_sign_x) > 255) {
+			mouse->x += 255;
+		} else {
+			mouse->x += mouse->packets[1] | mouse_sign_x;
+		}
 
 		if (mouse->x < 0) {
 			mouse->x = 0;
 		} else if (mouse->x + mouse->mouse_up->bitmapInfo.width > getHRes()) {
 			mouse->x = getHRes() - mouse->mouse_up->bitmapInfo.width;
 		}
-		mouse->y -= mouse->packets[2] | mouse_sign_y;
 
+		if ((mouse->packets[2] | mouse_sign_y) > 255) {
+			mouse->y -= 255;
+		} else {
+			mouse->y -= mouse->packets[2] | mouse_sign_y;
+		}
 		if (mouse->y < 0) {
 			mouse->y = 0;
 		} else if (mouse->y + mouse->mouse_up->bitmapInfo.height > getVRes()) {
 			mouse->y = getVRes() - mouse->mouse_up->bitmapInfo.height;
 		}
+
 		mouse->draw = 0;
 		mouse->bytesRead = 1;
 		mouse->leftButtonDown = mouse->packets[0] & BIT(0);
@@ -86,11 +97,9 @@ void drawMouse() {
 	}
 
 	if (mouse->leftButtonDown || mouse->rightButtonDown) {
-		alocaMouse(mouse->mouse_down->Data, mouse->mouse_up->bitmapInfo.width,
-				mouse->mouse_up->bitmapInfo.height);
+		alocaMouse(mouse->mouse_down->Data, mouse->mouse_up->bitmapInfo.width, mouse->mouse_up->bitmapInfo.height);
 	} else {
-		alocaMouse(mouse->mouse_up->Data, mouse->mouse_up->bitmapInfo.width,
-				mouse->mouse_up->bitmapInfo.height);
+		alocaMouse(mouse->mouse_up->Data, mouse->mouse_up->bitmapInfo.width, mouse->mouse_up->bitmapInfo.height);
 	}
 
 	updateBufferTriple();
@@ -119,9 +128,9 @@ int kbd_subscribe_int() {
 
 int kbd_unsubscribe_int() {
 
-		if (sys_irqrmpolicy(&hook_id) != OK) {
-			return 1;
-		}
+	if (sys_irqrmpolicy(&hook_id) != OK) {
+		return 1;
+	}
 
 	return 0;
 
@@ -130,8 +139,7 @@ int kbd_unsubscribe_int() {
 int mouse_subscribe_int() {
 	unsigned int bit_sel = 3; // bit_sel is different from the one on the timer_subscribe and kbc_subscrive (just in case)
 	hook_id = bit_sel;
-	if (sys_irqsetpolicy(MOUSE_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id)
-			!= OK)
+	if (sys_irqsetpolicy(MOUSE_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id) != OK)
 		return -1;
 	if (sys_irqenable(&hook_id) != OK)
 		return -1;
@@ -216,18 +224,14 @@ int check_first_byte() {
 
 void print_packets(long* packet) {
 	//B1=0x8	B2=0x12	B3=0x14	LB=0	MB=0	RB=0	XOV=0	YOV=0	X=18	Y=20
-	printf(
-			"B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
-			packet[0], packet[1], packet[2], (packet[0] & BIT(0)),
-			(packet[0] & BIT(2)) >> 2, (packet[0] & BIT(1)) >> 1,
-			(packet[0] & BIT(6)) >> 6, (packet[0] & BIT(7)) >> 7,
-			(char) packet[1], (char) packet[2]);
+	printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n", packet[0], packet[1], packet[2],
+			(packet[0] & BIT(0)), (packet[0] & BIT(2)) >> 2, (packet[0] & BIT(1)) >> 1, (packet[0] & BIT(6)) >> 6,
+			(packet[0] & BIT(7)) >> 7, (char) packet[1], (char) packet[2]);
 }
 
 int mouseInsideButton(Button* botao, Mouse* rato) {
 
-	if (rato->x > botao->x_ini && rato->x < botao->x_final
-			&& rato->y > botao->y_ini && rato->y < botao->y_final)
+	if (rato->x > botao->x_ini && rato->x < botao->x_final && rato->y > botao->y_ini && rato->y < botao->y_final)
 		return 1;
 
 	return 0;
