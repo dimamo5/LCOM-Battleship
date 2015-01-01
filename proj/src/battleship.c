@@ -80,9 +80,9 @@ void updateBattleship(Battleship* battleship) {
 	} else {
 		printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 	}
-	if (battleship->kb_code == KEY_ESC) {
-		battleship->done = 1;
-	}
+//	if (battleship->kb_code == KEY_ESC) {
+//		battleship->done = 1;
+//	}
 
 	updateCurrentState(battleship);
 }
@@ -145,17 +145,19 @@ void changeState(Battleship* battleship, State programState) {
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
+		battleship->kb_code = KEY_NONE;
 		battleship->state = (MainMenuState *) newMainMenuState(battleship);
-//		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
+		battleship->kb_code = KEY_NONE;
 		battleship->state = newPlaySetship(battleship);
-//		updateCurrentState(battleship);
 		break;
 	case GAME_PLAY_STATE:
+		battleship->kb_code = KEY_NONE;
 		battleship->state = newGame(battleship);
 		break;
 	case HIGHSCORE_STATE:
+		battleship->kb_code = KEY_NONE;
 //				battleship->state = newHighscore(battleship);
 //		break;
 	case EXIT_STATE:
@@ -182,12 +184,14 @@ void updateCurrentState(Battleship* battleship) {
 	case GAME_PLAY_SETSHIP_STATE:
 		statetochange = updatePlaySetship(battleship);
 		if (((SetShipState *) battleship->state)->done) {
+
 			changeState(battleship, statetochange);
 		}
 		break;
 	case GAME_PLAY_STATE:
-		if (((SetShipState *) battleship->state)->done) {
-			statetochange = updateGame(battleship);
+		statetochange = updateGame(battleship);
+		if (((GameState *) battleship->state)->done) {
+			changeState(battleship, statetochange);
 		}
 		break;
 	case HIGHSCORE_STATE:

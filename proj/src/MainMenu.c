@@ -60,6 +60,8 @@ MainMenuState* newMainMenuState() {
 	y2 = y1 + height;
 	state->exit_button = newButton(x1, y1, x2, y2, WHITE);
 
+	resetMouse();
+
 	return state;
 
 }

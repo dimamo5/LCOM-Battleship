@@ -63,6 +63,7 @@ typedef enum {
 	KEY_I = 0x0017,
 	KEY_O = 0x0018,
 	KEY_P = 0x0019,
+	KEY_P_BRK = 0X0099,
 	KEY_ENTER = 0x001C,
 	KEY_ENTER_BRK = 0x009C,
 	KEY_L_CTRL = 0x001D,
@@ -115,6 +116,7 @@ int mouse_unsubscribe_int();
 //int check_codes_menus();
 //int check_codes_game();
 Mouse* getMouse();
+void resetMouse();
 void deleteMouse();
 void updateMouse();
 int mouse_int_handler();
