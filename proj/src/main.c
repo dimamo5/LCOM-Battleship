@@ -27,10 +27,10 @@ int main(int argc, char **argv) {
 			drawBattleship(battleship);
 		}
 
-		if (battleship->kb_code == KEY_ESC) {
-			battleship->done = 1;
-
-		}
+//		if (battleship->kb_code == KEY_ESC) {
+//			battleship->done = 1;
+//
+//		}
 	}
 	stopBattleship(battleship);
 

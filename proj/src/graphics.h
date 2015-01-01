@@ -49,6 +49,9 @@ int vg_exit(void);
 
 void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color);
 
+void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
+		int width, int height);
+
 void updateBufferSec();
 
 int rgb(unsigned char r, unsigned char g, unsigned char b);
