@@ -227,7 +227,7 @@ void drawSetTabuleiro(unsigned x, unsigned y, tabuleiro tab, ship* s, Bitmap* b)
 	draw_board(x, y, BIG);
 
 	for (i; i < 100; i++) {
-		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41, *(tab.tab_array[i % 10][i / 10]), b, s->direction);
+		drawQuadricula(x + (i % 10) * 41, y + (i / 10) * 41, *(tab.tab_array[i % 10][i / 10]), b, tab.tab_array[i % 10][i / 10]->direction);
 	}
 
 // Desenha ship temporaria
@@ -284,43 +284,19 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 	sel.hit = 0;
 
 	//Desenha tab_hum
-	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
 
-	for (i = 0; i < 7; i++) {
-		if (i == 0) {
-			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central,
-					tab_hum.ship_array[i].parts_array[0], b, tab_hum.ship_array[i].direction);
-			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + 41,
-					tab_hum.ship_array[i].parts_array[1], b, tab_hum.ship_array[i].direction);
-			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central,
-					tab_hum.ship_array[i].parts_array[2], b, tab_hum.ship_array[i].direction);
-			drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41, Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + 41,
-					tab_hum.ship_array[i].parts_array[3], b, tab_hum.ship_array[i].direction);
-		} else if (tab_hum.ship_array[i].direction == 'h') {
-			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
-				drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central + 41 * m,
-						Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central, tab_hum.ship_array[i].parts_array[m], b,
-						tab_hum.ship_array[i].direction);
-			}
-		} else if (tab_hum.ship_array[i].direction == 'v') {
-			for (m = 0; m < tab_hum.ship_array[i].size; m++) {
-				drawQuadricula(X_BOARD_HUM + 41 * tab_hum.ship_array[i].x_central,
-						Y_BOARD_HUM + 41 * tab_hum.ship_array[i].y_central + m * 41, tab_hum.ship_array[i].parts_array[m], b,
-						tab_hum.ship_array[i].direction);
-			}
-		}
-	}
+	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
 	for (i = 0; i < 100; i++) {
-		if (tab_hum.tab_array[i % 10][i / 10]->t_part == WATER) {
-			drawQuadricula(X_BOARD_HUM + (i % 10) * 41, Y_BOARD_HUM + (i / 10) * 41, *(tab_hum.tab_array[i % 10][i / 10]), b, 'h');
-		}
+		drawQuadricula(X_BOARD_HUM + (i % 10) * 41, Y_BOARD_HUM + (i / 10) * 41, *(tab_hum.tab_array[i % 10][i / 10]), b,
+				(tab_hum.tab_array[i % 10][i / 10])->direction);
 	}
 
 	//Desenha tab_com
 	draw_board(X_BOARD_COM, Y_BOARD_COM, BIG);
 	for (i = 0; i < 100; i++) {
 		if (tab_com.tab_array[i % 10][i / 10]->hit == 1) {
-			drawQuadricula(X_BOARD_COM + (i % 10) * 41, Y_BOARD_COM + (i / 10) * 41, *(tab_com.tab_array[i % 10][i / 10]), b, 'h');
+			drawQuadricula(X_BOARD_COM + (i % 10) * 41, Y_BOARD_COM + (i / 10) * 41, *(tab_com.tab_array[i % 10][i / 10]), b,
+					(tab_com.tab_array[i % 10][i / 10])->direction);
 		}
 	}
 
@@ -448,13 +424,26 @@ void drawQuadricula(unsigned x, unsigned y, ship_part p, Bitmap* bmp, char ori) 
 
 	int pos = (bmp->bitmapInfo.height - 1 - pos_y) * bmp->bitmapInfo.width + pos_x;
 
-	for (i = 0; i < 40 * 40; i++) {
-		if (bmp->Data[pos] != TRANS_COLOR) {
-			vg_set_pixel(x + i % 40, y + i / 40, bmp->Data[pos]);
+	if (ori == 'v') {
+
+		for (i = 0; i < 40 * 40; i++) {
+			if (bmp->Data[pos] != TRANS_COLOR) {
+				vg_set_pixel(x + i % 40, y + i / 40, bmp->Data[pos]);
+			}
+			pos++;
+			if (i % 40 == 0 && i > 0) {
+				pos -= (bmp->bitmapInfo.width + 40);
+			}
 		}
-		pos++;
-		if (i % 40 == 0 && i > 0) {
-			pos -= (bmp->bitmapInfo.width + 40);
+	} else {
+		for (i = 0; i < 40 * 40; i++) {
+			if (bmp->Data[pos] != TRANS_COLOR) {
+				vg_set_pixel(x + i / 40, y + i % 40, bmp->Data[pos]);
+			}
+			pos++;
+			if (i % 40 == 0 && i > 0) {
+				pos -= (bmp->bitmapInfo.width + 40);
+			}
 		}
 	}
 }
@@ -475,7 +464,7 @@ void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, uns
 	unsigned short y_temp = y_rel * y_size;
 	unsigned short i;
 
-	int pos = (bmp->bitmapInfo.height - y_temp) * bmp->bitmapInfo.width + x_temp;
+	int pos = (bmp->bitmapInfo.height - 1 - y_temp) * bmp->bitmapInfo.width + x_temp;
 
 	for (i = 0; i < x_size * y_size; i++) {
 		if (bmp->Data[pos] != TRANS_COLOR) {
@@ -694,6 +683,6 @@ void drawString(unsigned x, unsigned y, char* str, Bitmap* bmp) {
 			return;
 			break;
 		}
-		drawPortionBitmap(x + i * 25, y, x_pos, y_pos, 25, 44, bmp);
+		drawPortionBitmap(x + i * 24, y, x_pos, y_pos, 24, 48, bmp);
 	}
 }

@@ -6,7 +6,7 @@
 #include "bitmap.h"
 
 typedef enum {
-	play_ai, play_pvp, instructions, highscores, exit_game
+	play_ai, instructions, highscores, exit_game
 } currently_selected;
 
 typedef struct {
@@ -14,7 +14,6 @@ typedef struct {
 	currently_selected selected_button;
 	Button* exit_button; // A struct destes botoes possui a variavel "hover" que esta a 1 se
 	Button* play_ai_button; // o rato estiver por cima do botao
-	Button* play_pvp_button;
 	Button* instructions_button;
 	Button* highscores_button;
 	Bitmap* background;

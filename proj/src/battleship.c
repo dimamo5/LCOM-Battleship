@@ -23,13 +23,13 @@ Battleship* startBattleship() {
 	// Por frequencia do timer a 60
 	timer_set_square(0, 60);
 
+	battle->highscore_winner = -1;
+
 	// Inicializar Variaveis
 	// currentState inicial e o menu inicial
 	battle->kb_code = KEY_NONE;
 	battle->currentState = HIGHSCORE_STATE;
 	battle->state = newHighscore(battle);
-
-	battle->highscore_winner = -1;
 
 	// finish initialization
 	battle->done = 0;
@@ -66,7 +66,6 @@ void updateBattleship(Battleship* battleship) {
 			}
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_KEYBOARD) {
-				printf("interrupcao teclado!");
 				if (battleship->kb_code == 0xE0) {
 					battleship->kb_code = battleship->kb_code << 8; //2 Bytes Makecode
 					battleship->kb_code |= kbd_int_handler();
@@ -82,9 +81,9 @@ void updateBattleship(Battleship* battleship) {
 	} else {
 		printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 	}
-	if (battleship->kb_code == KEY_ESC) {
-		battleship->done = 1;
-	}
+//	if (battleship->kb_code == KEY_ESC) {
+//		battleship->done = 1;
+//	}
 
 	updateCurrentState(battleship);
 }
@@ -196,7 +195,10 @@ void updateCurrentState(Battleship* battleship) {
 		}
 		break;
 	case HIGHSCORE_STATE:
-		updateHighscore(battleship);
+		statetochange = updateHighscore(battleship);
+		if (((Highscore_State *) battleship->state)->done) {
+			changeState(battleship, statetochange);
+		}
 		break;
 
 	default:
