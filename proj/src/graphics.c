@@ -285,6 +285,10 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 
 	//Desenha tab_hum
 
+	drawLine(480, 0, 768, 'v', RED);
+	drawLine(481, 0, 768, 'v', RED);
+	drawLine(482, 0, 768, 'v', RED);
+
 	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
 	for (i = 0; i < 100; i++) {
 		drawQuadricula(X_BOARD_HUM + (i % 10) * 41, Y_BOARD_HUM + (i / 10) * 41, *(tab_hum.tab_array[i % 10][i / 10]), b,
@@ -496,23 +500,23 @@ void drawWinner(int winner) {
 void drawDestroyedList(Battleship* battle) {
 	unsigned int i;
 	if (!game_state->turn) {
-		drawPortionBitmap(X_BOARD_HUM, Y_BOARD_HUM + 500, 1, 0, 98, 25, game_state->turns);
+		drawPortionBitmap(X_BOARD_HUM, Y_BOARD_HUM - 200, 1, 0, 98, 25, game_state->turns);
 	} else {
-		drawPortionBitmap(X_BOARD_COM + 100, Y_BOARD_COM - 100, 0, 0, 98, 25, game_state->turns);
+	drawPortionBitmap(X_BOARD_HUM, Y_BOARD_HUM - 200, 0, 0, 98, 25, game_state->turns);
 	}
 
-	aloca_pixmap(X_BOARD_HUM + 450, Y_BOARD_HUM, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
-			game_state->ship_list->bitmapInfo.height);
-	for (i = 0; i < 7; i++) {
-		if (game_state->hum.tab.ship_array[i].destroyed)
-			drawLine(X_BOARD_HUM + 450, Y_BOARD_HUM + 25 * i + 12, 100, 'h', RED);
-	}
+//	aloca_pixmap(X_BOARD_HUM + 450, Y_BOARD_HUM, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
+//			game_state->ship_list->bitmapInfo.height);
+//	for (i = 0; i < 7; i++) {
+//		if (game_state->hum.tab.ship_array[i].destroyed)
+//			drawLine(X_BOARD_HUM + 150, Y_BOARD_HUM - 100 + 25 * i + 12, 100, 'h', RED);
+//	}
 
-	aloca_pixmap(X_BOARD_COM - 200, 500, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
+	aloca_pixmap(X_BOARD_COM - 200, Y_BOARD_HUM-200, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
 			game_state->ship_list->bitmapInfo.height);
 	for (i = 0; i < 7; i++) {
 		if (game_state->com.tab.ship_array[i].destroyed)
-			drawLine(X_BOARD_COM - 100, Y_BOARD_COM + 25 * i + 12, 100, 'h', RED);
+			drawLine(X_BOARD_COM - 200, (Y_BOARD_HUM-200) + 25 * i + 12, 100, 'h', RED);
 	}
 
 }
@@ -683,6 +687,16 @@ void drawString(unsigned x, unsigned y, char* str, Bitmap* bmp) {
 			return;
 			break;
 		}
-		drawPortionBitmap(x + i * 24, y, x_pos, y_pos, 24, 48, bmp);
+		drawPortionBitmap(x + i * 25, y, x_pos, y_pos, 25, 50, bmp);
 	}
+}
+
+void drawTurnsMissed(unsigned int x, unsigned int y, int turns_missed, Bitmap* bmp_cross, Bitmap* bmp_turns_missed) {
+	unsigned int i;
+	for (i = 0; i < turns_missed; i++) {
+		aloca_pixmap(x, y, bmp_turns_missed->Data, bmp_turns_missed->bitmapInfo.width, bmp_turns_missed->bitmapInfo.height);
+		aloca_pixmap(x + bmp_turns_missed->bitmapInfo.width + i * 35, y, bmp_cross->Data, bmp_cross->bitmapInfo.width,
+				bmp_cross->bitmapInfo.height);
+	}
+
 }

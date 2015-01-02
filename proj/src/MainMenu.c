@@ -23,11 +23,11 @@ MainMenuState* newMainMenuState() {
 	// WHITE - this is the button color, but it might be useless here
 	// since drawRectange is where we choose the border color
 
-	// INSTRUCTIONS BUTTON
+	// HELP BUTTON
 	x1 = 384;
 	x2 = 612;
 	y1 = 516;
-	y2 = 619;
+	y2 = 599;
 	state->instructions_button = newButton(x1, y1, x2, y2, WHITE);
 
 	// HIGHSCORES BUTTON
@@ -40,8 +40,8 @@ MainMenuState* newMainMenuState() {
 
 	// EXIT BUTTON
 	x1 = 416;
-	x2 = 695;
-	y1 = 612;
+	x2 = 575;
+	y1 = 622;
 	y2 = 685;
 	state->exit_button = newButton(x1, y1, x2, y2, WHITE);
 
@@ -55,23 +55,25 @@ void drawMainMenuState(Battleship* battle) {
 	drawBitmap(((MainMenuState *) battle->state)->background, 0, 0);
 
 	// Checks which button is pressed and correspondingly draws a square around it
+	if (instruct) {
 
-	if (((MainMenuState *) battle->state)->play_ai_button->mouse_hover == 1) {
-		drawRectangle(((MainMenuState *) battle->state)->play_ai_button);
+	} else {
+		if (((MainMenuState *) battle->state)->play_ai_button->mouse_hover == 1) {
+			drawRectangle(((MainMenuState *) battle->state)->play_ai_button);
+		}
+
+		else if (((MainMenuState *) battle->state)->exit_button->mouse_hover == 1) {
+			drawRectangle(((MainMenuState *) battle->state)->exit_button);
+		}
+
+		else if (((MainMenuState *) battle->state)->instructions_button->mouse_hover == 1) {
+			drawRectangle(((MainMenuState *) battle->state)->instructions_button);
+		}
+
+		else if (((MainMenuState *) battle->state)->highscores_button->mouse_hover == 1) {
+			drawRectangle(((MainMenuState *) battle->state)->highscores_button);
+		}
 	}
-
-	else if (((MainMenuState *) battle->state)->exit_button->mouse_hover == 1) {
-		drawRectangle(((MainMenuState *) battle->state)->exit_button);
-	}
-
-	else if (((MainMenuState *) battle->state)->instructions_button->mouse_hover == 1) {
-		drawRectangle(((MainMenuState *) battle->state)->instructions_button);
-	}
-
-	else if (((MainMenuState *) battle->state)->highscores_button->mouse_hover == 1) {
-		drawRectangle(((MainMenuState *) battle->state)->highscores_button);
-	}
-
 }
 
 State updateMainMenuState(Battleship* battle) {
@@ -111,7 +113,8 @@ State updateMainMenuState(Battleship* battle) {
 		((MainMenuState *) battle->state)->exit_button->mouse_hover = 0;
 
 		if (getMouse()->leftButtonDown) {
-			((MainMenuState *) battle->state)->done = 1;
+			instruct = 1;
+			return MAIN_MENU_STATE;
 		}
 
 	}

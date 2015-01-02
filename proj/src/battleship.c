@@ -200,7 +200,6 @@ void updateCurrentState(Battleship* battleship) {
 			changeState(battleship, statetochange);
 		}
 		break;
-
 	default:
 		break;
 	}

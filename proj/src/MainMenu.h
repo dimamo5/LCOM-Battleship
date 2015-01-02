@@ -12,6 +12,7 @@ typedef enum {
 typedef struct {
 	int done;
 	currently_selected selected_button;
+	unsigned int instruct;
 	Button* exit_button; // A struct destes botoes possui a variavel "hover" que esta a 1 se
 	Button* play_ai_button; // o rato estiver por cima do botao
 	Button* instructions_button;

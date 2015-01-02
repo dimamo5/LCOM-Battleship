@@ -75,6 +75,8 @@ typedef struct {
 	Bitmap* alarm_clock;
 	Bitmap* ship_list;
 	Bitmap* turns;
+	Bitmap* bmp_turns_missed;
+	Bitmap* cross;
 	Bitmap* pause_screen;
 	int done;
 	unsigned int pause;

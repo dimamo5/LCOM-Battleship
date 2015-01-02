@@ -17,7 +17,7 @@ typedef enum {
 
 #define PART_SIZE 40
 #define X_BOARD_HUM 50
-#define Y_BOARD_HUM 50
+#define Y_BOARD_HUM 250
 #define X_BOARD_COM 500
 #define Y_BOARD_COM 250
 
@@ -49,8 +49,7 @@ int vg_exit(void);
 
 void vg_set_pixel(unsigned short x, unsigned short y, unsigned short color);
 
-void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map,
-		int width, int height);
+void aloca_pixmap(unsigned short xi, unsigned short yi, unsigned short *map, int width, int height);
 
 void updateBufferSec();
 
@@ -69,6 +68,7 @@ void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, uns
 
 void drawDestroyedList(Battleship* battle);
 
+void drawTurnsMissed(unsigned int x, unsigned int y, int turns_missed, Bitmap* bmp_cross, Bitmap* bmp_turns_missed);
 /** @} end of video_gr */
 
 #endif /* __VIDEO_GR_H */
