@@ -47,4 +47,6 @@ void string_conc(char* str1, char ch);
 void getStringJogador(Battleship* battle, unsigned int i, char * temp);
 int entrouHighscore(Battleship* battle);
 void dataToString(Battleship* battle, char *temp);
+void insertionSort(Jogador jogadores[], int tam);
+void saveScores(Battleship* battle);
 #endif

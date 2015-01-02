@@ -48,10 +48,14 @@ State updateHighscore(Battleship* battle) {
 			return MAIN_MENU_STATE;
 		}
 	} else if (battle->kb_code == KEY_ENTER && strlen(highscore->nome_player) > 2) {
-		Jogador temp;
-		strcpy(temp.nome, highscore->nome_player);
-		temp.score = highscore->score_player;
-		dataToString(battle, temp.data);
+		Jogador j_temp;
+		strcpy(j_temp.nome, highscore->nome_player);
+		j_temp.score = highscore->score_player;
+		dataToString(battle, j_temp.data);
+		highscore->jogador_array[4] = j_temp;
+		insertionSort(highscore->jogador_array, 5);
+		saveScores(battle);
+
 	} else if (battle->kb_code != KEY_NONE) {
 		char_adicionar = getKey(battle);
 		battle->kb_code = KEY_NONE;
@@ -232,5 +236,41 @@ int entrouHighscore(Battleship* battle) {
 
 void dataToString(Battleship* battle, char *temp) {
 	char s_temp[10];
+	char space[2] = "";
+	char dot[2] = ".";
+	char twodots[2] = ":";
 
+	sprintf(s_temp, "%d", highscore->year);
+	strcat(temp, s_temp);
+	strcat(temp, dot);
+	sprintf(s_temp, "%d", highscore->month);
+	strcat(temp, s_temp);
+	strcat(temp, dot);
+	sprintf(s_temp, "%d", highscore->day);
+	strcat(temp, s_temp);
+	strcat(temp, space);
+	sprintf(s_temp, "%d", highscore->hour);
+	strcat(temp, s_temp);
+	strcat(temp, twodots);
+	sprintf(s_temp, "%d", highscore->min);
+	strcat(temp, s_temp);
+}
+
+void saveScores(Battleship* battle) {
+	unsigned int i;
+
+	FILE *f = fopen("home/lcom/proj/img/highscore.txt", "r");
+	if (f == NULL)
+		printf("Error opening file");
+
+	for (i = 0; i < 5; i++) {
+		fprintf(f, "%s\n", highscore->jogador_array[i].nome);
+		fprintf(f, "%s\n", highscore->jogador_array[i].data);
+		if (i == 4) {
+			fprintf(f, "%d\n", highscore->jogador_array[i].score);
+		} else {
+			fprintf(f, "%d\n", highscore->jogador_array[i].score);
+		}
+	}
+	fclose(f);
 }
