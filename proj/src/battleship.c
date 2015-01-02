@@ -23,7 +23,7 @@ Battleship* startBattleship() {
 	// Por frequencia do timer a 60
 	timer_set_square(0, 60);
 
-	battle->highscore_winner = -1;
+	battle->highscore_winner = 10;
 
 	// Inicializar Variaveis
 	// currentState inicial e o menu inicial
@@ -68,9 +68,9 @@ void updateBattleship(Battleship* battleship) {
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_KEYBOARD) {
 				if (battleship->kb_code == 0xE0) {
 					battleship->kb_code = battleship->kb_code << 8; //2 Bytes Makecode
-					battleship->kb_code |= kbd_int_handler();
+					battleship->kb_code |= handler_kbd_asm();
 				} else
-					battleship->kb_code = kbd_int_handler();
+					battleship->kb_code = handler_kbd_asm();
 			}
 
 			break;

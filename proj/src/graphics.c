@@ -286,7 +286,7 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 	//Desenha tab_hum
 	unsigned int j = 0;
 	for(j;j<4;j++){
-	drawLine(479+j, Y_BOARD_HUM, 412, 'v', RED);
+	drawLine(479+j, Y_BOARD_HUM, 411, 'v', RED);
 	}
 	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
 	for (i = 0; i < 100; i++) {
@@ -488,11 +488,11 @@ void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp) {
 	}
 }
 
-void drawWinner(int winner) {
+void drawWinner(int winner, Battleship* battle) {
 	if (winner == 1) {
-		printf("imagem winner");
+		aloca_pixmap(371,300 , game_state ->winner_bmp->Data, game_state ->winner_bmp->bitmapInfo.width, game_state ->winner_bmp->bitmapInfo.height);
 	} else if (winner == 2) {
-		printf("imagme loser");
+		aloca_pixmap(371,300 , game_state ->loser_bmp->Data, game_state ->loser_bmp->bitmapInfo.width, game_state ->loser_bmp->bitmapInfo.height);
 	}
 }
 

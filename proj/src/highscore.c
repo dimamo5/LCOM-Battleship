@@ -11,6 +11,9 @@ Highscore_State* newHighscore(Battleship* battle) {
 
 	loadScores(state);
 
+	state->intro_nome = loadBitmap("home/lcom/proj/img/intro_nome.bmp");
+	state->show_scores = loadBitmap("home/lcom/proj/img/show_score.bmp");
+
 	if (battle->highscore_winner > state->jogador_array[4].score) {
 		state->score_player = battle->highscore_winner;
 		state->show = 0;
@@ -26,15 +29,20 @@ Highscore_State* newHighscore(Battleship* battle) {
 }
 
 void drawHighscore(Battleship* battle) {
+	char temp[20] = "";
 	if (highscore->show) {
 		unsigned int i;
+		aloca_pixmap(0, 0, highscore->show_scores->Data, highscore->show_scores->bitmapInfo.width,
+				highscore->show_scores->bitmapInfo.height);
 		for (i = 0; i < 5; i++) {
-			char temp[20] = "";
 			getStringJogador(battle, i, temp);
 			drawString(100, 100 + 75 * i, temp, highscore->fonts);
 		}
 	} else {
-		drawString(100, 100, highscore->nome_player, highscore->fonts);
+		sprintf(temp, "%d", battle->highscore_winner);
+		aloca_pixmap(0, 0, highscore->intro_nome->Data, highscore->intro_nome->bitmapInfo.width, highscore->intro_nome->bitmapInfo.height);
+		drawString(400, 100, highscore->nome_player, highscore->fonts);
+		drawString(700, 100, temp, highscore->fonts);
 	}
 
 }
@@ -75,6 +83,8 @@ State updateHighscore(Battleship* battle) {
 void deleteHighscore(Battleship* battle) {
 	battle->highscore_winner = -1;
 	deleteBitmap(highscore->fonts);
+	deleteBitmap(highscore->show_scores);
+	deleteBitmap(highscore->intro_nome);
 	free(battle->state);
 }
 
