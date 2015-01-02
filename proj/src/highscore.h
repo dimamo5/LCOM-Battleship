@@ -29,6 +29,8 @@ typedef struct {
 	char nome_player[10];
 
 	unsigned short score_player;
+	Bitmap* intro_nome;
+	Bitmap* show_scores;
 
 	unsigned short done;
 
@@ -49,4 +51,5 @@ int entrouHighscore(Battleship* battle);
 void dataToString(Battleship* battle, char *temp);
 void insertionSort(Jogador jogadores[], int tam);
 void saveScores(Battleship* battle);
+
 #endif

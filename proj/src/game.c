@@ -48,7 +48,7 @@ void drawGame(Battleship* battle) {
 		drawDestroyedList(battle);
 		drawTurnsMissed(610, 150, game_state->hum.turns_missed, game_state->cross, game_state->bmp_turns_missed);
 		if (game_state->winner) {
-			drawWinner(game_state->winner);
+			drawWinner(game_state->winner, battle);
 		}
 	} else {
 		aloca_pixmap(0, 0, game_state->pause_screen->Data, game_state->pause_screen->bitmapInfo.width,
@@ -67,7 +67,7 @@ State updateGame(Battleship* battle) {
 			printf("\ncomputador ganhou");
 		}
 		if (battle->kb_code == KEY_ESC_BRK) {
-			printf("\nalguem ganhou e tem de carregar esc");
+			printf("\nalguem ganhou e carregou esc");
 			game_state->done = 1;
 			battle->kb_code = KEY_NONE;
 			if (game_state->winner == 1) {
@@ -904,6 +904,7 @@ int gameOver(Battleship* battle) {
 	if (count == 7) {
 		return 1;
 	}
+	count = 0;
 	for (i = 0; i < 7; i++) {
 		if (game_state->com.tab.ship_array[i].destroyed) {
 			count++;
