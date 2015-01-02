@@ -10,7 +10,7 @@
 #define highscore ((Highscore_State*) battle->state)
 
 typedef struct {
-	char nome[20];
+	char nome[10];
 	char data[20];
 	int score;
 } Jogador;
@@ -26,10 +26,10 @@ typedef struct {
 
 	unsigned short show; //0 esta a escrever //1 esta a mostrar
 
-	char* nome_player;
+	char nome_player[10];
 
-	unsigned short score_introduzido;
-	unsigned short nome_introduzido;
+	unsigned short score_player;
+
 	unsigned short done;
 
 	Bitmap* fonts;
@@ -46,4 +46,5 @@ void loadScores(Highscore_State* state);
 void string_conc(char* str1, char ch);
 void getStringJogador(Battleship* battle, unsigned int i, char * temp);
 int entrouHighscore(Battleship* battle);
+void dataToString(Battleship* battle, char *temp);
 #endif
