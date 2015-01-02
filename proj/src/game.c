@@ -15,6 +15,8 @@ GameState* newGame() {
 	state->ship_list = loadBitmap("home/lcom/proj/img/ship_list.bmp");
 	state->turns = loadBitmap("home/lcom/proj/img/turns.bmp");
 	state->pause_screen = loadBitmap("home/lcom/proj/img/pause.bmp");
+	state->bmp_turns_missed = loadBitmap("home/lcom/proj/img/turnos_falhados.bmp");
+	state->cross = loadBitmap("home/lcom/proj/img/red_cross.bmp");
 
 	state->turn = 1; //1- player turn 0-player turn
 	state->turn_time_counter = TURN_TIME;
@@ -36,16 +38,15 @@ GameState* newGame() {
 
 void drawGame(Battleship* battle) {
 	if (!game_state->pause) {
-		drawTabuleirosGame(game_state->hum.tab, game_state->com.tab,
-				game_state->ship_map, game_state->turn);
+		drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map, game_state->turn);
 		drawClock(game_state->turn_time_counter, game_state->alarm_clock);
 		drawDestroyedList(battle);
+		drawTurnsMissed(600, 200, game_state->hum.turns_missed, game_state->cross, game_state->bmp_turns_missed);
 		if (game_state->winner) {
 			drawWinner(game_state->winner);
 		}
 	} else {
-		aloca_pixmap(0, 0, game_state->pause_screen->Data,
-				game_state->pause_screen->bitmapInfo.width,
+		aloca_pixmap(0, 0, game_state->pause_screen->Data, game_state->pause_screen->bitmapInfo.width,
 				game_state->pause_screen->bitmapInfo.height);
 	}
 }
@@ -76,7 +77,7 @@ State updateGame(Battleship* battle) {
 	if (battle->kb_code == KEY_P_BRK) {
 		game_state->pause = !game_state->pause;
 		battle->kb_code = KEY_NONE;
-		if(game_state->pause)
+		if (game_state->pause)
 			printf("\nEntrou em pausa");
 		else
 			printf("\nSaiu de pausa");
@@ -155,19 +156,16 @@ State updateGame(Battleship* battle) {
 
 				return GAME_PLAY_STATE;
 			} else {
-				game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit =
-						1;
+				game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->hit = 1;
 			}
 
-			if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->t_part
-					== WATER) {
+			if (game_state->com.tab.tab_array[game_state->com.tab.selected_x][game_state->com.tab.selected_y]->t_part == WATER) {
 				game_state->turn = !game_state->turn;
 				tempo_bot_espera = rand() % 3 + 7;
 				game_state->hum.shots_missed++;
 			}
 
-			game_state->hum.time_played += (TURN_TIME
-					- game_state->turn_time_counter);
+			game_state->hum.time_played += (TURN_TIME - game_state->turn_time_counter);
 
 			updateShips(battle);
 
@@ -213,8 +211,7 @@ SetShipState* newPlaySetship() {
 
 void drawPlaySetship(Battleship* battle) {
 
-	drawSetTabuleiro(300, 200, set_ship->tab, set_ship->ship_temp,
-			set_ship->ship_map);
+	drawSetTabuleiro(300, 200, set_ship->tab, set_ship->ship_temp, set_ship->ship_map);
 
 	drawListShipSet(750, 200, set_ship->tab.ship_on_board, set_ship->ship_list);
 }
@@ -237,8 +234,7 @@ State updatePlaySetship(Battleship* battle) {
 				set_ship->ship_temp->y_central++;
 			}
 		} else if (set_ship->ship_temp->direction == 'v') {
-			if (set_ship->ship_temp->y_central + set_ship->ship_temp->size
-					!= 10) {
+			if (set_ship->ship_temp->y_central + set_ship->ship_temp->size != 10) {
 				set_ship->ship_temp->y_central++;
 			}
 
@@ -264,8 +260,7 @@ State updatePlaySetship(Battleship* battle) {
 				set_ship->ship_temp->x_central++;
 			}
 		} else if (set_ship->ship_temp->direction == 'h') {
-			if (set_ship->ship_temp->x_central + set_ship->ship_temp->size
-					!= 10) {
+			if (set_ship->ship_temp->x_central + set_ship->ship_temp->size != 10) {
 				set_ship->ship_temp->x_central++;
 			}
 
@@ -293,31 +288,24 @@ State updatePlaySetship(Battleship* battle) {
 		short y = set_ship->ship_temp->y_central;
 
 		if (set_ship->ship_temp->t_ship == DEATH_STAR) {
-			set_ship->tab.tab_array[x][y] =
-					&set_ship->ship_temp->parts_array[0];
-			set_ship->tab.tab_array[x + 1][y] =
-					&set_ship->ship_temp->parts_array[1];
-			set_ship->tab.tab_array[x][y + 1] =
-					&set_ship->ship_temp->parts_array[2];
-			set_ship->tab.tab_array[x + 1][y + 1] =
-					&set_ship->ship_temp->parts_array[3];
+			set_ship->tab.tab_array[x][y] = &set_ship->ship_temp->parts_array[0];
+			set_ship->tab.tab_array[x + 1][y] = &set_ship->ship_temp->parts_array[1];
+			set_ship->tab.tab_array[x][y + 1] = &set_ship->ship_temp->parts_array[2];
+			set_ship->tab.tab_array[x + 1][y + 1] = &set_ship->ship_temp->parts_array[3];
 
 		} else if (set_ship->ship_temp->direction == 'h') {
 			for (i = 0; i < set_ship->ship_temp->size; i++) {
-				set_ship->tab.tab_array[x + i][y] =
-						&set_ship->ship_temp->parts_array[i];
+				set_ship->tab.tab_array[x + i][y] = &set_ship->ship_temp->parts_array[i];
 			}
 
 		} else if (set_ship->ship_temp->direction == 'v') {
 			for (i = 0; i < set_ship->ship_temp->size; i++) {
-				set_ship->tab.tab_array[x][y + i] =
-						&set_ship->ship_temp->parts_array[i];
+				set_ship->tab.tab_array[x][y + i] = &set_ship->ship_temp->parts_array[i];
 			}
 		}
 
 		set_ship->tab.ship_on_board++;
-		set_ship->ship_temp =
-				&set_ship->tab.ship_array[set_ship->tab.ship_on_board];
+		set_ship->ship_temp = &set_ship->tab.ship_array[set_ship->tab.ship_on_board];
 
 		battle->kb_code = KEY_NONE;
 
@@ -330,17 +318,21 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 
 	case KEY_R_BRK:
-		if (set_ship->ship_temp->direction == 'h'
-				&& set_ship->ship_temp->y_central + set_ship->ship_temp->size
-						< 11) {
+		if (set_ship->ship_temp->t_ship == DEATH_STAR) {
+			battle->kb_code = KEY_NONE;
+			return GAME_PLAY_SETSHIP_STATE;
+		}
+		if (set_ship->ship_temp->t_ship == ESCAPE_SHUTTLE) {
+					battle->kb_code = KEY_NONE;
+					return GAME_PLAY_SETSHIP_STATE;
+				}
+		if (set_ship->ship_temp->direction == 'h' && set_ship->ship_temp->y_central + set_ship->ship_temp->size < 11) {
 			set_ship->ship_temp->direction = 'v';
 			for (i = 0; i < set_ship->ship_temp->size; i++) {
 				set_ship->ship_temp->parts_array[i].direction = 'v';
 			}
 
-		} else if (set_ship->ship_temp->direction == 'v'
-				&& set_ship->ship_temp->x_central + set_ship->ship_temp->size
-						< 11) {
+		} else if (set_ship->ship_temp->direction == 'v' && set_ship->ship_temp->x_central + set_ship->ship_temp->size < 11) {
 			set_ship->ship_temp->direction = 'h';
 			for (i = 0; i < set_ship->ship_temp->size; i++) {
 				set_ship->ship_temp->parts_array[i].direction = 'h';
@@ -560,8 +552,7 @@ int checkColission(tabuleiro tab, ship* s) {
 		if (tab.tab_array[s->x_central][s->y_central + 1]->t_part != WATER) {
 			return 1;
 		}
-		if (tab.tab_array[s->x_central + 1][s->y_central + 1]->t_part
-				!= WATER) {
+		if (tab.tab_array[s->x_central + 1][s->y_central + 1]->t_part != WATER) {
 			return 1;
 		}
 	} else {
@@ -570,16 +561,14 @@ int checkColission(tabuleiro tab, ship* s) {
 				if (s->x_central + s->size > 10) {
 					return 1;
 				}
-				if (tab.tab_array[s->x_central + i][s->y_central]->t_part
-						!= WATER) {
+				if (tab.tab_array[s->x_central + i][s->y_central]->t_part != WATER) {
 					return 1;
 				}
 			} else if (s->direction == 'v') {
 				if (s->y_central + s->size > 10) {
 					return 1;
 				}
-				if (tab.tab_array[s->x_central][s->y_central + i]->t_part
-						!= WATER) {
+				if (tab.tab_array[s->x_central][s->y_central + i]->t_part != WATER) {
 					return 1;
 				}
 			}
@@ -613,8 +602,7 @@ void randTabuleiro(tabuleiro* tab) {
 				tab->tab_array[x][y] = &tab->ship_array[i].parts_array[0];
 				tab->tab_array[x + 1][y] = &tab->ship_array[i].parts_array[1];
 				tab->tab_array[x][y + 1] = &tab->ship_array[i].parts_array[2];
-				tab->tab_array[x + 1][y + 1] =
-						&tab->ship_array[i].parts_array[3];
+				tab->tab_array[x + 1][y + 1] = &tab->ship_array[i].parts_array[3];
 			}
 		} else {
 			tab->ship_array[i].x_central = x;
@@ -624,13 +612,11 @@ void randTabuleiro(tabuleiro* tab) {
 			} else {
 				if (tab->ship_array[i].direction == 'h') {
 					for (m = 0; m < tab->ship_array[i].size; m++)
-						tab->tab_array[x + m][y] =
-								&tab->ship_array[i].parts_array[m];
+						tab->tab_array[x + m][y] = &tab->ship_array[i].parts_array[m];
 
 				} else if (tab->ship_array[i].direction == 'v') {
 					for (m = 0; m < tab->ship_array[i].size; m++)
-						tab->tab_array[x][y + m] =
-								&tab->ship_array[i].parts_array[m];
+						tab->tab_array[x][y + m] = &tab->ship_array[i].parts_array[m];
 				}
 			}
 		}
@@ -685,8 +671,7 @@ int checkShips(Battleship* battle) {
 			}
 			if (count != game_state->hum.tab.ship_array[i].nr_hits) {
 				game_state->hum.tab.ship_array[i].nr_hits = count;
-				if (game_state->hum.tab.ship_array[i].nr_hits
-						== game_state->hum.tab.ship_array[i].size) {
+				if (game_state->hum.tab.ship_array[i].nr_hits == game_state->hum.tab.ship_array[i].size) {
 					return i + 1;
 				}
 			}
@@ -699,8 +684,7 @@ int checkShips(Battleship* battle) {
 			}
 			if (count != game_state->com.tab.ship_array[i].nr_hits) {
 				game_state->com.tab.ship_array[i].nr_hits = count;
-				if (game_state->com.tab.ship_array[i].nr_hits
-						== game_state->com.tab.ship_array[i].size) {
+				if (game_state->com.tab.ship_array[i].nr_hits == game_state->com.tab.ship_array[i].size) {
 					return i + 1;
 				}
 			}
@@ -743,8 +727,7 @@ void bot_play(Battleship* battle) {
 
 		if (game_state->ai_comp.direction == 'h') { //Quando chega aqui, ja tem dir. definida
 //			printf("\ndirecao horizontal!");
-			if ((game_state->ai_comp.orientation != 0)
-					&& (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
+			if ((game_state->ai_comp.orientation != 0) && (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
 				if (game_state->ai_comp.last_x_hit == 9) {
 					game_state->ai_comp.orientation = 0;
 					game_state->ai_comp.orientation_was_inverted = 1;
@@ -767,8 +750,7 @@ void bot_play(Battleship* battle) {
 
 //					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
-					game_state->ai_comp.orientation =
-							!game_state->ai_comp.orientation; //inverte-a
+					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
 					selected_y = game_state->ai_comp.last_y_hit;
 					selected_x = game_state->ai_comp.last_x_hit;
@@ -792,8 +774,7 @@ void bot_play(Battleship* battle) {
 
 //					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
-					game_state->ai_comp.orientation =
-							!game_state->ai_comp.orientation; //inverte-a
+					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
 					selected_y = game_state->ai_comp.last_y_hit;
 					selected_x = game_state->ai_comp.last_x_hit;
@@ -812,8 +793,7 @@ void bot_play(Battleship* battle) {
 		}
 		if (game_state->ai_comp.direction == 'v') { //Quando chega aqui, ja tem dir. definida
 //			printf("\ndireccao vertical!");
-			if ((game_state->ai_comp.orientation != 0)
-					&& (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
+			if ((game_state->ai_comp.orientation != 0) && (game_state->ai_comp.orientation != 1)) { // E se ainda nao tinha orientacao, define-a
 				if (game_state->ai_comp.last_y_hit == 9) {
 					game_state->ai_comp.orientation = 0;
 					game_state->ai_comp.orientation_was_inverted = 1;
@@ -836,8 +816,7 @@ void bot_play(Battleship* battle) {
 
 //					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
-					game_state->ai_comp.orientation =
-							!game_state->ai_comp.orientation; //inverte-a
+					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
 					selected_y = game_state->ai_comp.last_y_hit;
 					selected_x = game_state->ai_comp.last_x_hit;
@@ -860,8 +839,7 @@ void bot_play(Battleship* battle) {
 					game_state->ai_comp.last_y_hit = selected_y;
 //					printf("\ny>0");
 				} else if (!game_state->ai_comp.orientation_was_inverted) { // se nunca inverteu orientacao
-					game_state->ai_comp.orientation =
-							!game_state->ai_comp.orientation; //inverte-a
+					game_state->ai_comp.orientation = !game_state->ai_comp.orientation; //inverte-a
 					game_state->ai_comp.orientation_was_inverted = 1;
 					selected_y = game_state->ai_comp.last_y_hit;
 					selected_x = game_state->ai_comp.last_x_hit;
@@ -891,8 +869,7 @@ void bot_play(Battleship* battle) {
 		game_state->ai_comp.last_y_hit = selected_y;
 	}
 
-	if (game_state->hum.tab.tab_array[selected_x][selected_y]->t_part
-			== WATER) {
+	if (game_state->hum.tab.tab_array[selected_x][selected_y]->t_part == WATER) {
 		printf("\nAgua!");
 		game_state->ai_comp.previous_hit = 0;
 		game_state->turn = !game_state->turn;
@@ -907,9 +884,7 @@ void bot_play(Battleship* battle) {
 }
 
 unsigned int calculaScore(Battleship* battle) {
-	return battle->highscore_winner = 1000
-			/ (0.05 * game_state->hum.shots_missed
-					+ 0.01 * game_state->hum.time_played);
+	return battle->highscore_winner = 1000 / (0.05 * game_state->hum.shots_missed + 0.01 * game_state->hum.time_played);
 }
 
 int gameOver(Battleship* battle) {
