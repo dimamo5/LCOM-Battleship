@@ -17,6 +17,9 @@ GameState* newGame() {
 	state->pause_screen = loadBitmap("home/lcom/proj/img/pause.bmp");
 	state->bmp_turns_missed = loadBitmap("home/lcom/proj/img/turnos_falhados.bmp");
 	state->cross = loadBitmap("home/lcom/proj/img/red_cross.bmp");
+	state->winner_bmp = loadBitmap("home/lcom/proj/img/win.bmp");
+	state->loser_bmp = loadBitmap("home/lcom/proj/img/lost.bmp");
+	state->background = loadBitmap("home/lcom/proj/img/game_background.bmp");
 
 	state->turn = 1; //1- player turn 0-player turn
 	state->turn_time_counter = TURN_TIME;
@@ -38,10 +41,12 @@ GameState* newGame() {
 
 void drawGame(Battleship* battle) {
 	if (!game_state->pause) {
+		aloca_pixmap(0, 0, game_state->background->Data, game_state->background->bitmapInfo.width,
+				game_state->background->bitmapInfo.height);
 		drawTabuleirosGame(game_state->hum.tab, game_state->com.tab, game_state->ship_map, game_state->turn);
 		drawClock(game_state->turn_time_counter, game_state->alarm_clock);
 		drawDestroyedList(battle);
-		drawTurnsMissed(600, 200, game_state->hum.turns_missed, game_state->cross, game_state->bmp_turns_missed);
+		drawTurnsMissed(610, 150, game_state->hum.turns_missed, game_state->cross, game_state->bmp_turns_missed);
 		if (game_state->winner) {
 			drawWinner(game_state->winner);
 		}
@@ -204,12 +209,14 @@ SetShipState* newPlaySetship() {
 	state->ship_temp = &state->tab.ship_array[0];
 
 	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
-
 	state->ship_list = loadBitmap("home/lcom/proj/img/ship_list.bmp");
+	state->background = loadBitmap("home/lcom/proj/img/game_background.bmp");
 	return state;
 }
 
 void drawPlaySetship(Battleship* battle) {
+
+	aloca_pixmap(0, 0, set_ship->background->Data, set_ship->background->bitmapInfo.width, set_ship->background->bitmapInfo.height);
 
 	drawSetTabuleiro(300, 200, set_ship->tab, set_ship->ship_temp, set_ship->ship_map);
 
@@ -323,9 +330,9 @@ State updatePlaySetship(Battleship* battle) {
 			return GAME_PLAY_SETSHIP_STATE;
 		}
 		if (set_ship->ship_temp->t_ship == ESCAPE_SHUTTLE) {
-					battle->kb_code = KEY_NONE;
-					return GAME_PLAY_SETSHIP_STATE;
-				}
+			battle->kb_code = KEY_NONE;
+			return GAME_PLAY_SETSHIP_STATE;
+		}
 		if (set_ship->ship_temp->direction == 'h' && set_ship->ship_temp->y_central + set_ship->ship_temp->size < 11) {
 			set_ship->ship_temp->direction = 'v';
 			for (i = 0; i < set_ship->ship_temp->size; i++) {

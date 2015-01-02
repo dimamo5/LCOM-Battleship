@@ -5,6 +5,8 @@
 #include "battleship.h"
 #include "bitmap.h"
 
+#define main_menu ((MainMenuState *) battle->state)
+
 typedef enum {
 	play_ai, instructions, highscores, exit_game
 } currently_selected;
@@ -18,6 +20,7 @@ typedef struct {
 	Button* instructions_button;
 	Button* highscores_button;
 	Bitmap* background;
+	Bitmap* instructions;
 	// Existe uma funcao que verifica a posicao do rato e enche a variavel
 } MainMenuState;
 

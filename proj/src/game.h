@@ -78,6 +78,9 @@ typedef struct {
 	Bitmap* bmp_turns_missed;
 	Bitmap* cross;
 	Bitmap* pause_screen;
+	Bitmap* winner_bmp;
+	Bitmap* loser_bmp;
+	Bitmap* background;
 	int done;
 	unsigned int pause;
 
@@ -89,6 +92,7 @@ typedef struct {
 	ship* ship_temp;
 	Bitmap* ship_list;
 	Bitmap* ship_map;
+	Bitmap* background;
 	int done;
 } SetShipState;
 
