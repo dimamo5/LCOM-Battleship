@@ -7,7 +7,6 @@ static tabuleiro* tab_player;
 static tabuleiro* tab_computer;
 
 GameState* newGame() {
-	printf("\n Entrou em newGame");
 	GameState* state = (GameState*) malloc(sizeof(GameState));
 
 	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
@@ -59,7 +58,7 @@ void drawGame(Battleship* battle) {
 State updateGame(Battleship* battle) {
 	static int tempo_bot_espera;
 	if (game_state->winner) {
-		printf("\nentrou na winner");
+//		printf("\nentrou na winner");
 		if (game_state->winner == 1) {
 			printf("\njogador ganhou");
 			battle->highscore_winner = calculaScore(battle);
@@ -67,11 +66,10 @@ State updateGame(Battleship* battle) {
 			printf("\ncomputador ganhou");
 		}
 		if (battle->kb_code == KEY_ESC_BRK) {
-			printf("\nalguem ganhou e carregou esc");
+//			printf("\nalguem ganhou e carregou esc");
 			game_state->done = 1;
 			battle->kb_code = KEY_NONE;
 			if (game_state->winner == 1) {
-				printf("jogador ganhou e carregou esc");
 				return HIGHSCORE_STATE;
 			} else
 				return MAIN_MENU_STATE;
@@ -82,10 +80,6 @@ State updateGame(Battleship* battle) {
 	if (battle->kb_code == KEY_P_BRK) {
 		game_state->pause = !game_state->pause;
 		battle->kb_code = KEY_NONE;
-		if (game_state->pause)
-			printf("\nEntrou em pausa");
-		else
-			printf("\nSaiu de pausa");
 	}
 
 	if (game_state->pause) {
@@ -104,23 +98,23 @@ State updateGame(Battleship* battle) {
 		if (game_state->turn == 0) {
 			if (game_state->turn_time_counter == tempo_bot_espera) {
 				bot_play(battle);
-				printf("\nsaiu da bot");
+//				printf("\nsaiu da bot");
 			}
 			return GAME_PLAY_STATE;
 		}
-		printf("\nturno do jogador");
-		printf("\ntempo restante: %d", game_state->turn_time_counter);
+//		printf("\nturno do jogador");
+//		printf("\ntempo restante: %d", game_state->turn_time_counter);
 		if (game_state->turn_time_counter == 0) {
-			printf("\n counter chegou a 0, passou o turno");
+//			printf("\n counter chegou a 0, passou o turno");
 			tempo_bot_espera = rand() % 3 + 7;
 			game_state->hum.turns_missed++;
 			if (game_state->hum.turns_missed == 3) {
-				printf("saiu");
+//				printf("saiu");
 				game_state->winner = 2;
 				return GAME_PLAY_STATE;
 			} else {
 				game_state->turn = !game_state->turn;
-				printf("turno missed: %d", game_state->hum.turns_missed);
+//				printf("turno missed: %d", game_state->hum.turns_missed);
 				game_state->turn_time_counter = TURN_TIME;
 				return GAME_PLAY_STATE;
 			}
@@ -190,7 +184,7 @@ void deleteGame(Battleship* battle) {
 
 SetShipState* newPlaySetship() {
 
-	printf("\n newPlaySetShip");
+//	printf("\n newPlaySetShip");
 
 	tab_player = NULL;
 	tab_computer = NULL;
@@ -227,7 +221,7 @@ State updatePlaySetship(Battleship* battle) {
 
 	switch (battle->kb_code) {
 	case KEY_ARR_UP_BRK:
-		printf("\n Up Arrow");
+//		printf("\n Up Arrow");
 		if (set_ship->ship_temp->y_central != 0) {
 			set_ship->ship_temp->y_central--;
 		}
@@ -235,7 +229,7 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 
 	case KEY_ARR_DOWN_BRK:
-		printf("\n Down Arrow");
+//		printf("\n Down Arrow");
 		if (set_ship->ship_temp->t_ship == DEATH_STAR) {
 			if (set_ship->ship_temp->y_central + 1 != 9) {
 				set_ship->ship_temp->y_central++;
@@ -253,7 +247,7 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 
 	case KEY_ARR_LEFT_BRK:
-		printf("\n Left Arrow");
+//		printf("\n Left Arrow");
 		if (set_ship->ship_temp->x_central != 0) {
 			set_ship->ship_temp->x_central--;
 		}
@@ -261,7 +255,7 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 
 	case KEY_ARR_RIGHT_BRK:
-		printf("\n Right Arrow");
+//		printf("\n Right Arrow");
 		if (set_ship->ship_temp->t_ship == DEATH_STAR) {
 			if (set_ship->ship_temp->x_central + 1 != 9) {
 				set_ship->ship_temp->x_central++;
@@ -279,13 +273,13 @@ State updatePlaySetship(Battleship* battle) {
 		break;
 
 	case KEY_ESC_BRK:
-		printf("\n Esc");
+//		printf("\n Esc");
 		battle->kb_code = KEY_NONE;
 		set_ship->done = 1;
 		return MAIN_MENU_STATE;
 		break;
 	case KEY_ENTER_BRK:
-		printf("\n Enter");
+//		printf("\n Enter");
 		if (checkColission(set_ship->tab, set_ship->ship_temp)) {
 			battle->kb_code = KEY_NONE;
 			return;
@@ -629,20 +623,13 @@ void randTabuleiro(tabuleiro* tab) {
 		}
 	}
 
-//	printf("DeathStar x:%d\ty:%d", tab->ship_array[0].x_central,
-//			tab->ship_array[0].y_central);
-//	printf("Battleship x:%d\ty:%d", tab->ship_array[1].x_central,
-//			tab->ship_array[1].y_central);
-//	printf("Cruiser1 x:%d\ty:%d", tab->ship_array[2].x_central,
-//			tab->ship_array[2].y_central);
-//	printf("Cruiser2 x:%d\ty:%d", tab->ship_array[3].x_central,
-//			tab->ship_array[3].y_central);
-//	printf("Fighter x:%d\ty:%d", tab->ship_array[4].x_central,
-//			tab->ship_array[4].y_central);
-//	printf("Fighter x:%d\ty:%d", tab->ship_array[5].x_central,
-//			tab->ship_array[5].y_central);
-//	printf("Escape pod x:%d\ty:%d", tab->ship_array[6].x_central,
-//			tab->ship_array[6].y_central);
+	printf("DeathStar x:%d\ty:%d", tab->ship_array[0].x_central, tab->ship_array[0].y_central);
+	printf("Battleship x:%d\ty:%d", tab->ship_array[1].x_central, tab->ship_array[1].y_central);
+	printf("Cruiser1 x:%d\ty:%d", tab->ship_array[2].x_central, tab->ship_array[2].y_central);
+	printf("Cruiser2 x:%d\ty:%d", tab->ship_array[3].x_central, tab->ship_array[3].y_central);
+	printf("Fighter x:%d\ty:%d", tab->ship_array[4].x_central, tab->ship_array[4].y_central);
+	printf("Fighter x:%d\ty:%d", tab->ship_array[5].x_central, tab->ship_array[5].y_central);
+	printf("Escape pod x:%d\ty:%d", tab->ship_array[6].x_central, tab->ship_array[6].y_central);
 
 }
 
@@ -705,24 +692,22 @@ void bot_play(Battleship* battle) {
 	unsigned int selected_x;
 	unsigned int selected_y;
 	unsigned int bot_destroyed_ship = checkShips(battle);
-	if (bot_destroyed_ship)
-		printf("\nDestruiu humano:%d", bot_destroyed_ship);
 
 	if (!game_state->ai_comp.previous_hit) { // Se antes falhou o hit,
-		printf("\nEstado 1");
+//		printf("\nEstado 1");
 		selected_x = rand() % 10; // agora vai fazer random do sitio onde jogar
 		selected_y = rand() % 10;
 		game_state->ai_comp.last_x_hit = selected_x;
 		game_state->ai_comp.last_y_hit = selected_y;
 	} else if (bot_destroyed_ship) {
-		printf("\nEstado 2");
+//		printf("\nEstado 2");
 		selected_x = rand() % 10; // agora vai fazer random do sitio onde jogar
 		selected_y = rand() % 10;
 		game_state->ai_comp.last_x_hit = selected_x;
 		game_state->ai_comp.last_y_hit = selected_y;
 
 	} else { // Se acertou o ultimo hit mas nao destruiu um ship
-		printf("\nEstado 3");
+//		printf("\nEstado 3");
 		if (game_state->ai_comp.direction == 'n') {
 			//se ainda nao tinha direcao definida porque
 			unsigned int dir = rand() % 2; //era a 1a vez que tinha acertado, decide
@@ -867,21 +852,21 @@ void bot_play(Battleship* battle) {
 	}
 
 	if (game_state->hum.tab.tab_array[selected_x][selected_y]->hit) { //peca ja tinha sido atingida antes
-		printf("\nPeca ja estava atingida");
+//		printf("\nPeca ja estava atingida");
 		return;
 	} else { // Se a peca ainda nao tinha sido atingida, passa a estar -> hit = 1
-		printf("\nPeca atingida pela 1a vez");
+//		printf("\nPeca atingida pela 1a vez");
 		game_state->hum.tab.tab_array[selected_x][selected_y]->hit = 1;
 		game_state->ai_comp.last_x_hit = selected_x;
 		game_state->ai_comp.last_y_hit = selected_y;
 	}
 
 	if (game_state->hum.tab.tab_array[selected_x][selected_y]->t_part == WATER) {
-		printf("\nAgua!");
+//		printf("\nAgua!");
 		game_state->ai_comp.previous_hit = 0;
 		game_state->turn = !game_state->turn;
 	} else {
-		printf("\nShip");
+//		printf("\nShip");
 		game_state->ai_comp.previous_hit = 1;
 	}
 
@@ -902,8 +887,9 @@ int gameOver(Battleship* battle) {
 		}
 	}
 	if (count == 7) {
-		return 1;
+		return 2;
 	}
+
 	count = 0;
 	for (i = 0; i < 7; i++) {
 		if (game_state->com.tab.ship_array[i].destroyed) {
@@ -911,7 +897,7 @@ int gameOver(Battleship* battle) {
 		}
 	}
 	if (count == 7) {
-		return 2;
+		return 1;
 	}
 	return 0;
 }

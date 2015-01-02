@@ -21,7 +21,7 @@ typedef enum {
 #define X_BOARD_COM 500
 #define Y_BOARD_COM 250
 
-/** @defgroup video_gr video_gr
+/** @defgroup graphics Graphics
  * @{
  *
  * Functions for outputing data to screen in graphics mode

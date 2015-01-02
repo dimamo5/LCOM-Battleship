@@ -1,6 +1,10 @@
 #ifndef _HIGHSCORE_H_
 #define _HIGHSCORE_H_
-
+/**
+ * @defgroup highscore Highscore
+ * @{
+ * Funcoes de gestao e leitura/escrita de recordes
+ */
 #include "graphics.h"
 #include "battleship.h"
 #include "game.h"
@@ -38,6 +42,9 @@ typedef struct {
 
 } Highscore_State;
 
+/**
+ *
+ */
 Highscore_State* newHighscore(Battleship* battle);
 
 void drawHighscore(Battleship* battle);
