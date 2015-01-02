@@ -284,11 +284,10 @@ void drawTabuleirosGame(tabuleiro tab_hum, tabuleiro tab_com, Bitmap* b, int tur
 	sel.hit = 0;
 
 	//Desenha tab_hum
-
-	drawLine(480, 0, 768, 'v', RED);
-	drawLine(481, 0, 768, 'v', RED);
-	drawLine(482, 0, 768, 'v', RED);
-
+	unsigned int j = 0;
+	for(j;j<4;j++){
+	drawLine(479+j, Y_BOARD_HUM, 412, 'v', RED);
+	}
 	draw_board(X_BOARD_HUM, Y_BOARD_HUM, BIG);
 	for (i = 0; i < 100; i++) {
 		drawQuadricula(X_BOARD_HUM + (i % 10) * 41, Y_BOARD_HUM + (i / 10) * 41, *(tab_hum.tab_array[i % 10][i / 10]), b,
@@ -482,9 +481,9 @@ void drawPortionBitmap(unsigned int x, unsigned int y, unsigned short x_rel, uns
 }
 
 void drawListShipSet(unsigned x, unsigned y, unsigned count, Bitmap* bmp) {
-	unsigned int i;
+	unsigned int i = 0;
 	aloca_pixmap(x, y, bmp->Data, bmp->bitmapInfo.width, bmp->bitmapInfo.height);
-	for (i = 0; i < count; i++) {
+	for (i; i < count; i++) {
 		drawLine(x, y + 25 * i + 12, 100, 'h', RED);
 	}
 }
@@ -499,10 +498,12 @@ void drawWinner(int winner) {
 
 void drawDestroyedList(Battleship* battle) {
 	unsigned int i;
+
+	// 206 = X_BOARD_HUM + (412/2)-50
 	if (!game_state->turn) {
-		drawPortionBitmap(X_BOARD_HUM, Y_BOARD_HUM - 200, 1, 0, 98, 25, game_state->turns);
+		drawPortionBitmap(206, Y_BOARD_HUM - 200, 1, 0, 98, 25, game_state->turns);
 	} else {
-	drawPortionBitmap(X_BOARD_HUM, Y_BOARD_HUM - 200, 0, 0, 98, 25, game_state->turns);
+	drawPortionBitmap(206, Y_BOARD_HUM - 200, 0, 0, 98, 25, game_state->turns);
 	}
 
 //	aloca_pixmap(X_BOARD_HUM + 450, Y_BOARD_HUM, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
@@ -512,11 +513,12 @@ void drawDestroyedList(Battleship* battle) {
 //			drawLine(X_BOARD_HUM + 150, Y_BOARD_HUM - 100 + 25 * i + 12, 100, 'h', RED);
 //	}
 
-	aloca_pixmap(X_BOARD_COM - 200, Y_BOARD_HUM-200, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
+ // desenha lista ships e tracos vermelhos
+	aloca_pixmap(X_BOARD_COM, Y_BOARD_HUM-205, game_state->ship_list->Data, game_state->ship_list->bitmapInfo.width,
 			game_state->ship_list->bitmapInfo.height);
 	for (i = 0; i < 7; i++) {
 		if (game_state->com.tab.ship_array[i].destroyed)
-			drawLine(X_BOARD_COM - 200, (Y_BOARD_HUM-200) + 25 * i + 12, 100, 'h', RED);
+			drawLine(X_BOARD_COM, (Y_BOARD_HUM-205) + 25 * i + 12, 100, 'h', RED);
 	}
 
 }
