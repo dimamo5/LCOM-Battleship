@@ -9,13 +9,12 @@ Highscore_State* newHighscore(Battleship* battle) {
 	Highscore_State * state = (Highscore_State*) malloc(sizeof(Highscore_State));
 
 	get_time(&(state->year), &(state->month), &(state->day), &(state->hour), &(state->min));
-	printf("nao deu coco!");
+
 	loadScores(state);
-	printf("dá coco aqui");
 
 	if (battle->highscore_winner > state->jogador_array[4].score) {
-		printf("entra aqui");
-		state->score_introduzir = battle->highscore_winner;
+
+		state->score_introduzido = battle->highscore_winner;
 		state->nome_player = malloc(sizeof(char) * 10);
 		state->show = 0;
 	} else {
@@ -33,7 +32,9 @@ void drawHighscore(Battleship* battle) {
 	if (highscore->show) {
 		unsigned int i;
 		for (i = 0; i < 5; i++) {
-			drawString(100, 100 + 75 * i, getStringJogador(battle, i), highscore->fonts);
+			char temp[20] = "";
+			getStringJogador(battle, i, temp);
+			drawString(100, 100 + 75 * i, temp, highscore->fonts);
 		}
 	}
 
@@ -47,6 +48,11 @@ State updateHighscore(Battleship* battle) {
 			highscore->done = 1;
 			return MAIN_MENU_STATE;
 		}
+	} else if (battle->kb_code == KEY_ENTER && strlen(highscore->nome_introduzido) > 2) {
+		Jogador temp;
+		temp.nome=highscore.nome_introduzido;
+		temp.score=highscore.score_introduzido;
+		dataToString(battle,temp.data);
 	} else if (battle->kb_code != KEY_NONE) {
 		char_adicionar = getKey(battle);
 		battle->kb_code = KEY_NONE;
@@ -97,7 +103,6 @@ void loadScores(Highscore_State* state) {
 			*pos = '\0';
 		j_temp.score = atoi(temp);
 		state->jogador_array[i] = j_temp;
-		printf("score %d:%s", i, state->jogador_array[i].nome);
 	}
 
 	fclose(f);
@@ -205,18 +210,17 @@ void insertionSort(Jogador jogadores[], int tam) {
 	}
 }
 
-char* getStringJogador(Battleship* battle, unsigned int i) {
-	char* temp = malloc(sizeof(char) * 30);
-	char score_temp[10];
+void getStringJogador(Battleship* battle, unsigned int i, char * temp) {
+	char score_temp[30];
 	char s[3] = "  ";
-	itoa(highscore->jogador_array[i].score, score_temp, 10);
+	printf("\ninicio:%s", highscore->jogador_array[i].nome);
+	sprintf(score_temp, "%d", highscore->jogador_array[i].score);
 	strcat(temp, highscore->jogador_array[i].nome);
 	strcat(temp, s);
 	strcat(temp, highscore->jogador_array[i].data);
 	strcat(temp, s);
 	strcat(temp, score_temp);
 	printf("\n%s", temp);
-	return temp;
 }
 
 int entrouHighscore(Battleship* battle) {
@@ -225,4 +229,8 @@ int entrouHighscore(Battleship* battle) {
 		return 1;
 	} else
 		return 0;
+}
+
+void dataToString(Battleship* battle,char *temp){
+
 }
