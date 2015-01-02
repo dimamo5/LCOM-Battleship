@@ -14,50 +14,35 @@ MainMenuState* newMainMenuState() {
 	state->done = 0;
 
 	// PLAY AI BUTTON
-	int width = 435, height = 80;
-	int x1 = 287;
-	int x2 = x1 + width;
-	int y1 = 256;
-	int y2 = y1 + height;
+	int x1 = 383;
+	int x2 = 612;
+	int y1 = 310;
+	int y2 = 387;
 	state->play_ai_button = newButton(x1, y1, x2, y2, WHITE);
 
 	// WHITE - this is the button color, but it might be useless here
 	// since drawRectange is where we choose the border color
 
-	// PLAY PVP BUTTON
-	width = 583;
-	height = 79;
-	x1 = 212;
-	x2 = x1 + width;
-	y1 = 341;
-	y2 = y1 + height;
-	state->play_pvp_button = newButton(x1, y1, x2, y2, WHITE);
-
 	// INSTRUCTIONS BUTTON
-	width = 409;
-	height = 79;
-	x1 = 287;
-	x2 = x1 + width;
-	y1 = 449;
-	y2 = y1 + height;
+	x1 = 384;
+	x2 = 612;
+	y1 = 516;
+	y2 = 619;
 	state->instructions_button = newButton(x1, y1, x2, y2, WHITE);
 
 	// HIGHSCORES BUTTON
-	width = 359;
-	height = 90;
-	x1 = 323;
-	x2 = x1 + width;
-	y1 = 545;
-	y2 = y1 + height;
+
+	x1 = 328;
+	x2 = 644;
+	y1 = 418;
+	y2 = 486;
 	state->highscores_button = newButton(x1, y1, x2, y2, WHITE);
 
 	// EXIT BUTTON
-	width = 169;
-	height = 79;
-	x1 = 417;
-	x2 = x1 + width;
-	y1 = 646;
-	y2 = y1 + height;
+	x1 = 416;
+	x2 = 695;
+	y1 = 612;
+	y2 = 685;
 	state->exit_button = newButton(x1, y1, x2, y2, WHITE);
 
 	resetMouse();
@@ -75,22 +60,15 @@ void drawMainMenuState(Battleship* battle) {
 		drawRectangle(((MainMenuState *) battle->state)->play_ai_button);
 	}
 
-	else if (((MainMenuState *) battle->state)->play_pvp_button->mouse_hover
-			== 1) {
-		drawRectangle(((MainMenuState *) battle->state)->play_pvp_button);
-	}
-
 	else if (((MainMenuState *) battle->state)->exit_button->mouse_hover == 1) {
 		drawRectangle(((MainMenuState *) battle->state)->exit_button);
 	}
 
-	else if (((MainMenuState *) battle->state)->instructions_button->mouse_hover
-			== 1) {
+	else if (((MainMenuState *) battle->state)->instructions_button->mouse_hover == 1) {
 		drawRectangle(((MainMenuState *) battle->state)->instructions_button);
 	}
 
-	else if (((MainMenuState *) battle->state)->highscores_button->mouse_hover
-			== 1) {
+	else if (((MainMenuState *) battle->state)->highscores_button->mouse_hover == 1) {
 		drawRectangle(((MainMenuState *) battle->state)->highscores_button);
 	}
 
@@ -102,14 +80,16 @@ State updateMainMenuState(Battleship* battle) {
 
 	//Checking each button to update the button "hover" status, the states's
 	// "selected_button" status and the state's "done" status.
-
+	if (battle->kb_code == KEY_ESC) {
+		((MainMenuState *) battle->state)->done = 1;
+		return EXIT_STATE;
+	}
 	// CHECK PLAY AI BUTTON
 	if (mouseInsideButton(((MainMenuState *) battle->state)->play_ai_button, rato)) {
 
 		((MainMenuState *) battle->state)->selected_button = play_ai;
 
 		((MainMenuState *) battle->state)->play_ai_button->mouse_hover = 1;
-		((MainMenuState *) battle->state)->play_pvp_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->instructions_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->highscores_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->exit_button->mouse_hover = 0;
@@ -121,27 +101,11 @@ State updateMainMenuState(Battleship* battle) {
 
 	}
 
-	// CHECK PLAY PVP BUTTON
-	else if (mouseInsideButton(((MainMenuState *) battle->state)->play_pvp_button, rato)) {
-		((MainMenuState *) battle->state)->selected_button = play_pvp;
-
-		((MainMenuState *) battle->state)->play_ai_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->play_pvp_button->mouse_hover = 1;
-		((MainMenuState *) battle->state)->instructions_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->highscores_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->exit_button->mouse_hover = 0;
-
-		if (getMouse()->leftButtonDown) {
-			((MainMenuState *) battle->state)->done = 1;
-		}
-	}
-
 	// CHECK INSTRUCTIONS BUTTON
 	else if (mouseInsideButton(((MainMenuState *) battle->state)->instructions_button, rato)) {
 		((MainMenuState *) battle->state)->selected_button = instructions;
 
 		((MainMenuState *) battle->state)->play_ai_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->play_pvp_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->instructions_button->mouse_hover = 1;
 		((MainMenuState *) battle->state)->highscores_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->exit_button->mouse_hover = 0;
@@ -157,13 +121,13 @@ State updateMainMenuState(Battleship* battle) {
 		((MainMenuState *) battle->state)->selected_button = highscores;
 
 		((MainMenuState *) battle->state)->play_ai_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->play_pvp_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->instructions_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->highscores_button->mouse_hover = 1;
 		((MainMenuState *) battle->state)->exit_button->mouse_hover = 0;
 
 		if (getMouse()->leftButtonDown) {
 			((MainMenuState *) battle->state)->done = 1;
+			return HIGHSCORE_STATE;
 		}
 
 	}
@@ -172,7 +136,6 @@ State updateMainMenuState(Battleship* battle) {
 		((MainMenuState *) battle->state)->selected_button = exit_game;
 
 		((MainMenuState *) battle->state)->play_ai_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->play_pvp_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->instructions_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->highscores_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->exit_button->mouse_hover = 1;
@@ -186,7 +149,6 @@ State updateMainMenuState(Battleship* battle) {
 	// IF NO BUTTON IS SELECTED
 	else {
 		((MainMenuState *) battle->state)->play_ai_button->mouse_hover = 0;
-		((MainMenuState *) battle->state)->play_pvp_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->instructions_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->highscores_button->mouse_hover = 0;
 		((MainMenuState *) battle->state)->exit_button->mouse_hover = 0;
@@ -194,12 +156,12 @@ State updateMainMenuState(Battleship* battle) {
 }
 
 void deleteMainMenuState(Battleship* battle) {
+	deleteBitmap(((MainMenuState *) battle->state)->background);
 	disable_packets();
 	deleteButton(((MainMenuState *) battle->state)->play_ai_button);
-	deleteButton(((MainMenuState *) battle->state)->play_pvp_button);
 	deleteButton(((MainMenuState *) battle->state)->instructions_button);
 	deleteButton(((MainMenuState *) battle->state)->highscores_button);
 	deleteButton(((MainMenuState *) battle->state)->exit_button);
 	free(battle->state);
-	battle->state=NULL;
+	battle->state = NULL;
 }

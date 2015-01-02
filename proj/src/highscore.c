@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "highscore.h"
 #include "rtc.h"
 
@@ -13,7 +12,6 @@ Highscore_State* newHighscore(Battleship* battle) {
 	loadScores(state);
 
 	if (battle->highscore_winner > state->jogador_array[4].score) {
-
 		state->score_player = battle->highscore_winner;
 		state->show = 0;
 	} else {
@@ -35,6 +33,8 @@ void drawHighscore(Battleship* battle) {
 			getStringJogador(battle, i, temp);
 			drawString(100, 100 + 75 * i, temp, highscore->fonts);
 		}
+	} else {
+		drawString(100, 100, highscore->nome_player, highscore->fonts);
 	}
 
 }
@@ -55,28 +55,29 @@ State updateHighscore(Battleship* battle) {
 		highscore->jogador_array[4] = j_temp;
 		insertionSort(highscore->jogador_array, 5);
 		saveScores(battle);
-
+		highscore->show = 1;
+		return HIGHSCORE_STATE;
 	} else if (battle->kb_code != KEY_NONE) {
 		char_adicionar = getKey(battle);
 		battle->kb_code = KEY_NONE;
 		if (char_adicionar == '#') {
 			return HIGHSCORE_STATE;
 		}
-		printf("\n%c", char_adicionar);
 		if (char_adicionar == 0 && strlen(highscore->nome_player) > 0) {
 			highscore->nome_player[strlen(highscore->nome_player) - 1] = 0;
 		} else if (strlen(highscore->nome_player) < 5) {
-			printf("\nconcatenou");
 			string_conc(highscore->nome_player, char_adicionar);
-			printf("\n%s", highscore->nome_player);
 		}
 
 	}
 }
 
 void deleteHighscore(Battleship* battle) {
+	battle->highscore_winner = -1;
+	deleteBitmap(highscore->fonts);
 	free(battle->state);
 }
+
 void loadScores(Highscore_State* state) {
 	char temp[50];
 	char *pos;
@@ -205,7 +206,7 @@ void insertionSort(Jogador jogadores[], int tam) {
 	for (i = 1; i < tam; i++) {
 		eleito = jogadores[i];
 		j = i - 1;
-		while ((j >= 0) && (eleito.score < jogadores[j].score)) {
+		while ((j >= 0) && (eleito.score > jogadores[j].score)) {
 			jogadores[j + 1] = jogadores[j];
 			j--;
 		}
@@ -214,20 +215,10 @@ void insertionSort(Jogador jogadores[], int tam) {
 }
 
 void getStringJogador(Battleship* battle, unsigned int i, char * temp) {
-	char score_temp[30];
-	char s[3] = "  ";
-//	printf("\ninicio:%s", highscore->jogador_array[i].nome);
-	sprintf(score_temp, "%d", highscore->jogador_array[i].score);
-	strcat(temp, highscore->jogador_array[i].nome);
-	strcat(temp, s);
-	strcat(temp, highscore->jogador_array[i].data);
-	strcat(temp, s);
-	strcat(temp, score_temp);
-//	printf("\n%s", temp);
+	sprintf(temp, "%-5s  %s  %d", highscore->jogador_array[i].nome, highscore->jogador_array[i].data, highscore->jogador_array[i].score);
 }
 
 int entrouHighscore(Battleship* battle) {
-//	printf("score do ultimo: %d", highscore->jogador_array[4].score);
 	if (battle->highscore_winner > highscore->jogador_array[4].score) {
 		return 1;
 	} else
@@ -235,31 +226,14 @@ int entrouHighscore(Battleship* battle) {
 }
 
 void dataToString(Battleship* battle, char *temp) {
-	char s_temp[10];
-	char space[2] = "";
-	char dot[2] = ".";
-	char twodots[2] = ":";
 
-	sprintf(s_temp, "%d", highscore->year);
-	strcat(temp, s_temp);
-	strcat(temp, dot);
-	sprintf(s_temp, "%d", highscore->month);
-	strcat(temp, s_temp);
-	strcat(temp, dot);
-	sprintf(s_temp, "%d", highscore->day);
-	strcat(temp, s_temp);
-	strcat(temp, space);
-	sprintf(s_temp, "%d", highscore->hour);
-	strcat(temp, s_temp);
-	strcat(temp, twodots);
-	sprintf(s_temp, "%d", highscore->min);
-	strcat(temp, s_temp);
+	sprintf(temp, "20%.2d.%.2d.%.2d %.2d:%.2d", highscore->year, highscore->month, highscore->day, highscore->hour, highscore->day);
 }
 
 void saveScores(Battleship* battle) {
 	unsigned int i;
 
-	FILE *f = fopen("home/lcom/proj/img/highscore.txt", "r");
+	FILE *f = fopen("home/lcom/proj/img/highscore.txt", "w");
 	if (f == NULL)
 		printf("Error opening file");
 
@@ -267,7 +241,7 @@ void saveScores(Battleship* battle) {
 		fprintf(f, "%s\n", highscore->jogador_array[i].nome);
 		fprintf(f, "%s\n", highscore->jogador_array[i].data);
 		if (i == 4) {
-			fprintf(f, "%d\n", highscore->jogador_array[i].score);
+			fprintf(f, "%d", highscore->jogador_array[i].score);
 		} else {
 			fprintf(f, "%d\n", highscore->jogador_array[i].score);
 		}
