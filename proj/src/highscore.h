@@ -28,7 +28,7 @@ typedef struct {
 
 	char* nome_player;
 
-	unsigned short score_introduzir;
+	unsigned short score_introduzido;
 	unsigned short nome_introduzido;
 	unsigned short done;
 
@@ -44,6 +44,6 @@ void deleteHighscore(Battleship* battle);
 char getKey(Battleship* battle);
 void loadScores(Highscore_State* state);
 void string_conc(char* str1, char ch);
-char* getStringJogador(Battleship* battle, unsigned int i);
+void getStringJogador(Battleship* battle, unsigned int i, char * temp);
 int entrouHighscore(Battleship* battle);
 #endif
