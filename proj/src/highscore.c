@@ -14,8 +14,7 @@ Highscore_State* newHighscore(Battleship* battle) {
 
 	if (battle->highscore_winner > state->jogador_array[4].score) {
 
-		state->score_introduzido = battle->highscore_winner;
-		state->nome_player = malloc(sizeof(char) * 10);
+		state->score_player = battle->highscore_winner;
 		state->show = 0;
 	} else {
 		state->show = 1;
@@ -48,11 +47,11 @@ State updateHighscore(Battleship* battle) {
 			highscore->done = 1;
 			return MAIN_MENU_STATE;
 		}
-	} else if (battle->kb_code == KEY_ENTER && strlen(highscore->nome_introduzido) > 2) {
+	} else if (battle->kb_code == KEY_ENTER && strlen(highscore->nome_player) > 2) {
 		Jogador temp;
-		temp.nome=highscore.nome_introduzido;
-		temp.score=highscore.score_introduzido;
-		dataToString(battle,temp.data);
+		strcpy(temp.nome, highscore->nome_player);
+		temp.score = highscore->score_player;
+		dataToString(battle, temp.data);
 	} else if (battle->kb_code != KEY_NONE) {
 		char_adicionar = getKey(battle);
 		battle->kb_code = KEY_NONE;
@@ -213,24 +212,25 @@ void insertionSort(Jogador jogadores[], int tam) {
 void getStringJogador(Battleship* battle, unsigned int i, char * temp) {
 	char score_temp[30];
 	char s[3] = "  ";
-	printf("\ninicio:%s", highscore->jogador_array[i].nome);
+//	printf("\ninicio:%s", highscore->jogador_array[i].nome);
 	sprintf(score_temp, "%d", highscore->jogador_array[i].score);
 	strcat(temp, highscore->jogador_array[i].nome);
 	strcat(temp, s);
 	strcat(temp, highscore->jogador_array[i].data);
 	strcat(temp, s);
 	strcat(temp, score_temp);
-	printf("\n%s", temp);
+//	printf("\n%s", temp);
 }
 
 int entrouHighscore(Battleship* battle) {
-	printf("score do ultimo: %d", highscore->jogador_array[4].score);
+//	printf("score do ultimo: %d", highscore->jogador_array[4].score);
 	if (battle->highscore_winner > highscore->jogador_array[4].score) {
 		return 1;
 	} else
 		return 0;
 }
 
-void dataToString(Battleship* battle,char *temp){
+void dataToString(Battleship* battle, char *temp) {
+	char s_temp[10];
 
 }
