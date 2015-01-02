@@ -4,6 +4,7 @@
 #include "button.h"
 #include "battleship.h"
 #include "bitmap.h"
+#include "highscore.h"
 #include "graphics.h"
 #include "MainMenu.h"
 
@@ -24,9 +25,9 @@ Battleship* startBattleship() {
 
 	// Inicializar Variaveis
 	// currentState inicial e o menu inicial
-	battle->kb_code = 0;
-	battle->currentState = MAIN_MENU_STATE;
-	battle->state = newMainMenuState();
+	battle->kb_code = KEY_NONE;
+	battle->currentState = HIGHSCORE_STATE;
+	battle->state = newHighscore(battle);
 
 	battle->highscore_winner = -1;
 
@@ -65,6 +66,7 @@ void updateBattleship(Battleship* battleship) {
 			}
 
 			if (msg.NOTIFY_ARG & battleship->IRQ_SET_KEYBOARD) {
+				printf("interrupcao teclado!");
 				if (battleship->kb_code == 0xE0) {
 					battleship->kb_code = battleship->kb_code << 8; //2 Bytes Makecode
 					battleship->kb_code |= kbd_int_handler();
@@ -80,9 +82,9 @@ void updateBattleship(Battleship* battleship) {
 	} else {
 		printf("Any interrupt received\n"); // Any interrupt received, so anything to do
 	}
-//	if (battleship->kb_code == KEY_ESC) {
-//		battleship->done = 1;
-//	}
+	if (battleship->kb_code == KEY_ESC) {
+		battleship->done = 1;
+	}
 
 	updateCurrentState(battleship);
 }
@@ -106,7 +108,9 @@ void drawBattleship(Battleship* battleship) {
 		updateBufferSec();
 		break;
 	case HIGHSCORE_STATE:
-//		drawHighscoreWrite;
+		cleanBufferSec();
+		drawHighscore(battleship);
+		updateBufferSec();
 		break;
 
 	default:
@@ -142,24 +146,22 @@ void changeState(Battleship* battleship, State programState) {
 //Fazer set ao state atual para aquele que se queria
 	battleship->currentState = programState;
 //Dependendo do estado que estamos a querer, vai-se criar esse estado
+	battleship->kb_code = KEY_NONE;
+
 	switch (battleship->currentState) {
 
 	case MAIN_MENU_STATE:
-		battleship->kb_code = KEY_NONE;
 		battleship->state = (MainMenuState *) newMainMenuState(battleship);
 		break;
 	case GAME_PLAY_SETSHIP_STATE:
-		battleship->kb_code = KEY_NONE;
 		battleship->state = newPlaySetship(battleship);
 		break;
 	case GAME_PLAY_STATE:
-		battleship->kb_code = KEY_NONE;
 		battleship->state = newGame(battleship);
 		break;
 	case HIGHSCORE_STATE:
-		battleship->kb_code = KEY_NONE;
-//				battleship->state = newHighscore(battleship);
-//		break;
+		battleship->state = newHighscore(battleship);
+		break;
 	case EXIT_STATE:
 		battleship->done = 1;
 		break;
@@ -184,7 +186,6 @@ void updateCurrentState(Battleship* battleship) {
 	case GAME_PLAY_SETSHIP_STATE:
 		statetochange = updatePlaySetship(battleship);
 		if (((SetShipState *) battleship->state)->done) {
-
 			changeState(battleship, statetochange);
 		}
 		break;
@@ -195,7 +196,7 @@ void updateCurrentState(Battleship* battleship) {
 		}
 		break;
 	case HIGHSCORE_STATE:
-		//		updateHighscoreWrite(battleship);
+		updateHighscore(battleship);
 		break;
 
 	default:
@@ -217,8 +218,8 @@ void deleteCurrentState(Battleship* battleship) {
 		deleteGame(battleship);
 		break;
 	case HIGHSCORE_STATE:
-//		deleteHighscoreMenu(battleship);
-//		break;
+		deleteHighscore(battleship);
+		break;
 
 	default:
 		break;

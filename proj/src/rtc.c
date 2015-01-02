@@ -19,42 +19,42 @@ unsigned long read_rtc_reg(unsigned long reg) {
 	return data;
 }
 /*
-int rtc_subscribe_int() {
-	unsigned int bit_sel = 4; // bit_sel is different from the timer, mouse and keyboard one.
-	hook_id = bit_sel;
-	if (sys_irqsetpolicy(RTC_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id) != OK)
-		return -1;
+ int rtc_subscribe_int() {
+ unsigned int bit_sel = 4; // bit_sel is different from the timer, mouse and keyboard one.
+ hook_id = bit_sel;
+ if (sys_irqsetpolicy(RTC_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &hook_id) != OK)
+ return -1;
 
-	if (sys_irqenable(&hook_id) != OK)
-		return -1;
+ if (sys_irqenable(&hook_id) != OK)
+ return -1;
 
-	unsigned char RegB = read_rtc_reg(11);
-	RegB |= 1 << 6;
-	//falta escrever
+ unsigned char RegB = read_rtc_reg(11);
+ RegB |= 1 << 6;
+ //falta escrever
 
-	unsigned char RegA = read_rtc_reg(10);
-	RegA |= 1 << 0;
-	RegA |= 1 << 1;
-	RegA |= 1 << 2;
-	RegA |= 1 << 3;
-	//escrever no registo
+ unsigned char RegA = read_rtc_reg(10);
+ RegA |= 1 << 0;
+ RegA |= 1 << 1;
+ RegA |= 1 << 2;
+ RegA |= 1 << 3;
+ //escrever no registo
 
-	unsigned char RegC = read_rtc_reg(12);
-	RegC |= 1 << 6;
-	//escrever
+ unsigned char RegC = read_rtc_reg(12);
+ RegC |= 1 << 6;
+ //escrever
 
-	return BIT(bit_sel);
-}
+ return BIT(bit_sel);
+ }
 
-int rtc_unsubscribe_int() {
+ int rtc_unsubscribe_int() {
 
-	if (sys_irqrmpolicy(&hook_id) != OK) {
-		return 1;
-	}
+ if (sys_irqrmpolicy(&hook_id) != OK) {
+ return 1;
+ }
 
-	return 0;
-}
-*/
+ return 0;
+ }
+ */
 void disable_ints() {
 	//__asm__("cli");
 }
@@ -63,13 +63,30 @@ void enable_ints() {
 	//__asm__("sti");
 }
 
-void get_time(int *day, int *hour, int *min) {
+void get_time(int *year, int *month, int *day, int *hour, int *min) {
 	unsigned char RegA, RegB;
 
 	//disable interrupts
 	//not sure
 	//disable_ints();
 	//day
+	*year = read_rtc_reg(9);
+
+	//hour
+	RegA = read_rtc_reg(10);
+
+	while (RegA & 0x80 != 0) {
+		RegA = read_rtc_reg(10);
+	}
+
+	*month = read_rtc_reg(8);
+
+	//hour
+	RegA = read_rtc_reg(10);
+
+	while (RegA & 0x80 != 0) {
+		RegA = read_rtc_reg(10);
+	}
 	*day = read_rtc_reg(7);
 
 	//hour
@@ -90,7 +107,6 @@ void get_time(int *day, int *hour, int *min) {
 
 	*min = read_rtc_reg(2);
 
-
 	RegB = read_rtc_reg(11);
 
 	if ((RegB & 0x02) == 0) {
@@ -98,16 +114,15 @@ void get_time(int *day, int *hour, int *min) {
 	}
 
 	if ((RegB & 0x04) == 0) {
+		*year = bcd_to_bin(*year);
+		*month = bcd_to_bin(*month);
 		*day = bcd_to_bin(*day);
 		*hour = bcd_to_bin(*hour);
 		*min = bcd_to_bin(*min);
 	}
 
-
 	//enable interrupts
 	//not sure
 	//enable_ints();
 }
-
-
 

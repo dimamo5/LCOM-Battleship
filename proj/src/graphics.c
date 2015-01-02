@@ -595,3 +595,173 @@ void drawDestroyedList(Battleship* battle) {
 	}
 
 }
+
+void drawString(unsigned x, unsigned y, char* str, Bitmap* bmp) {
+	unsigned int i, x_pos, y_pos;
+
+	for (i = 0; i < strlen(str); i++) {
+		switch (str[i]) {
+		case 'a':
+			x_pos = 0;
+			y_pos = 0;
+			break;
+		case 'b':
+			x_pos = 1;
+			y_pos = 0;
+			break;
+		case 'c':
+			x_pos = 2;
+			y_pos = 0;
+			break;
+		case 'd':
+			x_pos = 3;
+			y_pos = 0;
+			break;
+		case 'e':
+			x_pos = 4;
+			y_pos = 0;
+			break;
+		case 'f':
+			x_pos = 5;
+			y_pos = 0;
+			break;
+		case 'g':
+			x_pos = 6;
+			y_pos = 0;
+			break;
+		case 'h':
+			x_pos = 7;
+			y_pos = 0;
+			break;
+		case 'i':
+			x_pos = 8;
+			y_pos = 0;
+			break;
+		case 'j':
+			x_pos = 9;
+			y_pos = 0;
+			break;
+		case 'k':
+			x_pos = 10;
+			y_pos = 0;
+			break;
+		case 'l':
+			x_pos = 11;
+			y_pos = 0;
+			break;
+		case 'm':
+			x_pos = 12;
+			y_pos = 0;
+			break;
+		case 'n':
+			x_pos = 13;
+			y_pos = 0;
+			break;
+		case 'o':
+			x_pos = 14;
+			y_pos = 0;
+			break;
+		case 'p':
+			x_pos = 15;
+			y_pos = 0;
+			break;
+		case 'q':
+			x_pos = 16;
+			y_pos = 0;
+			break;
+		case 'r':
+			x_pos = 17;
+			y_pos = 0;
+			break;
+		case 's':
+			x_pos = 18;
+			y_pos = 0;
+			break;
+		case 't':
+			x_pos = 19;
+			y_pos = 0;
+			break;
+		case 'u':
+			x_pos = 20;
+			y_pos = 0;
+			break;
+		case 'v':
+			x_pos = 21;
+			y_pos = 0;
+			break;
+		case 'w':
+			x_pos = 22;
+			y_pos = 0;
+			break;
+		case 'x':
+			x_pos = 23;
+			y_pos = 0;
+			break;
+		case 'y':
+			x_pos = 24;
+			y_pos = 0;
+			break;
+		case 'z':
+			x_pos = 25;
+			y_pos = 0;
+			break;
+
+		case '0':
+			x_pos = 0;
+			y_pos = 1;
+			break;
+		case '1':
+			x_pos = 1;
+			y_pos = 1;
+			break;
+		case '2':
+			x_pos = 2;
+			y_pos = 1;
+			break;
+		case '3':
+			x_pos = 3;
+			y_pos = 1;
+			break;
+		case '4':
+			x_pos = 4;
+			y_pos = 1;
+			break;
+		case '5':
+			x_pos = 5;
+			y_pos = 1;
+			break;
+		case '6':
+			x_pos = 6;
+			y_pos = 1;
+			break;
+		case '7':
+			x_pos = 7;
+			y_pos = 1;
+			break;
+		case '8':
+			x_pos = 8;
+			y_pos = 1;
+			break;
+		case '9':
+			x_pos = 9;
+			y_pos = 1;
+			break;
+		case ' ':
+			x_pos = 10;
+			y_pos = 1;
+			break;
+		case '.':
+			x_pos = 18;
+			y_pos = 1;
+			break;
+		case ':':
+			x_pos = 21;
+			y_pos = 1;
+			break;
+		default:
+			return;
+			break;
+		}
+		drawPortionBitmap(x + i * 28, y, x_pos, y_pos, 28, 50, bmp);
+	}
+}
