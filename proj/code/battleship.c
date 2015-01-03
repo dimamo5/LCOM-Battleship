@@ -31,6 +31,7 @@ Battleship* startBattleship() {
 	battle->currentState = MAIN_MENU_STATE;
 	battle->state = newMainMenuState(battle);
 
+
 	// finish initialization
 	battle->done = 0;
 
