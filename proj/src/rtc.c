@@ -110,7 +110,7 @@ void get_time(int *year, int *month, int *day, int *hour, int *min) {
 	RegB = read_rtc_reg(11);
 
 	if ((RegB & 0x02) == 0) {
-		*hour = hour + 12;
+		*hour = *hour + 12;
 	}
 
 	if ((RegB & 0x04) == 0) {

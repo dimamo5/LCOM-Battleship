@@ -5,21 +5,29 @@
 #include "bitmap.h"
 
 //this struct is from difusal.blogspot.pt
-
+/**@defgroup keyboard_mouse KeyBoard/Mouse
+ * @{
+ * @brief Funcoes relacionadas com Mouse e Keyboard
+ */
+/**
+ * @name mouse Mouse
+ * @brief Estrutura com informação do mouse
+ */
 typedef struct {
-	int x, y;
-	double speedMultiplier;
+	int x, y;/**<@brief Posicao do mouse coord (x,y)*/
+	double speedMultiplier;/**<@brief Velocidade*/
 
-	int bytesRead;
-	long packets[3];
+	int bytesRead; /**<@brief Numero do byte que esta a ser lido*/
+	long packets[3]; /**<@brief Pacote completo com informacao recebida pela rato */
 
-	int leftButtonDown;
-	int rightButtonDown;
-	Bitmap* mouse_up;
-	Bitmap* mouse_down;
-	int hasBeenUpdated;
-	int draw;
+	int leftButtonDown;/**<@brief Flag botao esquerdo premido*/
+	int rightButtonDown;/**<@brief Flago botao direito premido*/
+	Bitmap* mouse_up;/**<@brief Bitmap cursor botoes levantados*/
+	Bitmap* mouse_down;/**<@brief Bitmap cursor botoes premidos*/
+
+	int draw;/**<@brief Flag preciso desenhar o mouse*/
 } Mouse;
+/**@}fim da estrutura */
 
 #define ENABLE_PACKETS 	0xF4
 #define ENABLE_MOUSE	0xA8
@@ -101,29 +109,88 @@ typedef enum {
 	KEY_PGDN = 0xE051,
 	KEY_DEL = 0xE053,
 } KEY;
-
+/**
+ * Handler do keyboard feito em C (nao utilizado no jogo)
+ * @return o break ou make code premido
+ */
 int kbd_int_handler();
+/**
+ * Subscricao de Interrupcoes do Keyboard
+ * @return hook id
+ */
 int kbd_subscribe_int();
+/**
+ * Desativa subscricoes do Keyboard
+ * @return 1 Erro 0 OK
+ */
 int kbd_unsubscribe_int();
 
+/**
+ * Handler do Mouse
+ * @return Byte lido do Mouse
+ */
 int mouse_int_handler();
+/**
+ * Activa Subscricoes do mouse
+ * @return hook_id
+ */
+
 int mouse_subscribe_int();
+/**
+ * Desativa subscricoes do mouse
+ */
 int mouse_unsubscribe_int();
 
 /*verifica se a tecla enter, up_arrow ou down_arrow é premida
  * retorna 0 se a tecla for enter, 1 para up_arrow e 2 para down_arrow
  */
-//int check_codes_menus();
-//int check_codes_game();
+/**
+ * Inizializa e retorna o "objecto" Mouse
+ * @return pointer para o objecto
+ */
 Mouse* getMouse();
+/**
+ * Faz reset ao Mouse colocando o no sitio inicial e com botoes levantados
+ */
 void resetMouse();
+/**
+ * Remove e liberta memoria alocada para o mouse
+ */
 void deleteMouse();
+/**
+ * Actualiza a posicao e as flags dos botoes do mouse
+ */
 void updateMouse();
-int mouse_int_handler();
+/**
+ * Activa o envio de pacotes do mouse
+ * @return 0 Sucesso
+ */
 int enable_packets();
+/**
+ * Desativa o envio de pacotes do mouse
+ * @return 0 Sucesso
+ */
 int disable_packets();
+/**
+ * Verifica se o byte recebido é o primeiro do pacote
+ * @return 1 Verdade 0 False
+ */
 int check_first_byte();
+/**
+ * Desenha o mouse no triple buffer, mostra no ecra e actualiza a flag de draw
+ */
 void drawMouse();
+/**
+ * Verifica se o rato esta dentro de um botao e actualiza a flag no botao
+ * @param botao botao a ser actualizado
+ * @param rato Objecto do rato
+ */
 int mouseInsideButton(Button* botao, Mouse* rato);
+/**
+ * Imprime um pacote recebido pelo mouse (debug)
+ * @param packet array com os bytes
+ */
+void print_packets(long* packet);
+/**@} fim do modulo */
 
 #endif

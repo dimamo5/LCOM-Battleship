@@ -10,8 +10,8 @@ MainMenuState* newMainMenuState() {
 	//Criacao do estado e inicializacao das suas variaveis e botoes
 
 	MainMenuState* state = (MainMenuState*) malloc(sizeof(MainMenuState));
-	state->background = loadBitmap("home/lcom/proj/img/mainmenu.bmp");
-	state->instructions = loadBitmap("home/lcom/proj/img/regras.bmp");
+	state->background = loadBitmap(PATH_IMG"mainmenu.bmp");
+	state->instructions = loadBitmap(PATH_IMG"regras.bmp");
 	state->instruct = 0;
 	state->done = 0;
 
@@ -86,13 +86,13 @@ State updateMainMenuState(Battleship* battle) {
 	// Checks if the user presses ESC while reading the instructions or while not
 	if (main_menu->instruct) {
 		if ((battle->kb_code == KEY_ESC_BRK)) {
-			printf("\n 1a condicao");
+//			printf("\n 1a condicao");
 			main_menu->instruct = 0;
 			battle->kb_code = KEY_NONE;
 			return MAIN_MENU_STATE;
 		}
 	} else if (battle->kb_code == KEY_ESC_BRK) {
-		printf("\n 2a condicao");
+//		printf("\n 2a condicao");
 		battle->kb_code = KEY_NONE;
 		((MainMenuState *) battle->state)->done = 1;
 		return EXIT_STATE;

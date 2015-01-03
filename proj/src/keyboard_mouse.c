@@ -1,5 +1,6 @@
 #include "keyboard_mouse.h"
 #include "bitmap.h"
+#include "battleship.h"
 #include <stdio.h>
 #include <minix/syslib.h>
 #include <minix/drivers.h>
@@ -27,8 +28,8 @@ Mouse* getMouse() {
 		mouse->leftButtonDown = 0;
 		mouse->rightButtonDown = 0;
 		mouse->draw = 0;
-		mouse->mouse_up = loadBitmap("home/lcom/proj/img/mouse_up.bmp");
-		mouse->mouse_down = loadBitmap("home/lcom/proj/img/mouse_down.bmp");
+		mouse->mouse_up = loadBitmap(PATH_IMG"mouse_up.bmp");
+		mouse->mouse_down = loadBitmap(PATH_IMG"mouse_down.bmp");
 	} else {
 		return mouse;
 	}

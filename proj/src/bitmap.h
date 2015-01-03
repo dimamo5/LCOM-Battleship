@@ -1,12 +1,12 @@
 /** @defgroup Bitmap Bitmap
  * @{
- * Functions for manipulating bitmaps
+ * Adaptadas do aluno Henrique Ferrolho
+ * @brief Functions for manipulating bitmaps
  */
 #ifndef _BITMAP_H_
 #define _BITMAP_H_
 
 #define BITMAP_TYPE 0x4D42 //B M ASCII
-
 typedef struct {
 	unsigned short type; // specifies the file type
 	unsigned int size; // specifies the size in bytes of the bitmap file
@@ -48,14 +48,13 @@ Bitmap* loadBitmap(const char* filename);
  * @param bitmap bitmap to be drawn
  * @param x destiny x coord
  * @param y destiny y coord
- * @param alignment image alignment
  */
 void drawBitmap(Bitmap* bitmap, int x, int y);
 
 /**
  * @brief Destroys the given bitmap, freeing all resources used by it.
  *
- * @param bitmap bitmap to be destroyed
+ * @param bmp bitmap to be destroyed
  */
 void deleteBitmap(Bitmap* bmp);
 
