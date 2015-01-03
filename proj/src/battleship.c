@@ -23,13 +23,13 @@ Battleship* startBattleship() {
 	// Por frequencia do timer a 60
 	timer_set_square(0, 60);
 
-	battle->highscore_winner = 10;
+	battle->highscore_winner = -1;
 
 	// Inicializar Variaveis
 	// currentState inicial e o menu inicial
 	battle->kb_code = KEY_NONE;
-	battle->currentState = HIGHSCORE_STATE;
-	battle->state = newHighscore(battle);
+	battle->currentState = MAIN_MENU_STATE;
+	battle->state = newMainMenuState(battle);
 
 	// finish initialization
 	battle->done = 0;

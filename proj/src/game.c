@@ -9,16 +9,16 @@ static tabuleiro* tab_computer;
 GameState* newGame() {
 	GameState* state = (GameState*) malloc(sizeof(GameState));
 
-	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
-	state->alarm_clock = loadBitmap("home/lcom/proj/img/alarm_clock.bmp");
-	state->ship_list = loadBitmap("home/lcom/proj/img/ship_list.bmp");
-	state->turns = loadBitmap("home/lcom/proj/img/turns.bmp");
-	state->pause_screen = loadBitmap("home/lcom/proj/img/pause.bmp");
-	state->bmp_turns_missed = loadBitmap("home/lcom/proj/img/turnos_falhados.bmp");
-	state->cross = loadBitmap("home/lcom/proj/img/red_cross.bmp");
-	state->winner_bmp = loadBitmap("home/lcom/proj/img/win.bmp");
-	state->loser_bmp = loadBitmap("home/lcom/proj/img/lost.bmp");
-	state->background = loadBitmap("home/lcom/proj/img/game_background.bmp");
+	state->ship_map = loadBitmap(PATH_IMG"mapanaves.bmp");
+	state->alarm_clock = loadBitmap(PATH_IMG"alarm_clock.bmp");
+	state->ship_list = loadBitmap(PATH_IMG"ship_list.bmp");
+	state->turns = loadBitmap(PATH_IMG"turns.bmp");
+	state->pause_screen = loadBitmap(PATH_IMG"pause.bmp");
+	state->bmp_turns_missed = loadBitmap(PATH_IMG"turnos_falhados.bmp");
+	state->cross = loadBitmap(PATH_IMG"red_cross.bmp");
+	state->winner_bmp = loadBitmap(PATH_IMG"win.bmp");
+	state->loser_bmp = loadBitmap(PATH_IMG"lost.bmp");
+	state->background = loadBitmap(PATH_IMG"game_background.bmp");
 
 	state->turn = 1; //1- player turn 0-player turn
 	state->turn_time_counter = TURN_TIME;
@@ -60,10 +60,10 @@ State updateGame(Battleship* battle) {
 	if (game_state->winner) {
 //		printf("\nentrou na winner");
 		if (game_state->winner == 1) {
-			printf("\njogador ganhou");
+//			printf("\njogador ganhou");
 			battle->highscore_winner = calculaScore(battle);
 		} else if (game_state->winner == 2) {
-			printf("\ncomputador ganhou");
+//			printf("\ncomputador ganhou");
 		}
 		if (battle->kb_code == KEY_ESC_BRK) {
 //			printf("\nalguem ganhou e carregou esc");
@@ -122,28 +122,28 @@ State updateGame(Battleship* battle) {
 
 		switch (battle->kb_code) {
 
-		case KEY_ARR_UP_BRK:
+		case KEY_ARR_UP:
 			if (game_state->com.tab.selected_y > 0) {
 				game_state->com.tab.selected_y--;
 			}
 			battle->kb_code = KEY_NONE;
 			break;
 
-		case KEY_ARR_DOWN_BRK:
+		case KEY_ARR_DOWN:
 			if (game_state->com.tab.selected_y != 9) {
 				game_state->com.tab.selected_y++;
 			}
 			battle->kb_code = KEY_NONE;
 			break;
 
-		case KEY_ARR_RIGHT_BRK:
+		case KEY_ARR_RIGHT:
 			if (game_state->com.tab.selected_x != 9) {
 				game_state->com.tab.selected_x++;
 			}
 			battle->kb_code = KEY_NONE;
 			break;
 
-		case KEY_ARR_LEFT_BRK:
+		case KEY_ARR_LEFT:
 			if (game_state->com.tab.selected_x > 0) {
 				game_state->com.tab.selected_x--;
 			}
@@ -202,9 +202,9 @@ SetShipState* newPlaySetship() {
 
 	state->ship_temp = &state->tab.ship_array[0];
 
-	state->ship_map = loadBitmap("home/lcom/proj/img/mapanaves.bmp");
-	state->ship_list = loadBitmap("home/lcom/proj/img/ship_list.bmp");
-	state->background = loadBitmap("home/lcom/proj/img/game_background.bmp");
+	state->ship_map = loadBitmap(PATH_IMG"mapanaves.bmp");
+	state->ship_list = loadBitmap(PATH_IMG"ship_list.bmp");
+	state->background = loadBitmap(PATH_IMG"game_background.bmp");
 	return state;
 }
 
@@ -220,7 +220,7 @@ void drawPlaySetship(Battleship* battle) {
 State updatePlaySetship(Battleship* battle) {
 
 	switch (battle->kb_code) {
-	case KEY_ARR_UP_BRK:
+	case KEY_ARR_UP:
 //		printf("\n Up Arrow");
 		if (set_ship->ship_temp->y_central != 0) {
 			set_ship->ship_temp->y_central--;
@@ -228,7 +228,7 @@ State updatePlaySetship(Battleship* battle) {
 		battle->kb_code = KEY_NONE;
 		break;
 
-	case KEY_ARR_DOWN_BRK:
+	case KEY_ARR_DOWN:
 //		printf("\n Down Arrow");
 		if (set_ship->ship_temp->t_ship == DEATH_STAR) {
 			if (set_ship->ship_temp->y_central + 1 != 9) {
@@ -246,7 +246,7 @@ State updatePlaySetship(Battleship* battle) {
 		battle->kb_code = KEY_NONE;
 		break;
 
-	case KEY_ARR_LEFT_BRK:
+	case KEY_ARR_LEFT:
 //		printf("\n Left Arrow");
 		if (set_ship->ship_temp->x_central != 0) {
 			set_ship->ship_temp->x_central--;
@@ -254,7 +254,7 @@ State updatePlaySetship(Battleship* battle) {
 		battle->kb_code = KEY_NONE;
 		break;
 
-	case KEY_ARR_RIGHT_BRK:
+	case KEY_ARR_RIGHT:
 //		printf("\n Right Arrow");
 		if (set_ship->ship_temp->t_ship == DEATH_STAR) {
 			if (set_ship->ship_temp->x_central + 1 != 9) {

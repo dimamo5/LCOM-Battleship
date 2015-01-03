@@ -11,8 +11,8 @@ Highscore_State* newHighscore(Battleship* battle) {
 
 	loadScores(state);
 
-	state->intro_nome = loadBitmap("home/lcom/proj/img/intro_nome.bmp");
-	state->show_scores = loadBitmap("home/lcom/proj/img/show_score.bmp");
+	state->intro_nome = loadBitmap(PATH_IMG"intro_nome.bmp");
+	state->show_scores = loadBitmap(PATH_IMG"show_score.bmp");
 
 	if (battle->highscore_winner > state->jogador_array[4].score) {
 		state->score_player = battle->highscore_winner;
@@ -21,7 +21,7 @@ Highscore_State* newHighscore(Battleship* battle) {
 		state->show = 1;
 	}
 
-	state->fonts = loadBitmap("home/lcom/proj/img/fonts.bmp");
+	state->fonts = loadBitmap(PATH_IMG"fonts.bmp");
 
 	state->done = 0;
 
@@ -94,7 +94,7 @@ void loadScores(Highscore_State* state) {
 	unsigned int i;
 	Jogador j_temp;
 
-	FILE *f = fopen("home/lcom/proj/img/highscore.txt", "r");
+	FILE *f = fopen(PATH_IMG"highscore.txt", "r");
 	if (f == NULL)
 		printf("Error opening file");
 
@@ -243,7 +243,7 @@ void dataToString(Battleship* battle, char *temp) {
 void saveScores(Battleship* battle) {
 	unsigned int i;
 
-	FILE *f = fopen("home/lcom/proj/img/highscore.txt", "w");
+	FILE *f = fopen(PATH_IMG"highscore.txt", "w");
 	if (f == NULL)
 		printf("Error opening file");
 
